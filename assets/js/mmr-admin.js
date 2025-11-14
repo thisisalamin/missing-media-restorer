@@ -40,6 +40,7 @@
 		const filesInput = document.getElementById( 'mmr-files-input' );
 		const selectFilesBtn = document.getElementById( 'mmr-select-files-btn' );
 		const selectFolderBtn = document.getElementById( 'mmr-select-folder-btn' );
+		const refreshFilesBtn = document.getElementById( 'mmr-refresh-files-btn' );
 
 		if ( scanBtn ) {
 			scanBtn.addEventListener( 'click', startScan );
@@ -84,6 +85,11 @@
 					fileInput.click();
 				}
 			} );
+		}
+
+		// Refresh files button - check for files already uploaded via FTP
+		if ( refreshFilesBtn ) {
+			refreshFilesBtn.addEventListener( 'click', refreshFilesList );
 		}
 	}
 
@@ -162,9 +168,9 @@
 				resultsDiv.style.display = 'block';
 				let html = '<div style="margin-bottom: 20px;">';
 				html += '<p><strong style="font-size: 16px; color: #23282d;">Scan Summary:</strong></p>';
+				html += '<p style="margin: 5px 0;"><strong style="color: #0073aa;">Total Files in Database:</strong> ' + data.total_count + '</p>';
 				html += '<p style="margin: 5px 0;"><strong style="color: #28a745;">✓ Existing Files:</strong> ' + existingFiles.length + '</p>';
 				html += '<p style="margin: 5px 0;"><strong style="color: #dc3545;">✗ Missing Files:</strong> ' + missingFiles.length + '</p>';
-				html += '<p style="margin: 5px 0;"><strong style="color: #0073aa;">Total Files:</strong> ' + data.total_count + '</p>';
 
 				if ( missingFiles.length > 0 ) {
 					html += '<p style="margin-top: 10px; color: #666;"><em>Missing files will be restored in ' + mmrState.totalBatches + ' batches of ' + mmrState.batchSize + ' files each.</em></p>';
@@ -175,7 +181,7 @@
 				// Display existing files (green)
 				if ( existingFiles.length > 0 ) {
 					html += '<div style="margin-top: 20px;">';
-					html += '<h4 style="color: #28a745; margin-bottom: 10px;">✓ Available Files (' + existingFiles.length + '):</h4>';
+					html += '<h4 style="color: #28a745; margin-bottom: 10px;">✓ Existing Files (' + existingFiles.length + '):</h4>';
 					html += '<div style="background: #d4edda; border-left: 4px solid #28a745; padding: 15px; border-radius: 4px; max-height: 250px; overflow-y: auto;">';
 					html += '<ul style="list-style: none; padding: 0; margin: 0;">';
 
@@ -195,7 +201,7 @@
 				if ( missingFiles.length > 0 ) {
 					html += '<div style="margin-top: 20px;">';
 					html += '<h4 style="color: #dc3545; margin-bottom: 10px;">✗ Missing Files (' + missingFiles.length + '):</h4>';
-					html += '<div style="background: #f8d7da; border-left: 4px solid #dc3545; padding: 15px; border-radius: 4px; max-height: 300px; overflow-y: auto;">';
+					html += '<div style="background: #f8d7da; border-left: 4px solid #dc3545; padding: 15px; border-radius: 4px; max-height: 400px; overflow-y: auto;">';
 					html += '<ul style="list-style: none; padding: 0; margin: 0;">';
 
 					missingFiles.forEach( function( file ) {
@@ -591,6 +597,77 @@
 	}
 
 	/**
+	 * Refresh files list - fetch files already uploaded to /mmr-temp/ via FTP
+	 */
+	function refreshFilesList() {
+		const refreshBtn = document.getElementById( 'mmr-refresh-files-btn' );
+		if ( refreshBtn ) {
+			refreshBtn.disabled = true;
+			refreshBtn.textContent = '🔄 Refreshing...';
+		}
+
+		// Fetch files from temp directory
+		const xhr = new XMLHttpRequest();
+		xhr.open( 'POST', mmrConfig.ajaxUrl, true );
+		xhr.setRequestHeader( 'Content-Type', 'application/x-www-form-urlencoded' );
+
+		const data = new URLSearchParams();
+		data.append( 'action', 'mmr_get_available_files' );
+		data.append( 'nonce', mmrConfig.nonce );
+
+		xhr.onload = function() {
+			if ( xhr.status === 200 ) {
+				try {
+					const responseText = xhr.responseText.trim();
+					const jsonStart = responseText.indexOf( '{' );
+					const jsonEnd = responseText.lastIndexOf( '}' ) + 1;
+
+					if ( jsonStart !== -1 && jsonEnd > jsonStart ) {
+						const jsonString = responseText.substring( jsonStart, jsonEnd );
+						const response = JSON.parse( jsonString );
+
+						if ( response.success ) {
+							const uploadedFiles = response.data.files || [];
+							if ( uploadedFiles.length > 0 ) {
+								displayUploadSummary( uploadedFiles );
+							} else {
+								const uploadList = document.getElementById( 'mmr-upload-list' );
+								if ( uploadList ) {
+									uploadList.innerHTML = '<p style="color: #0073aa; padding: 15px; background: #e7f3ff; border-left: 4px solid #0073aa; border-radius: 4px;">No files found in /mmr-temp/ folder. Please upload files via FTP or use the browser upload above.</p>';
+								}
+							}
+						}
+					}
+				} catch ( e ) {
+					console.error( 'Error refreshing files:', e );
+					const uploadList = document.getElementById( 'mmr-upload-list' );
+					if ( uploadList ) {
+						uploadList.innerHTML = '<p style="color: #dc3545; padding: 15px; background: #f8d7da; border-left: 4px solid #dc3545; border-radius: 4px;">Error refreshing files list. Please try again.</p>';
+					}
+				}
+			}
+
+			if ( refreshBtn ) {
+				refreshBtn.disabled = false;
+				refreshBtn.textContent = '🔄 Refresh Files List';
+			}
+		};
+
+		xhr.onerror = function() {
+			if ( refreshBtn ) {
+				refreshBtn.disabled = false;
+				refreshBtn.textContent = '🔄 Refresh Files List';
+			}
+			const uploadList = document.getElementById( 'mmr-upload-list' );
+			if ( uploadList ) {
+				uploadList.innerHTML = '<p style="color: #dc3545; padding: 15px; background: #f8d7da; border-left: 4px solid #dc3545; border-radius: 4px;">Network error. Please try again.</p>';
+			}
+		};
+
+		xhr.send( data );
+	}
+
+	/**
 	 * Display upload summary
 	 *
 	 * @param {Array} uploadedFiles - List of uploaded files
@@ -605,13 +682,13 @@
 
 			if ( uploadedFiles.length > 0 ) {
 				html += '<p style="margin: 10px 0 0 0; font-size: 12px; color: #0c5460;">Files are stored in: /mmr-temp/</p>';
-				html += '<details style="margin-top: 10px;"><summary style="cursor: pointer; color: #155724;">View uploaded files (' + uploadedFiles.length + ')</summary>';
-				html += '<div style="margin-top: 10px; max-height: 250px; overflow-y: auto;">';
+				html += '<details style="margin-top: 10px; cursor: pointer;"><summary style="cursor: pointer; color: #155724; font-weight: bold;">📁 View uploaded files (' + uploadedFiles.length + ')</summary>';
+				html += '<div style="margin-top: 10px; max-height: 300px; overflow-y: auto; background: white; padding: 10px; border-radius: 3px;">';
 				html += '<ul style="list-style: none; padding: 0; margin: 0;">';
 
 				uploadedFiles.forEach( function( file ) {
-					html += '<li style="padding: 4px 0; font-size: 12px; border-bottom: 1px solid #c3e6cb;">';
-					html += '<strong>' + file.name + '</strong> (' + formatFileSize( file.size ) + ')';
+					html += '<li style="padding: 6px 0; font-size: 12px; border-bottom: 1px solid #c3e6cb;">';
+					html += '✓ <strong style="color: #155724;">' + file.name + '</strong> <small style="color: #0c5460;">(' + formatFileSize( file.size ) + ')</small>';
 					html += '</li>';
 				} );
 
@@ -626,7 +703,7 @@
 			if ( mmrState.missingFiles.length > 0 ) {
 				html += '<div style="margin-top: 15px;">';
 				html += '<h5 style="color: #ffc107; margin-bottom: 10px;">! File Matching Status:</h5>';
-				html += '<div style="background: #fff3cd; border-left: 4px solid #ffc107; padding: 15px; border-radius: 4px; max-height: 250px; overflow-y: auto;">';
+				html += '<div style="background: #fff3cd; border-left: 4px solid #ffc107; padding: 15px; border-radius: 4px; max-height: 300px; overflow-y: auto;">';
 				html += '<ul style="list-style: none; padding: 0; margin: 0;">';
 
 				let matchedCount = 0;
@@ -651,6 +728,14 @@
 			}
 
 			uploadList.innerHTML = html;
+
+			// Enable restore button
+			const restoreBtn = document.getElementById( 'mmr-restore-btn' );
+			if ( restoreBtn && uploadedFiles.length > 0 ) {
+				restoreBtn.disabled = false;
+				restoreBtn.style.opacity = '1';
+				restoreBtn.style.cursor = 'pointer';
+			}
 		}
 	}	/**
 	 * Handle upload response

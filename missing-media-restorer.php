@@ -129,7 +129,19 @@ function mmr_render_admin_page() {
 		<!-- Upload Area -->
 		<div id="mmr-upload-area" class="mmr-section" style="margin-top: 40px;">
 			<h2>Step 2: Upload Backup Files</h2>
-			<p>Drag and drop your local backup media files here, or click to select files. You can select multiple files or entire folders with their contents.</p>
+			<p>You can upload files in two ways:</p>
+			<ol>
+				<li><strong>Via Web Browser:</strong> Drag and drop or select files below</li>
+				<li><strong>Via FTP/File System:</strong> Upload large files directly to <code>/wp-content/uploads/mmr-temp/</code> folder on your server, then click "Refresh Files List" below</li>
+			</ol>
+
+			<div style="margin-top: 15px; padding: 15px; background: #e7f3ff; border-left: 4px solid #0073aa; border-radius: 4px;">
+				<p style="margin: 0; font-size: 13px; color: #0073aa;">
+					<strong>💡 Tip:</strong> For large files (4GB+), upload directly to the server via FTP to avoid browser timeouts:<br>
+					<code style="background: white; padding: 3px 6px; border-radius: 3px;">/wp-content/uploads/mmr-temp/</code>
+				</p>
+			</div>
+
 			<div id="mmr-upload-dropzone" class="mmr-dropzone">
 				<p>Drop files or folders here or click to browse</p>
 				<input type="file" id="mmr-file-input" multiple webkitdirectory style="display: none;">
@@ -138,6 +150,7 @@ function mmr_render_admin_page() {
 			<div style="margin-top: 10px; text-align: center;">
 				<button id="mmr-select-files-btn" class="button">Select Individual Files</button>
 				<button id="mmr-select-folder-btn" class="button">Select Entire Folder</button>
+				<button id="mmr-refresh-files-btn" class="button" style="background: #0073aa; color: white; border-color: #0073aa;">🔄 Refresh Files List</button>
 			</div>
 			<div id="mmr-upload-list" style="margin-top: 20px;"></div>
 		</div>
@@ -231,6 +244,30 @@ function mmr_get_uploads_dir() {
 }
 
 /**
+ * Count all files in the uploads directory (including thumbnails and variants)
+ *
+ * @return int Total file count
+ */
+function mmr_count_total_files() {
+	$uploads_dir = mmr_get_uploads_dir();
+	$file_count  = 0;
+
+	// Recursively count all files in the uploads directory
+	$iterator = new RecursiveIteratorIterator(
+		new RecursiveDirectoryIterator( $uploads_dir ),
+		RecursiveIteratorIterator::SELF_FIRST
+	);
+
+	foreach ( $iterator as $file ) {
+		if ( $file->isFile() ) {
+			$file_count++;
+		}
+	}
+
+	return $file_count;
+}
+
+/**
  * Scan all WordPress attachments and identify missing files
  *
  * @return array Array of missing files with their metadata
@@ -263,7 +300,7 @@ function mmr_scan_missing_files() {
 		// Extract directory path (year/month)
 		$dir_path = dirname( $attached_file );
 
-		// Check if file exists
+		// Check if main file exists
 		if ( ! file_exists( $file_path ) ) {
 			$missing_files[] = array(
 				'id'        => $attachment_id,
@@ -280,6 +317,35 @@ function mmr_scan_missing_files() {
 				'full_path' => $attached_file,
 				'status'    => 'exists',
 			);
+		}
+
+		// Also check for missing thumbnails
+		$metadata = wp_get_attachment_metadata( $attachment_id );
+		if ( ! empty( $metadata ) && is_array( $metadata ) ) {
+			// Check image sizes (thumbnails)
+			if ( ! empty( $metadata['sizes'] ) && is_array( $metadata['sizes'] ) ) {
+				foreach ( $metadata['sizes'] as $size_name => $size_data ) {
+					if ( ! empty( $size_data['file'] ) ) {
+						$thumb_filename = $size_data['file'];
+						$thumb_path     = $dir_path . '/' . $thumb_filename;
+						$thumb_full_path = $uploads_dir . '/' . $thumb_path;
+
+						// Check if thumbnail exists
+						if ( ! file_exists( $thumb_full_path ) ) {
+							$missing_files[] = array(
+								'id'        => $attachment_id,
+								'filename'  => $thumb_filename,
+								'path'      => $dir_path . '/',
+								'full_path' => $thumb_path,
+								'status'    => 'missing',
+								'is_thumbnail' => true,
+								'parent_file' => $filename,
+								'size_name'   => $size_name,
+							);
+						}
+					}
+				}
+			}
 		}
 	}
 
@@ -310,15 +376,17 @@ function mmr_ajax_scan_missing_files() {
 	$scan_results = mmr_scan_missing_files();
 	$missing_files = $scan_results['missing'];
 	$existing_files = $scan_results['existing'];
+	$total_actual_files = mmr_count_total_files();
 
 	wp_send_json_success(
 		array(
 			'missing_count'  => count( $missing_files ),
 			'existing_count' => count( $existing_files ),
 			'total_count'    => count( $missing_files ) + count( $existing_files ),
+			'total_actual_files' => $total_actual_files,
 			'missing_files'  => $missing_files,
 			'existing_files' => $existing_files,
-			'message'        => 'Scan completed. Found ' . count( $missing_files ) . ' missing and ' . count( $existing_files ) . ' existing files.',
+			'message'        => 'Scan completed. Found ' . count( $missing_files ) . ' missing and ' . count( $existing_files ) . ' existing attachment entries (' . $total_actual_files . ' total files including thumbnails).',
 		)
 	);
 }
@@ -355,40 +423,6 @@ function mmr_regenerate_attachment_metadata( $attachment_id ) {
 }
 
 /**
- * Get all related files for a given filename (main file + thumbnails)
- *
- * @param string $filename The base filename (e.g., "beanie-with-logo-1.jpg")
- * @param string $temp_dir The temp directory path
- * @return array Array of related files found
- */
-function mmr_get_related_files( $filename, $temp_dir ) {
-	$related_files = array();
-	$file_parts    = pathinfo( $filename );
-	$basename      = $file_parts['filename']; // Without extension
-	$extension     = $file_parts['extension'];
-
-	// Add the main file if it exists
-	if ( file_exists( $temp_dir . $filename ) ) {
-		$related_files[] = $filename;
-	}
-
-	// Look for thumbnail/variant files with the same basename
-	// Pattern: basename-*x*.ext (e.g., beanie-with-logo-1-300x300.jpg)
-	$files_in_temp = glob( $temp_dir . $basename . '-*.' . $extension );
-
-	if ( is_array( $files_in_temp ) ) {
-		foreach ( $files_in_temp as $file ) {
-			$fname = basename( $file );
-			if ( ! in_array( $fname, $related_files, true ) ) {
-				$related_files[] = $fname;
-			}
-		}
-	}
-
-	return $related_files;
-}
-
-/**
  * Match uploaded files with missing files and restore them
  *
  * @param int $batch_number The batch number to process
@@ -417,52 +451,100 @@ function mmr_process_batch_restore( $batch_number, $batch_size ) {
 	$uploaded_dir    = wp_upload_dir();
 	$temp_upload_dir = $uploaded_dir['basedir'] . '/mmr-temp/';
 
+	// Get list of available files in temp directory for efficient matching
+	$available_temp_files = mmr_get_temp_files();
+	$available_filenames  = wp_list_pluck( $available_temp_files, 'name' );
+
 	// Process each file in this batch
 	foreach ( $batch_files as $missing_file ) {
 		$filename    = $missing_file['filename'];
 		$target_path = $uploads_dir . '/' . $missing_file['full_path'];
 		$target_dir  = dirname( $target_path );
-		$status      = 'failed';
-		$message     = 'File not found in uploads';
+		$status      = 'skipped';
+		$message     = 'File not uploaded';
 		$attachment_id = $missing_file['id'];
-		$related_count = 0;
+		$files_restored = 0;
 
-		// Get all related files (main + thumbnails)
-		$related_files = mmr_get_related_files( $filename, $temp_upload_dir );
+		// Check if this is a thumbnail - if so, skip (handled with main file)
+		if ( ! empty( $missing_file['is_thumbnail'] ) ) {
+			$processed_files[] = array(
+				'filename' => $filename,
+				'status'   => 'skipped',
+				'path'     => $missing_file['full_path'],
+				'message'  => 'Thumbnail (restored with main file)',
+			);
+			continue;
+		}
 
-		if ( ! empty( $related_files ) ) {
-			// Create target directory if it doesn't exist
-			if ( ! file_exists( $target_dir ) ) {
-				wp_mkdir_p( $target_dir );
-			}
+		// Check if main file is available in /mmr-temp/
+		$file_is_available = in_array( $filename, $available_filenames, true );
 
-			$copy_success = false;
+		// SKIP if main file is not available
+		if ( ! $file_is_available ) {
+			$processed_files[] = array(
+				'filename' => $filename,
+				'status'   => $status,
+				'path'     => $missing_file['full_path'],
+				'message'  => $message,
+			);
+			continue;
+		}
 
-			// Copy all related files
-			foreach ( $related_files as $related_file ) {
-				$source_file = $temp_upload_dir . $related_file;
-				$dest_file   = $target_dir . '/' . $related_file;
+		// File is available - restore it and its thumbnails
+		$copy_success = false;
 
-				if ( copy( $source_file, $dest_file ) ) {
-					$copy_success = true;
-					$related_count++;
-					// Remove from temp after successful copy
-					@unlink( $source_file );
+		// Create target directory if it doesn't exist
+		if ( ! file_exists( $target_dir ) ) {
+			wp_mkdir_p( $target_dir );
+		}
+
+		// Get file info to find related thumbnails
+		$file_parts    = pathinfo( $filename );
+		$basename      = $file_parts['filename']; // Without extension
+		$extension     = isset( $file_parts['extension'] ) ? $file_parts['extension'] : '';
+
+		// Copy the main file
+		$source_file = $temp_upload_dir . $filename;
+		$dest_file   = $target_dir . '/' . $filename;
+
+		if ( copy( $source_file, $dest_file ) ) {
+			$copy_success = true;
+			$files_restored++;
+			// Remove from temp after successful copy
+			@unlink( $source_file );
+		}
+
+		// Look for and copy related thumbnail files
+		// Pattern: basename-*x*.ext (e.g., image-300x300.jpg)
+		if ( ! empty( $extension ) ) {
+			$thumbnail_pattern = $basename . '-*.' . $extension;
+			$thumbnails = glob( $temp_upload_dir . $thumbnail_pattern );
+
+			if ( is_array( $thumbnails ) && ! empty( $thumbnails ) ) {
+				foreach ( $thumbnails as $thumb_file ) {
+					$thumb_name = basename( $thumb_file );
+					$thumb_dest = $target_dir . '/' . $thumb_name;
+
+					if ( copy( $thumb_file, $thumb_dest ) ) {
+						$files_restored++;
+						// Remove from temp after successful copy
+						@unlink( $thumb_file );
+					}
 				}
 			}
+		}
 
-			if ( $copy_success ) {
-				$status  = 'restored';
-				$message = 'Successfully restored ' . $related_count . ' file(s)';
+		if ( $copy_success ) {
+			$status  = 'restored';
+			$message = 'Successfully restored ' . $files_restored . ' file(s)';
 
-				// Regenerate attachment metadata and thumbnails
-				if ( mmr_regenerate_attachment_metadata( $attachment_id ) ) {
-					$message .= ' (metadata updated)';
-				}
-			} else {
-				$status  = 'failed';
-				$message = 'Failed to copy files';
+			// Regenerate attachment metadata and thumbnails
+			if ( mmr_regenerate_attachment_metadata( $attachment_id ) ) {
+				$message .= ' (metadata updated)';
 			}
+		} else {
+			$status  = 'failed';
+			$message = 'Failed to copy file';
 		}
 
 		$processed_files[] = array(
@@ -472,8 +554,6 @@ function mmr_process_batch_restore( $batch_number, $batch_size ) {
 			'message'  => $message,
 		);
 	}
-
-	// Check if this is the last batch
 	$total_files = count( $missing_files );
 	$is_complete = $end_index >= $total_files;
 
