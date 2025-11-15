@@ -499,11 +499,43 @@
 			return;
 		}
 
-		// Find matches by filename
+		// Find matches by filename (case-insensitive + tolerate common sanitization)
 		const matchedItems = [];
 		const unmatchedItems = [];
+
+		function normalize( name ) {
+			return String( name || '' ).toLowerCase().trim();
+		}
+
 		missingList.forEach( function( mf ) {
-			const isAvailable = uploadedList.some( f => f.name === mf.filename );
+			const mfName = normalize( mf.filename );
+			const mfBase = mfName.replace(/\.[^/.]+$/, '');
+			const mfExt = (mfName.indexOf('.') !== -1) ? mfName.split('.').pop() : '';
+
+			const isAvailable = uploadedList.some( function( f ) {
+				// uploaded item may be a File object or a simple object with .name
+				const uploadedName = normalize( f.name || f );
+
+				if ( uploadedName === mfName ) {
+					return true;
+				}
+
+				// compare base names and allow common suffixes added during upload (e.g., _1, -1)
+				const uploadedBase = uploadedName.replace(/\.[^/.]+$/, '');
+				const uploadedExt = (uploadedName.indexOf('.') !== -1) ? uploadedName.split('.').pop() : '';
+
+				if ( uploadedExt && mfExt && uploadedExt === mfExt ) {
+					if ( uploadedBase === mfBase ) {
+						return true;
+					}
+					if ( uploadedBase.startsWith( mfBase + '_' ) || uploadedBase.startsWith( mfBase + '-' ) ) {
+						return true;
+					}
+				}
+
+				return false;
+			} );
+
 			if ( isAvailable ) {
 				matched++;
 				matchedItems.push( mf );
@@ -855,6 +887,10 @@
 	 */
 	function displayUploadSummary( uploadedFiles ) {
 		const uploadList = document.getElementById( 'mmr-upload-list' );
+
+		// Ensure global state is updated so later steps (Match & Review)
+		// use the same uploaded files list (fixes Refresh -> Continue to Match mismatch)
+		mmrState.uploadedFiles = uploadedFiles || [];
 
 		if ( uploadList ) {
 			let html = '<div style="background: #d4edda; border-left: 4px solid #28a745; padding: 15px; border-radius: 4px;">';

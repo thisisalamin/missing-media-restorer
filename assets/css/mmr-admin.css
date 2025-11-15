@@ -389,6 +389,17 @@
 	margin-top: 2px;
 }
 
+/* Specific small tweak for the scan intro layout */
+.mmr-scan-intro {
+	margin-bottom: 18px;
+}
+
+.mmr-scan-intro p {
+	margin: 4px 0 0 0;
+	font-size: 13px;
+	color: var(--mmr-text-secondary);
+}
+
 .mmr-info-box strong {
 	color: var(--mmr-text-primary);
 	display: block;

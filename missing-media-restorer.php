@@ -153,16 +153,20 @@ function mmr_render_admin_page() {
 					</h2>
 				</div>
 				<div class="mmr-card-body">
+					<div class="mmr-scan-intro mmr-info-box">
+						<span class="dashicons dashicons-info"></span>
+						<div>
+							<strong><?php esc_html_e( 'Scan Your Media Library', 'missing-media-restorer' ); ?></strong>
+							<p><?php esc_html_e( "Analyzes attachments and thumbnails, reports missing items, and lets you restore them safely in batched steps using uploaded backups.", 'missing-media-restorer' ); ?></p>
+						</div>
+					</div>
+
 					<div class="mmr-action-center">
 						<button id="mmr-scan-btn" class="mmr-button mmr-button-primary mmr-button-large">
 							<span class="dashicons dashicons-search"></span>
 							<?php esc_html_e( 'Start Scanning', 'missing-media-restorer' ); ?>
 						</button>
 					</div>
-
-					<p class="mmr-description">
-						<?php esc_html_e( "This scan analyzes your media library to find missing originals and thumbnails by comparing attachment records with files on the server. It reports missing items and lets you restore them safely in batched steps using uploaded backups.", 'missing-media-restorer' ); ?>
-					</p>
 
 					<div id="mmr-scan-results" class="mmr-scan-results" style="display: none;">
 						<div id="mmr-scan-output"></div>
