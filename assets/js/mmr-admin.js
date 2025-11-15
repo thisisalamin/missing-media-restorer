@@ -25,7 +25,11 @@
 	 * Initialize the plugin on page load
 	 */
 	function mmrInit() {
+		console.log( 'MMR initializing...' );
+		console.log( 'mmrConfig available:', typeof mmrConfig !== 'undefined' ? mmrConfig : 'NOT FOUND' );
 		attachEventListeners();
+		// Ensure indicator matches initial step
+		updateStepIndicator( 1 );
 	}
 
 	/**
@@ -42,9 +46,13 @@
 		const selectFolderBtn = document.getElementById( 'mmr-select-folder-btn' );
 		const refreshFilesBtn = document.getElementById( 'mmr-refresh-files-btn' );
 
+		console.log( 'Attaching event listeners. Scan button found:', !!scanBtn );
 		if ( scanBtn ) {
 			scanBtn.addEventListener( 'click', startScan );
+			console.log( 'Scan button event listener attached' );
 		}
+
+		// Step navigation buttons
 
 		if ( restoreBtn ) {
 			restoreBtn.addEventListener( 'click', startBatchRestore );
@@ -91,12 +99,36 @@
 		if ( refreshFilesBtn ) {
 			refreshFilesBtn.addEventListener( 'click', refreshFilesList );
 		}
+
+		const continueMatchBtn = document.getElementById( 'mmr-continue-match-btn' );
+		if ( continueMatchBtn ) {
+			continueMatchBtn.addEventListener( 'click', function() {
+				navigateToStep( 3 );
+				// prepare match summary (if already available)
+				prepareMatchSummary();
+			} );
+		}
+
+		const backToUploadBtn = document.getElementById( 'mmr-back-to-upload-btn' );
+		if ( backToUploadBtn ) {
+			backToUploadBtn.addEventListener( 'click', function() {
+				navigateToStep( 2 );
+			} );
+		}
+
+		const continueRestoreBtn = document.getElementById( 'mmr-continue-restore-btn' );
+		if ( continueRestoreBtn ) {
+			continueRestoreBtn.addEventListener( 'click', function() {
+				navigateToStep( 4 );
+			} );
+		}
 	}
 
 	/**
 	 * Start scanning for missing files
 	 */
 	function startScan() {
+		console.log( 'Start scan button clicked' );
 		if ( mmrState.scanning ) {
 			return;
 		}
@@ -104,7 +136,7 @@
 		mmrState.scanning = true;
 		const scanBtn = document.getElementById( 'mmr-scan-btn' );
 		scanBtn.disabled = true;
-		scanBtn.textContent = 'Scanning...';
+		scanBtn.innerHTML = '<span class="dashicons dashicons-search"></span> Scanning...';
 
 		// Make AJAX request to scan for missing files
 		const xhr = new XMLHttpRequest();
@@ -130,14 +162,14 @@
 
 			mmrState.scanning = false;
 			scanBtn.disabled = false;
-			scanBtn.textContent = 'Start Scan';
+			scanBtn.innerHTML = '<span class="dashicons dashicons-search"></span> Start Scanning';
 		};
 
 		xhr.onerror = function() {
 			showError( 'Network error during scan' );
 			mmrState.scanning = false;
 			scanBtn.disabled = false;
-			scanBtn.textContent = 'Start Scan';
+			scanBtn.innerHTML = '<span class="dashicons dashicons-search"></span> Start Scanning';
 		};
 
 		xhr.send( data );
@@ -149,6 +181,7 @@
 	 * @param {Object} response - The response from the server
 	 */
 	function handleScanResponse( response ) {
+		console.log( 'Scan response:', response );
 		if ( response.success ) {
 			const data = response.data;
 			const missingFiles = data.missing_files || [];
@@ -166,23 +199,30 @@
 
 			if ( resultsDiv ) {
 				resultsDiv.style.display = 'block';
-				let html = '<div style="margin-bottom: 20px;">';
-				html += '<p><strong style="font-size: 16px; color: #23282d;">Scan Summary:</strong></p>';
-				html += '<p style="margin: 5px 0;"><strong style="color: #0073aa;">Total Files in Database:</strong> ' + data.total_count + '</p>';
-				html += '<p style="margin: 5px 0;"><strong style="color: #28a745;">✓ Existing Files:</strong> ' + existingFiles.length + '</p>';
-				html += '<p style="margin: 5px 0;"><strong style="color: #dc3545;">✗ Missing Files:</strong> ' + missingFiles.length + '</p>';
+				let html = '<div style="margin-bottom: 20px; background: #f8f9fa; border: 1px solid #e9ecef; border-radius: 6px; padding: 16px;">';
+				html += '<div style="display: flex; align-items: center; gap: 20px; flex-wrap: wrap;">';
+				html += '<div style="font-weight: 600; color: #23282d; font-size: 15px;">Scan Summary</div>';
+				html += '<div style="display: flex; gap: 16px; align-items: center;">';
+				html += '<span style="color: #6c757d; font-size: 14px;">Total: <strong style="color: #0073aa;">' + data.total_count + '</strong></span>';
+				html += '<span style="color: #6c757d; font-size: 14px;">Existing: <strong style="color: #28a745;">' + existingFiles.length + ' ✓</strong></span>';
+				html += '<span style="color: #6c757d; font-size: 14px;">Missing: <strong style="color: #dc3545;">' + missingFiles.length + ' ✗</strong></span>';
 
 				if ( missingFiles.length > 0 ) {
-					html += '<p style="margin-top: 10px; color: #666;"><em>Missing files will be restored in ' + mmrState.totalBatches + ' batches of ' + mmrState.batchSize + ' files each.</em></p>';
+					html += '<span style="color: #6c757d; font-size: 13px; font-style: italic;">' + mmrState.totalBatches + ' batches (' + mmrState.batchSize + ' files each)</span>';
 				}
 
 				html += '</div>';
+				html += '</div>';
+				html += '</div>';
 
-				// Display existing files (green)
+				// Display existing and missing files in two columns
+				html += '<div style="display: flex; gap: 20px; margin-top: 20px;">';
+
+				// Display existing files (left column)
+				html += '<div style="flex: 1;">';
 				if ( existingFiles.length > 0 ) {
-					html += '<div style="margin-top: 20px;">';
 					html += '<h4 style="color: #28a745; margin-bottom: 10px;">✓ Existing Files (' + existingFiles.length + '):</h4>';
-					html += '<div style="background: #d4edda; border-left: 4px solid #28a745; padding: 15px; border-radius: 4px; max-height: 250px; overflow-y: auto;">';
+					html += '<div style="background: #d4edda; border-left: 4px solid #28a745; padding: 15px; border-radius: 4px; max-height: 300px; overflow-y: auto;">';
 					html += '<ul style="list-style: none; padding: 0; margin: 0;">';
 
 					existingFiles.forEach( function( file ) {
@@ -194,14 +234,19 @@
 
 					html += '</ul>';
 					html += '</div>';
+				} else {
+					html += '<h4 style="color: #28a745; margin-bottom: 10px;">✓ Existing Files (0):</h4>';
+					html += '<div style="background: #d4edda; border-left: 4px solid #28a745; padding: 15px; border-radius: 4px;">';
+					html += '<p style="margin: 0; color: #155724; font-style: italic;">No existing files found.</p>';
 					html += '</div>';
 				}
+				html += '</div>';
 
-				// Display missing files (red)
+				// Display missing files (right column)
+				html += '<div style="flex: 1;">';
 				if ( missingFiles.length > 0 ) {
-					html += '<div style="margin-top: 20px;">';
 					html += '<h4 style="color: #dc3545; margin-bottom: 10px;">✗ Missing Files (' + missingFiles.length + '):</h4>';
-					html += '<div style="background: #f8d7da; border-left: 4px solid #dc3545; padding: 15px; border-radius: 4px; max-height: 400px; overflow-y: auto;">';
+					html += '<div style="background: #f8d7da; border-left: 4px solid #dc3545; padding: 15px; border-radius: 4px; max-height: 300px; overflow-y: auto;">';
 					html += '<ul style="list-style: none; padding: 0; margin: 0;">';
 
 					missingFiles.forEach( function( file ) {
@@ -213,15 +258,37 @@
 
 					html += '</ul>';
 					html += '</div>';
+				} else {
+					html += '<h4 style="color: #dc3545; margin-bottom: 10px;">✗ Missing Files (0):</h4>';
+					html += '<div style="background: #f8d7da; border-left: 4px solid #dc3545; padding: 15px; border-radius: 4px;">';
+					html += '<p style="margin: 0; color: #721c24; font-style: italic;">No missing files found.</p>';
 					html += '</div>';
 				}
+				html += '</div>';
+
+				html += '</div>'; // End flex container
+
+				// Add continue button after scan results
+				html += '<div class="mmr-action-center" style="margin-top: 20px;">';
+				html += '<button id="mmr-continue-upload-btn" class="mmr-button mmr-button-primary">';
+				html += 'Continue to Upload';
+				html += '</button>';
+				html += '</div>';
 
 				outputDiv.innerHTML = html;
 
-				// Enable restore button only if there are missing files
-				const restoreBtn = document.getElementById( 'mmr-restore-btn' );
-				if ( restoreBtn && missingFiles.length > 0 ) {
-					restoreBtn.disabled = false;
+				// Re-attach event listener for the dynamically created button
+				const continueUploadBtn = document.getElementById( 'mmr-continue-upload-btn' );
+				if ( continueUploadBtn ) {
+					continueUploadBtn.addEventListener( 'click', function() {
+						console.log( 'Continue to Upload button clicked' );
+						navigateToStep( 2 );
+					});
+					console.log( 'Showing continue upload button' );
+					continueUploadBtn.style.display = 'inline-block';
+					continueUploadBtn.disabled = false;
+				} else {
+					console.log( 'Continue upload button not found' );
 				}
 			}
 
@@ -367,6 +434,117 @@
 				progressText.textContent = 'Restored ' + mmrState.filesRestored + ' of ' + mmrState.totalFiles + ' files (' + Math.round( percentage ) + '%)';
 			}
 		}
+	}
+
+	/**
+	 * Navigate to a specific wizard step
+	 * @param {number} step
+	 */
+	function navigateToStep( step ) {
+		console.log( 'Navigating to step:', step );
+		// hide all step containers
+		document.querySelectorAll( '.mmr-step-container' ).forEach( function( el ) {
+			el.classList.remove( 'mmr-step-active' );
+			el.style.display = 'none';
+		} );
+
+		// show requested step
+		const target = document.getElementById( 'mmr-step-' + step );
+		console.log( 'Target element:', target );
+		if ( target ) {
+			target.classList.add( 'mmr-step-active' );
+			target.style.display = 'block';
+		}
+
+		// update indicator
+		updateStepIndicator( step );
+	}
+
+	/**
+	 * Update step indicator visuals
+	 */
+	function updateStepIndicator( step ) {
+		document.querySelectorAll( '.mmr-step' ).forEach( function( el ) {
+			const stepNum = parseInt( el.getAttribute( 'data-step' ), 10 );
+			el.classList.remove( 'mmr-step-active' );
+			el.classList.remove( 'mmr-step-completed' );
+			if ( stepNum < step ) {
+				el.classList.add( 'mmr-step-completed' );
+			} else if ( stepNum === step ) {
+				el.classList.add( 'mmr-step-active' );
+			}
+		} );
+	}
+
+	/**
+	 * Prepare & render match summary in Step 3
+	 */
+	function prepareMatchSummary() {
+		const matchWrap = document.getElementById( 'mmr-match-summary' );
+		if ( ! matchWrap ) {
+			return;
+		}
+
+		const uploadedList = mmrState.uploadedFiles || [];
+		const missingList = mmrState.missingFiles || [];
+
+		let matched = 0;
+		let unmatched = 0;
+
+		let html = '';
+
+		if ( missingList.length === 0 ) {
+			html = '<p>No missing files found. Please run scan first.</p>';
+			matchWrap.innerHTML = html;
+			return;
+		}
+
+		// Find matches by filename
+		const matchedItems = [];
+		const unmatchedItems = [];
+		missingList.forEach( function( mf ) {
+			const isAvailable = uploadedList.some( f => f.name === mf.filename );
+			if ( isAvailable ) {
+				matched++;
+				matchedItems.push( mf );
+			} else {
+				unmatched++;
+				unmatchedItems.push( mf );
+			}
+		} );
+
+		html += '<div class="mmr-match-stats">';
+		html += '<div class="mmr-match-stat stat-matched"><div class="mmr-match-stat-number">' + matched + '</div><div class="mmr-match-stat-label">Matched files</div></div>';
+		html += '<div class="mmr-match-stat stat-unmatched"><div class="mmr-match-stat-number">' + unmatched + '</div><div class="mmr-match-stat-label">Unmatched files</div></div>';
+		html += '</div>';
+
+		// show lists
+		html += '<div class="mmr-file-list-section">';
+		if ( matchedItems.length > 0 ) {
+			html += '<h4 class="mmr-file-list-title">Matched Files</h4>';
+			html += '<div class="mmr-file-list">';
+			matchedItems.forEach( function( it ) {
+				html += '<div class="mmr-file-item">';
+				html += '<div class="mmr-file-info"><div class="mmr-file-name">' + it.filename + '</div><div class="mmr-file-size">' + it.path + '</div></div>';
+				html += '</div>';
+			} );
+			html += '</div>';
+		}
+
+		if ( unmatchedItems.length > 0 ) {
+			html += '<h4 class="mmr-file-list-title list-missing">Unmatched Files</h4>';
+			html += '<div class="mmr-file-list">';
+			unmatchedItems.forEach( function( it ) {
+				html += '<div class="mmr-file-item">';
+				html += '<div class="mmr-file-info"><div class="mmr-file-name">' + it.filename + '</div><div class="mmr-file-size">' + it.path + '</div></div>';
+				html += '</div>';
+			} );
+			html += '</div>';
+		}
+
+		html += '</div>';
+
+		matchWrap.innerHTML = html;
 	}
 
 	/**
@@ -584,6 +762,9 @@
 
 						if ( response.success ) {
 							const uploadedFiles = response.data.files || [];
+							mmrState.uploadedFiles = uploadedFiles;
+							// update state and display
+							mmrState.uploadedFiles = uploadedFiles;
 							displayUploadSummary( uploadedFiles );
 						}
 					}
@@ -735,6 +916,11 @@
 				restoreBtn.disabled = false;
 				restoreBtn.style.opacity = '1';
 				restoreBtn.style.cursor = 'pointer';
+				// If we have uploaded files, show continue-to-match
+				const continueMatchBtn = document.getElementById( 'mmr-continue-match-btn' );
+				if ( continueMatchBtn ) {
+					continueMatchBtn.style.display = 'inline-block';
+				}
 			}
 		}
 	}

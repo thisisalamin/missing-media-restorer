@@ -4,260 +4,930 @@
  * @package MissingMediaRestorer
  */
 
-.mmr-section {
-	background: #fff;
+/* ============================================
+   MAIN WRAPPER & LAYOUT
+   ============================================ */
+
+.mmr-wrap {
+	max-width: 1200px;
+	margin: 20px auto;
+	padding: 0 20px;
+}
+
+/* ============================================
+   HEADER SECTION
+   ============================================ */
+
+.mmr-header {
+	text-align: center;
+	margin-bottom: 40px;
 	padding: 20px;
-	border: 1px solid #ccc;
-	border-radius: 4px;
+	background: #fff;
+	border: 1px solid #ddd;
+}
+
+.mmr-title {
+	font-size: 24px;
+	font-weight: 600;
+	margin: 0 0 10px 0;
+	color: #23282d;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	gap: 10px;
+}
+
+.mmr-title .dashicons {
+	font-size: 24px;
+	width: 24px;
+	height: 24px;
+	color: #007cba;
+}
+
+.mmr-subtitle {
+	font-size: 14px;
+	margin: 0;
+	color: #666;
+}
+
+/* ============================================
+   STEP PROGRESS INDICATOR
+   ============================================ */
+
+.mmr-steps-indicator {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	margin-bottom: 30px;
+	padding: 20px;
+	background: #f1f1f1;
+	border: 1px solid #ddd;
+}
+
+.mmr-step {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	gap: 5px;
+	position: relative;
+	z-index: 1;
+}
+
+.mmr-step-number {
+	width: 40px;
+	height: 40px;
+	border-radius: 50%;
+	background: #ddd;
+	color: #666;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	font-weight: 600;
+	font-size: 16px;
+	border: 2px solid #ddd;
+}
+
+.mmr-step-label {
+	font-size: 12px;
+	font-weight: 500;
+	color: #666;
+	white-space: nowrap;
+}
+
+.mmr-step-active .mmr-step-number {
+	background: #007cba;
+	color: #fff;
+	border-color: #007cba;
+}
+
+.mmr-step-active .mmr-step-label {
+	color: #007cba;
+	font-weight: 600;
+}
+
+.mmr-step-completed .mmr-step-number {
+	background: #46b450;
+	color: #fff;
+	border-color: #46b450;
+}
+
+.mmr-step-completed .mmr-step-label {
+	color: #46b450;
+}
+
+.mmr-step-connector {
+	width: 60px;
+	height: 2px;
+	background: #ddd;
+	margin: 0 5px;
+	position: relative;
+	top: -15px;
+}
+
+.mmr-step-completed + .mmr-step-connector {
+	background: #46b450;
+}
+
+/* ============================================
+   STEP CONTAINERS
+   ============================================ */
+
+.mmr-step-container {
+	display: none;
+}
+
+.mmr-step-container.mmr-step-active {
+	display: block;
+}
+
+/* ============================================
+   CARDS (Simplified)
+   ============================================ */
+
+.mmr-card {
+	background: #fff;
+	border: 1px solid #ddd;
 	margin-bottom: 20px;
 }
 
-.mmr-section h2 {
-	margin-top: 0;
-	color: #23282d;
-	border-bottom: 2px solid #0073aa;
-	padding-bottom: 10px;
-}
-
-/* Dropzone Styling */
-.mmr-dropzone {
-	border: 2px dashed #ccc;
-	border-radius: 4px;
-	padding: 40px;
-	text-align: center;
-	cursor: pointer;
-	transition: all 0.3s ease;
-	background-color: #f9f9f9;
-}
-
-.mmr-dropzone:hover {
-	border-color: #0073aa;
-	background-color: #f0f7fc;
-}
-
-.mmr-dropzone.mmr-dragover {
-	border-color: #0073aa;
-	background-color: #f0f7fc;
-	box-shadow: 0 0 10px rgba(0, 115, 170, 0.2);
-}
-
-.mmr-dropzone p {
-	margin: 0;
-	color: #666;
-	font-size: 14px;
-}
-
-/* Upload List */
-#mmr-upload-list {
-	margin-top: 20px;
-	padding: 15px;
-	background-color: #f5f5f5;
-	border-radius: 4px;
-}
-
-#mmr-upload-list h4 {
-	margin-top: 0;
-	color: #23282d;
-}
-
-#mmr-upload-list ul {
-	list-style: none;
-	padding: 0;
-	margin: 0;
-}
-
-#mmr-upload-list li {
-	padding: 5px 0;
-	color: #444;
-	font-size: 13px;
+.mmr-card-header {
+	padding: 15px 20px;
+	background: #f1f1f1;
 	border-bottom: 1px solid #ddd;
 }
 
-#mmr-upload-list li:last-child {
+.mmr-card-title {
+	margin: 0;
+	font-size: 18px;
+	font-weight: 600;
+	color: #23282d;
+	display: flex;
+	align-items: center;
+	gap: 8px;
+}
+
+.mmr-card-title .dashicons {
+	font-size: 20px;
+	width: 20px;
+	height: 20px;
+	color: #007cba;
+}
+
+.mmr-card-body {
+	padding: 20px;
+}
+
+.mmr-description {
+	font-size: 14px;
+	color: #666;
+	line-height: 1.5;
+	margin: 0 0 20px 0;
+}
+
+/* ============================================
+   BUTTONS
+   ============================================ */
+
+.mmr-button {
+	display: inline-flex;
+	align-items: center;
+	gap: 6px;
+	padding: 8px 16px;
+	border-radius: 4px;
+	font-size: 13px;
+	font-weight: 500;
+	cursor: pointer;
+	border: 1px solid #ccc;
+	text-decoration: none;
+	background: #f7f7f7;
+	color: #23282d;
+}
+
+.mmr-button:hover {
+	background: #e9e9e9;
+	color: #23282d;
+}
+
+.mmr-button:disabled {
+	background: #f7f7f7;
+	color: #999;
+	cursor: not-allowed;
+}
+
+.mmr-button-primary {
+	background: #007cba;
+	color: #fff;
+	border-color: #007cba;
+}
+
+.mmr-button-primary:hover {
+	background: #005a87;
+	color: #fff;
+}
+
+.mmr-button-secondary {
+	background: #f7f7f7;
+	color: #23282d;
+}
+
+.mmr-button-secondary:hover {
+	background: #e9e9e9;
+	color: #23282d;
+}
+
+.mmr-button-large {
+	padding: 10px 20px;
+	font-size: 14px;
+}
+
+.mmr-button .dashicons {
+	font-size: 16px;
+	width: 16px;
+	height: 16px;
+}
+
+.mmr-action-center {
+	text-align: center;
+	margin: 20px 0;
+}
+
+.mmr-action-buttons {
+	display: flex;
+	gap: 10px;
+	justify-content: center;
+	margin: 20px 0;
+}
+
+/* ============================================
+   INFO BOXES
+   ============================================ */
+
+.mmr-info-box {
+	background: #f1f1f1;
+	border-left: 4px solid #007cba;
+	padding: 15px;
+	margin: 15px 0;
+	display: flex;
+	gap: 10px;
+	align-items: flex-start;
+}
+
+.mmr-info-box .dashicons {
+	font-size: 20px;
+	width: 20px;
+	height: 20px;
+	color: #007cba;
+	flex-shrink: 0;
+	margin-top: 2px;
+}
+
+.mmr-info-box strong {
+	color: #23282d;
+	display: block;
+	margin-bottom: 5px;
+	font-size: 14px;
+}
+
+.mmr-info-box ul {
+	margin: 5px 0 0 0;
+	padding-left: 15px;
+	color: #666;
+}
+
+.mmr-info-box li {
+	margin: 3px 0;
+	font-size: 13px;
+}
+
+/* ============================================
+   UPLOAD METHODS
+   ============================================ */
+
+.mmr-upload-methods {
+	display: grid;
+	grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+	gap: 15px;
+	margin: 20px 0;
+}
+
+.mmr-upload-method {
+	background: #f9f9f9;
+	border: 1px solid #ddd;
+	padding: 20px;
+	text-align: center;
+}
+
+.mmr-upload-method:hover {
+	background: #f1f1f1;
+}
+
+.mmr-method-icon {
+	width: 50px;
+	height: 50px;
+	margin: 0 auto 10px;
+	background: #007cba;
+	border-radius: 50%;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+}
+
+.mmr-method-icon .dashicons {
+	font-size: 24px;
+	width: 24px;
+	height: 24px;
+	color: #fff;
+}
+
+.mmr-upload-method h3 {
+	margin: 0 0 8px 0;
+	font-size: 16px;
+	font-weight: 600;
+	color: #23282d;
+}
+
+.mmr-upload-method p {
+	margin: 0;
+	font-size: 13px;
+	color: #666;
+	line-height: 1.4;
+}
+
+.mmr-upload-method code {
+	background: #fff;
+	padding: 2px 4px;
+	font-size: 12px;
+	color: #007cba;
+	border: 1px solid #ddd;
+}
+
+/* ============================================
+   DROPZONE
+   ============================================ */
+
+.mmr-dropzone {
+	border: 2px dashed #ccc;
+	padding: 40px 20px;
+	text-align: center;
+	cursor: pointer;
+	background: #fafafa;
+	margin: 20px 0;
+}
+
+.mmr-dropzone:hover {
+	border-color: #007cba;
+	background: #f1f1f1;
+}
+
+.mmr-dropzone .dashicons {
+	font-size: 48px;
+	width: 48px;
+	height: 48px;
+	color: #999;
+	margin-bottom: 10px;
+}
+
+.mmr-dropzone:hover .dashicons {
+	color: #007cba;
+}
+
+.mmr-dropzone-text {
+	font-size: 16px;
+	font-weight: 600;
+	color: #23282d;
+	margin: 8px 0;
+}
+
+.mmr-dropzone-subtext {
+	font-size: 13px;
+	color: #666;
+	margin: 3px 0;
+}
+
+.mmr-upload-buttons {
+	display: flex;
+	gap: 10px;
+	justify-content: center;
+	flex-wrap: wrap;
+	margin: 15px 0;
+}
+
+/* ============================================
+   UPLOAD LIST
+   ============================================ */
+
+.mmr-upload-list {
+	margin-top: 20px;
+}
+
+.mmr-upload-list-header {
+	background: #f1f1f1;
+	padding: 12px 15px;
+	font-weight: 600;
+	color: #23282d;
+	display: flex;
+	align-items: center;
+	gap: 8px;
+}
+
+.mmr-upload-list-header .dashicons {
+	color: #007cba;
+}
+
+.mmr-file-list {
+	background: #fff;
+	border: 1px solid #ddd;
+	border-top: none;
+	max-height: 300px;
+	overflow-y: auto;
+}
+
+.mmr-file-item {
+	padding: 12px 15px;
+	border-bottom: 1px solid #f1f1f1;
+	display: flex;
+	align-items: center;
+	gap: 10px;
+}
+
+.mmr-file-item:last-child {
 	border-bottom: none;
 }
 
-/* Progress Bar */
+.mmr-file-item:hover {
+	background: #f9f9f9;
+}
+
+.mmr-file-icon {
+	width: 32px;
+	height: 32px;
+	background: #007cba;
+	border-radius: 4px;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	flex-shrink: 0;
+}
+
+.mmr-file-icon .dashicons {
+	font-size: 20px;
+	width: 20px;
+	height: 20px;
+	color: #fff;
+}
+
+.mmr-file-info {
+	flex: 1;
+}
+
+.mmr-file-name {
+	font-weight: 600;
+	color: #23282d;
+	margin-bottom: 2px;
+}
+
+.mmr-file-size {
+	font-size: 12px;
+	color: #666;
+}
+
+/* ============================================
+   SCAN RESULTS
+   ============================================ */
+
+.mmr-scan-results {
+	margin-top: 20px;
+}
+
+.mmr-stats-grid {
+	display: grid;
+	grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+	gap: 15px;
+	margin: 20px 0;
+}
+
+.mmr-stat-card {
+	background: #f9f9f9;
+	border: 1px solid #ddd;
+	padding: 15px;
+	text-align: center;
+}
+
+.mmr-stat-card.stat-total {
+	border-color: #007cba;
+}
+
+.mmr-stat-card.stat-existing {
+	border-color: #46b450;
+}
+
+.mmr-stat-card.stat-missing {
+	border-color: #dc3232;
+}
+
+.mmr-stat-number {
+	font-size: 28px;
+	font-weight: 600;
+	margin: 8px 0;
+	display: block;
+}
+
+.stat-total .mmr-stat-number {
+	color: #007cba;
+}
+
+.stat-existing .mmr-stat-number {
+	color: #46b450;
+}
+
+.stat-missing .mmr-stat-number {
+	color: #dc3232;
+}
+
+.mmr-stat-label {
+	font-size: 13px;
+	font-weight: 500;
+	color: #666;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	gap: 4px;
+}
+
+.mmr-file-list-section {
+	margin: 20px 0;
+}
+
+.mmr-file-list-title {
+	font-size: 14px;
+	font-weight: 600;
+	margin-bottom: 10px;
+	display: flex;
+	align-items: center;
+	gap: 6px;
+	color: #23282d;
+}
+
+.mmr-file-list-title .dashicons {
+	font-size: 18px;
+	width: 18px;
+	height: 18px;
+}
+
+.mmr-file-list-title.list-existing {
+	color: #46b450;
+}
+
+.mmr-file-list-title.list-missing {
+	color: #dc3232;
+}
+
+/* ============================================
+   MATCH SUMMARY
+   ============================================ */
+
+.mmr-match-summary {
+	margin: 20px 0;
+}
+
+.mmr-match-stats {
+	display: grid;
+	grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+	gap: 15px;
+	margin-bottom: 20px;
+}
+
+.mmr-match-stat {
+	background: #f1f1f1;
+	border-left: 3px solid #007cba;
+	padding: 15px;
+}
+
+.mmr-match-stat.stat-matched {
+	background: #f1f9f1;
+	border-color: #46b450;
+}
+
+.mmr-match-stat.stat-unmatched {
+	background: #fef1f1;
+	border-color: #dc3232;
+}
+
+.mmr-match-stat-number {
+	font-size: 24px;
+	font-weight: 600;
+	margin-bottom: 5px;
+	color: #007cba;
+}
+
+.mmr-match-stat.stat-matched .mmr-match-stat-number {
+	color: #46b450;
+}
+
+.mmr-match-stat.stat-unmatched .mmr-match-stat-number {
+	color: #dc3232;
+}
+
+.mmr-match-stat-label {
+	font-size: 13px;
+	font-weight: 500;
+	color: #23282d;
+}
+
+/* ============================================
+   RESTORE INFO
+   ============================================ */
+
+.mmr-restore-info {
+	display: grid;
+	grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+	gap: 15px;
+	margin: 20px 0;
+}
+
+.mmr-restore-info-item {
+	display: flex;
+	align-items: flex-start;
+	gap: 12px;
+	padding: 15px;
+	background: #f9f9f9;
+	border: 1px solid #ddd;
+}
+
+.mmr-restore-info-item:hover {
+	background: #f1f1f1;
+}
+
+.mmr-restore-info-item .dashicons {
+	font-size: 24px;
+	width: 24px;
+	height: 24px;
+	color: #007cba;
+	flex-shrink: 0;
+}
+
+.mmr-restore-info-item strong {
+	display: block;
+	font-size: 14px;
+	color: #23282d;
+	margin-bottom: 3px;
+}
+
+.mmr-restore-info-item p {
+	font-size: 13px;
+	color: #666;
+	margin: 0;
+}
+
+/* ============================================
+   PROGRESS BAR & RESTORE OUTPUT
+   ============================================ */
+
+.mmr-progress-container {
+	margin-top: 20px;
+	padding: 20px;
+	background: #f9f9f9;
+	border: 1px solid #ddd;
+}
+
+.mmr-progress-wrapper {
+	margin-bottom: 20px;
+}
+
 .mmr-progress-bar {
 	width: 100%;
 	height: 30px;
-	background-color: #f0f0f0;
+	background: #fff;
 	border-radius: 4px;
 	overflow: hidden;
-	margin: 15px 0;
-	border: 1px solid #ccc;
+	border: 1px solid #ddd;
 }
 
 .mmr-progress-fill {
 	height: 100%;
-	background: linear-gradient(90deg, #0073aa, #0099cc);
+	background: #007cba;
 	width: 0%;
 	transition: width 0.3s ease;
 	display: flex;
 	align-items: center;
 	justify-content: center;
-	color: white;
+	color: #fff;
 	font-size: 12px;
-	font-weight: bold;
-	text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+	font-weight: 600;
 }
 
-/* Progress Text */
-#mmr-progress-text {
+.mmr-progress-text {
 	font-size: 14px;
-	font-weight: bold;
+	font-weight: 500;
 	color: #23282d;
-	margin: 10px 0;
+	margin: 10px 0 0 0;
+	text-align: center;
 }
 
-/* Restore Output Log */
-#mmr-restore-output {
-	background: #f5f5f5;
+.mmr-restore-output {
+	background: #fff;
+	border: 1px solid #ddd;
 	padding: 15px;
-	border-radius: 4px;
-	max-height: 400px;
+	max-height: 300px;
 	overflow-y: auto;
-	font-family: 'Monaco', 'Consolas', 'Courier New', monospace;
+	font-family: monospace;
 	font-size: 12px;
-	line-height: 1.6;
+	line-height: 1.5;
 }
 
 .mmr-log-entry {
-	padding: 5px 0;
-	border-bottom: 1px solid #ddd;
+	padding: 6px 8px;
+	margin-bottom: 4px;
+	display: flex;
+	align-items: center;
+	gap: 8px;
 }
 
-.mmr-log-entry:last-child {
-	border-bottom: none;
+.mmr-log-entry::before {
+	content: '';
+	width: 6px;
+	height: 6px;
+	border-radius: 50%;
+	flex-shrink: 0;
 }
 
 .mmr-log-entry.mmr-restored {
-	color: #008000;
+	background: #f1f9f1;
+	color: #155724;
+}
+
+.mmr-log-entry.mmr-restored::before {
+	background: #46b450;
 }
 
 .mmr-log-entry.mmr-failed {
-	color: #dc3545;
+	background: #fef1f1;
+	color: #721c24;
+}
+
+.mmr-log-entry.mmr-failed::before {
+	background: #dc3232;
 }
 
 .mmr-log-entry.mmr-skipped {
-	color: #ffc107;
+	background: #fefbe8;
+	color: #8b6914;
+}
+
+.mmr-log-entry.mmr-skipped::before {
+	background: #f0c33c;
 }
 
 .mmr-log-entry.mmr-error {
-	color: #dc3545;
-	font-weight: bold;
-	background-color: #fff5f5;
-	padding: 5px;
-	border-radius: 2px;
+	background: #fef1f1;
+	color: #721c24;
+	font-weight: 600;
+	border: 1px solid #f5c6cb;
 }
 
-/* Button Styles */
-.button {
-	padding: 8px 16px;
-	border-radius: 4px;
-	cursor: pointer;
-	font-size: 13px;
-	font-weight: 500;
-	transition: all 0.2s ease;
+.mmr-log-entry.mmr-error::before {
+	background: #dc3232;
 }
 
-.button-primary {
-	background-color: #0073aa;
-	color: white;
-	border: none;
+/* ============================================
+   SCROLLBAR STYLING
+   ============================================ */
+
+.mmr-restore-output::-webkit-scrollbar,
+.mmr-file-list::-webkit-scrollbar {
+	width: 6px;
 }
 
-.button-primary:hover:not(:disabled) {
-	background-color: #005a87;
+.mmr-restore-output::-webkit-scrollbar-track,
+.mmr-file-list::-webkit-scrollbar-track {
+	background: #f1f1f1;
 }
 
-.button-primary:disabled {
-	background-color: #ccc;
-	color: #666;
-	cursor: not-allowed;
-	opacity: 0.6;
+.mmr-restore-output::-webkit-scrollbar-thumb,
+.mmr-file-list::-webkit-scrollbar-thumb {
+	background: #ccc;
 }
 
-/* Scan Results */
-#mmr-scan-results {
-	background-color: #f9f9f9;
-	padding: 15px;
-	border-left: 4px solid #0073aa;
-	border-radius: 4px;
-	margin-top: 20px;
+.mmr-restore-output::-webkit-scrollbar-thumb:hover,
+.mmr-file-list::-webkit-scrollbar-thumb:hover {
+	background: #999;
 }
 
-#mmr-scan-results h3 {
-	margin-top: 0;
-	color: #23282d;
-}
+/* ============================================
+   RESPONSIVE DESIGN
+   ============================================ */
 
-#mmr-scan-output {
-	color: #444;
-	font-size: 13px;
-}
-
-#mmr-scan-output p {
-	margin: 5px 0;
-}
-
-/* File Lists Styling */
-#mmr-scan-output h4,
-#mmr-upload-list h4,
-#mmr-upload-list h5 {
-	margin-top: 15px;
-	margin-bottom: 10px;
-	font-size: 14px;
-}
-
-#mmr-scan-output > div,
-#mmr-upload-list > div {
-	margin-top: 15px;
-}
-
-#mmr-scan-output ul,
-#mmr-upload-list ul {
-	list-style: none;
-	padding: 0;
-	margin: 0;
-}
-
-#mmr-scan-output li,
-#mmr-upload-list li {
-	padding: 8px 0;
-	font-size: 13px;
-	border-bottom: 1px solid;
-}
-
-#mmr-scan-output li:last-child,
-#mmr-upload-list li:last-child {
-	border-bottom: none;
-}
-
-#mmr-scan-output small,
-#mmr-upload-list small {
-	display: block;
-	margin-top: 3px;
-	font-size: 12px;
-}
-
-/* Responsive */
 @media (max-width: 768px) {
-	.mmr-section {
+	.mmr-wrap {
+		padding: 0 10px;
+	}
+
+	.mmr-header {
+		padding: 15px;
+	}
+
+	.mmr-title {
+		font-size: 20px;
+	}
+
+	.mmr-title .dashicons {
+		font-size: 20px;
+		width: 20px;
+		height: 20px;
+	}
+
+	.mmr-subtitle {
+		font-size: 13px;
+	}
+
+	.mmr-steps-indicator {
+		padding: 15px 5px;
+		overflow-x: auto;
+	}
+
+	.mmr-step-number {
+		width: 35px;
+		height: 35px;
+		font-size: 14px;
+	}
+
+	.mmr-step-label {
+		font-size: 11px;
+	}
+
+	.mmr-step-connector {
+		width: 30px;
+		margin: 0 2px;
+	}
+
+	.mmr-card-header {
+		padding: 12px 15px;
+	}
+
+	.mmr-card-title {
+		font-size: 16px;
+	}
+
+	.mmr-card-body {
 		padding: 15px;
 	}
 
 	.mmr-dropzone {
-		padding: 30px;
+		padding: 30px 15px;
 	}
 
-	#mmr-restore-output {
-		max-height: 300px;
+	.mmr-dropzone .dashicons {
+		font-size: 36px;
+		width: 36px;
+		height: 36px;
 	}
 
-	#mmr-scan-output div,
-	#mmr-upload-list div {
+	.mmr-upload-buttons {
+		flex-direction: column;
+	}
+
+	.mmr-upload-buttons .mmr-button {
+		width: 100%;
+		justify-content: center;
+	}
+
+	.mmr-action-buttons {
+		flex-direction: column;
+	}
+
+	.mmr-action-buttons .mmr-button {
+		width: 100%;
+		justify-content: center;
+	}
+
+	.mmr-stats-grid,
+	.mmr-match-stats,
+	.mmr-restore-info {
+		grid-template-columns: 1fr;
+	}
+
+	.mmr-restore-output {
+		font-size: 11px;
 		max-height: 250px;
-		overflow-y: auto;
 	}
+}
+
+/* ============================================
+   UTILITY CLASSES
+   ============================================ */
+
+.mmr-text-center {
+	text-align: center;
+}
+
+.mmr-mt-20 {
+	margin-top: 20px;
+}
+
+.mmr-mb-20 {
+	margin-bottom: 20px;
+}
+
+.mmr-hidden {
+	display: none !important;
 }

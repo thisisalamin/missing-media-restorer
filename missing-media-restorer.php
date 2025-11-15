@@ -11,12 +11,12 @@
  * @package MissingMediaRestorer
  */
 
-// Exit if accessed directly
+// Exit if accessed directly.
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-// Define plugin constants
+// Define plugin constants.
 define( 'MMR_PLUGIN_DIR', plugin_dir_path( __FILE__ ) );
 define( 'MMR_PLUGIN_URL', plugin_dir_url( __FILE__ ) );
 define( 'MMR_PLUGIN_VERSION', '1.0.0' );
@@ -111,69 +111,214 @@ add_action( 'admin_enqueue_scripts', 'mmr_enqueue_admin_assets' );
  */
 function mmr_render_admin_page() {
 	?>
-	<div class="wrap">
-		<h1>Missing Media Restorer</h1>
-		<p>Scan for missing WordPress media files and restore them in batches. This tool prevents timeouts by processing files in controlled batches.</p>
+	<div class="wrap mmr-wrap">
+		<div class="mmr-header">
+			<h1 class="mmr-title">
+				<span class="dashicons dashicons-format-image"></span>
+				<?php esc_html_e( 'Missing Media Restorer', 'missing-media-restorer' ); ?>
+			</h1>
+			<p class="mmr-subtitle"><?php esc_html_e( 'Restore missing WordPress media files in a safe, step-by-step process', 'missing-media-restorer' ); ?></p>
+		</div>
 
-		<!-- Scan Area -->
-		<div id="mmr-scan-area" class="mmr-section">
-			<h2>Step 1: Scan for Missing Files</h2>
-			<p>Click the button below to scan your WordPress media library and identify missing files. This will check all attachment entries in your database against physically existing files.</p>
-			<button id="mmr-scan-btn" class="button button-primary">Start Scan</button>
-			<div id="mmr-scan-results" style="display: none; margin-top: 20px;">
-				<h3>Scan Results</h3>
-				<div id="mmr-scan-output"></div>
+		<!-- Step Progress Indicator -->
+		<div class="mmr-steps-indicator">
+			<div class="mmr-step mmr-step-active" data-step="1">
+				<div class="mmr-step-number">1</div>
+				<div class="mmr-step-label">Scan Files</div>
+			</div>
+			<div class="mmr-step-connector"></div>
+			<div class="mmr-step" data-step="2">
+				<div class="mmr-step-number">2</div>
+				<div class="mmr-step-label">Upload Files</div>
+			</div>
+			<div class="mmr-step-connector"></div>
+			<div class="mmr-step" data-step="3">
+				<div class="mmr-step-number">3</div>
+				<div class="mmr-step-label">Match & Review</div>
+			</div>
+			<div class="mmr-step-connector"></div>
+			<div class="mmr-step" data-step="4">
+				<div class="mmr-step-number">4</div>
+				<div class="mmr-step-label">Restore</div>
 			</div>
 		</div>
 
-		<!-- Upload Area -->
-		<div id="mmr-upload-area" class="mmr-section" style="margin-top: 40px;">
-			<h2>Step 2: Upload Backup Files</h2>
-			<p>You can upload files in two ways:</p>
-			<ol>
-				<li><strong>Via Web Browser:</strong> Drag and drop or select files below</li>
-				<li><strong>Via FTP/File System:</strong> Upload large files directly to <code>/wp-content/uploads/mmr-temp/</code> folder on your server, then click "Refresh Files List" below</li>
-			</ol>
-
-			<div style="margin-top: 15px; padding: 15px; background: #e7f3ff; border-left: 4px solid #0073aa; border-radius: 4px;">
-				<p style="margin: 0; font-size: 13px; color: #0073aa;">
-					<strong>💡 Tip:</strong> For large files (2GB+), upload directly to the server via FTP to avoid browser timeouts:<br>
-					<code style="background: white; padding: 3px 6px; border-radius: 3px;">/wp-content/uploads/mmr-temp/</code>
-				</p>
-			</div>
-
-			<div id="mmr-upload-dropzone" class="mmr-dropzone">
-				<p>Drop files or folders here or click to browse</p>
-				<input type="file" id="mmr-file-input" multiple webkitdirectory style="display: none;">
-				<input type="file" id="mmr-files-input" multiple style="display: none;">
-			</div>
-			<div style="margin-top: 10px; text-align: center;">
-				<button id="mmr-select-files-btn" class="button">Select Individual Files</button>
-				<button id="mmr-select-folder-btn" class="button">Select Entire Folder</button>
-				<button id="mmr-refresh-files-btn" class="button" style="background: #0073aa; color: white; border-color: #0073aa;">🔄 Refresh Files List</button>
-			</div>
-			<div id="mmr-upload-list" style="margin-top: 20px;"></div>
-		</div>
-
-		<!-- Progress Tracker -->
-		<div id="mmr-progress-tracker" class="mmr-section" style="margin-top: 40px;">
-			<h2>Step 3: Batch Restore</h2>
-			<p>Restore missing files in controlled batches. This process will:</p>
-			<ul>
-				<li>Match your uploaded files with missing entries</li>
-				<li>Create necessary year/month folders</li>
-				<li>Move files to their correct locations</li>
-				<li>Handle each batch safely without timeouts</li>
-			</ul>
-			<button id="mmr-restore-btn" class="button button-primary" disabled>Start Batch Restore</button>
-
-			<div id="mmr-progress-container" style="display: none; margin-top: 20px;">
-				<div class="mmr-progress-bar">
-					<div id="mmr-progress-fill" class="mmr-progress-fill"></div>
+		<!-- Step 1: Scan for Missing Files -->
+		<div id="mmr-step-1" class="mmr-step-container mmr-step-active">
+			<div class="mmr-card">
+				<div class="mmr-card-header">
+					<h2 class="mmr-card-title">
+						<span class="dashicons dashicons-search"></span>
+						<?php esc_html_e( 'Scan Your Media Library', 'missing-media-restorer' ); ?>
+					</h2>
 				</div>
-				<p id="mmr-progress-text">Processing...</p>
-				<div id="mmr-restore-output" style="background: #f5f5f5; padding: 15px; border-radius: 4px; margin-top: 15px; max-height: 400px; overflow-y: auto;"></div>
-				<button id="mmr-clear-temp-btn" class="button" style="margin-top: 15px; display: none;">Clear Temporary Files</button>
+				<div class="mmr-card-body">
+					<p class="mmr-description"><?php esc_html_e( 'This scan will analyze your WordPress media library and identify any missing files by comparing database entries with physical files on your server.', 'missing-media-restorer' ); ?></p>
+
+					<div class="mmr-action-center">
+						<button id="mmr-scan-btn" class="mmr-button mmr-button-primary mmr-button-large">
+							<span class="dashicons dashicons-search"></span>
+							<?php esc_html_e( 'Start Scanning', 'missing-media-restorer' ); ?>
+						</button>
+					</div>
+
+					<div id="mmr-scan-results" class="mmr-scan-results" style="display: none;">
+						<div id="mmr-scan-output"></div>
+					</div>
+				</div>
+			</div>
+		</div>
+
+		<!-- Step 2: Upload Backup Files -->
+		<div id="mmr-step-2" class="mmr-step-container" style="display: none;">
+			<div class="mmr-card">
+				<div class="mmr-card-header">
+					<h2 class="mmr-card-title">
+						<span class="dashicons dashicons-upload"></span>
+						<?php esc_html_e( 'Upload Your Backup Files', 'missing-media-restorer' ); ?>
+					</h2>
+				</div>
+				<div class="mmr-card-body">
+					<p class="mmr-description"><?php esc_html_e( 'Upload your backup media files. You can drag and drop files, select them from your computer, or upload via FTP for large files.', 'missing-media-restorer' ); ?></p>
+
+					<div class="mmr-upload-methods">
+						<div class="mmr-upload-method">
+							<div class="mmr-method-icon">
+								<span class="dashicons dashicons-laptop"></span>
+							</div>
+							<h3><?php esc_html_e( 'Browser Upload', 'missing-media-restorer' ); ?></h3>
+							<p><?php esc_html_e( 'Drag & drop or select files from your computer', 'missing-media-restorer' ); ?></p>
+						</div>
+						<div class="mmr-upload-method">
+							<div class="mmr-method-icon">
+								<span class="dashicons dashicons-database"></span>
+							</div>
+							<h3><?php esc_html_e( 'FTP Upload', 'missing-media-restorer' ); ?></h3>
+							<p><?php esc_html_e( 'Upload to', 'missing-media-restorer' ); ?> <code>/wp-content/uploads/mmr-temp/</code></p>
+						</div>
+					</div>
+
+					<div class="mmr-dropzone" id="mmr-upload-dropzone">
+						<span class="dashicons dashicons-cloud-upload"></span>
+						<p class="mmr-dropzone-text"><?php esc_html_e( 'Drag and drop files here', 'missing-media-restorer' ); ?></p>
+						<p class="mmr-dropzone-subtext"><?php esc_html_e( 'or', 'missing-media-restorer' ); ?></p>
+						<input type="file" id="mmr-file-input" multiple webkitdirectory style="display: none;">
+						<input type="file" id="mmr-files-input" multiple style="display: none;">
+					</div>
+
+					<div class="mmr-upload-buttons">
+						<button id="mmr-select-files-btn" class="mmr-button mmr-button-secondary">
+							<span class="dashicons dashicons-media-default"></span>
+							<?php esc_html_e( 'Select Files', 'missing-media-restorer' ); ?>
+						</button>
+						<button id="mmr-select-folder-btn" class="mmr-button mmr-button-secondary">
+							<span class="dashicons dashicons-category"></span>
+							<?php esc_html_e( 'Select Folder', 'missing-media-restorer' ); ?>
+						</button>
+						<button id="mmr-refresh-files-btn" class="mmr-button mmr-button-secondary">
+							<span class="dashicons dashicons-update"></span>
+							<?php esc_html_e( 'Refresh List', 'missing-media-restorer' ); ?>
+						</button>
+					</div>
+
+					<div id="mmr-upload-list" class="mmr-upload-list"></div>
+				</div>
+			</div>
+
+			<div class="mmr-action-center" style="margin-top: 12px;">
+				<button id="mmr-continue-match-btn" class="mmr-button mmr-button-primary" style="display:none;"><?php esc_html_e( 'Continue to Match', 'missing-media-restorer' ); ?></button>
+			</div>
+		</div>
+
+		<!-- Step 3: Match & Review -->
+		<div id="mmr-step-3" class="mmr-step-container" style="display: none;">
+			<div class="mmr-card">
+				<div class="mmr-card-header">
+					<h2 class="mmr-card-title">
+						<span class="dashicons dashicons-yes"></span>
+						<?php esc_html_e( 'Review File Matches', 'missing-media-restorer' ); ?>
+					</h2>
+				</div>
+				<div class="mmr-card-body">
+					<p class="mmr-description"><?php esc_html_e( 'Review which files will be restored. Files are automatically matched by filename.', 'missing-media-restorer' ); ?></p>
+
+					<div id="mmr-match-summary" class="mmr-match-summary"></div>
+
+					<div class="mmr-action-buttons">
+						<button id="mmr-back-to-upload-btn" class="mmr-button mmr-button-secondary">
+							<span class="dashicons dashicons-arrow-left-alt2"></span>
+							<?php esc_html_e( 'Back to Upload', 'missing-media-restorer' ); ?>
+						</button>
+						<button id="mmr-continue-restore-btn" class="mmr-button mmr-button-primary">
+							<?php esc_html_e( 'Continue to Restore', 'missing-media-restorer' ); ?>
+							<span class="dashicons dashicons-arrow-right-alt2"></span>
+						</button>
+					</div>
+				</div>
+			</div>
+		</div>
+
+		<!-- Step 4: Restore Files -->
+		<div id="mmr-step-4" class="mmr-step-container" style="display: none;">
+			<div class="mmr-card">
+				<div class="mmr-card-header">
+					<h2 class="mmr-card-title">
+						<span class="dashicons dashicons-image-rotate"></span>
+						<?php esc_html_e( 'Restore Missing Files', 'missing-media-restorer' ); ?>
+					</h2>
+				</div>
+				<div class="mmr-card-body">
+					<p class="mmr-description"><?php esc_html_e( 'Files will be restored in controlled batches to prevent server timeouts. This process is safe and can be monitored in real-time.', 'missing-media-restorer' ); ?></p>
+
+					<div class="mmr-restore-info">
+						<div class="mmr-restore-info-item">
+							<span class="dashicons dashicons-clock"></span>
+							<div>
+								<strong>Batch Processing</strong>
+								<p>Files restored in small batches</p>
+							</div>
+						</div>
+						<div class="mmr-restore-info-item">
+							<span class="dashicons dashicons-yes-alt"></span>
+							<div>
+								<strong>Safe & Secure</strong>
+								<p>No database modifications</p>
+							</div>
+						</div>
+						<div class="mmr-restore-info-item">
+							<span class="dashicons dashicons-admin-site-alt3"></span>
+							<div>
+								<strong>Auto-Organize</strong>
+								<p>Files placed in correct folders</p>
+							</div>
+						</div>
+					</div>
+
+					<div class="mmr-action-center">
+						<button id="mmr-restore-btn" class="mmr-button mmr-button-primary mmr-button-large">
+							<span class="dashicons dashicons-image-rotate"></span>
+							<?php esc_html_e( 'Start Restoration', 'missing-media-restorer' ); ?>
+						</button>
+					</div>
+
+					<div id="mmr-progress-container" class="mmr-progress-container" style="display: none;">
+						<div class="mmr-progress-wrapper">
+							<div class="mmr-progress-bar">
+								<div id="mmr-progress-fill" class="mmr-progress-fill"></div>
+							</div>
+							<p id="mmr-progress-text" class="mmr-progress-text">Initializing...</p>
+						</div>
+
+						<div id="mmr-restore-output" class="mmr-restore-output"></div>
+
+						<div class="mmr-action-center" style="margin-top: 20px;">
+							<button id="mmr-clear-temp-btn" class="mmr-button mmr-button-secondary" style="display: none;">
+								<span class="dashicons dashicons-trash"></span>
+								Clear Temporary Files
+							</button>
+						</div>
+					</div>
+				</div>
 			</div>
 		</div>
 	</div>
@@ -302,21 +447,21 @@ function mmr_scan_missing_files() {
 			if ( ! empty( $metadata['sizes'] ) && is_array( $metadata['sizes'] ) ) {
 				foreach ( $metadata['sizes'] as $size_name => $size_data ) {
 					if ( ! empty( $size_data['file'] ) ) {
-						$thumb_filename = $size_data['file'];
-						$thumb_path     = $dir_path . '/' . $thumb_filename;
+						$thumb_filename  = $size_data['file'];
+						$thumb_path      = $dir_path . '/' . $thumb_filename;
 						$thumb_full_path = $uploads_dir . '/' . $thumb_path;
 
 						// Check if thumbnail exists
 						if ( ! file_exists( $thumb_full_path ) ) {
 							$missing_files[] = array(
-								'id'        => $attachment_id,
-								'filename'  => $thumb_filename,
-								'path'      => $dir_path . '/',
-								'full_path' => $thumb_path,
-								'status'    => 'missing',
+								'id'           => $attachment_id,
+								'filename'     => $thumb_filename,
+								'path'         => $dir_path . '/',
+								'full_path'    => $thumb_path,
+								'status'       => 'missing',
 								'is_thumbnail' => true,
-								'parent_file' => $filename,
-								'size_name'   => $size_name,
+								'parent_file'  => $filename,
+								'size_name'    => $size_name,
 							);
 						}
 					}
@@ -329,7 +474,7 @@ function mmr_scan_missing_files() {
 	set_transient( 'mmr_missing_files', $missing_files, HOUR_IN_SECONDS * 24 );
 
 	return array(
-		'missing' => $missing_files,
+		'missing'  => $missing_files,
 		'existing' => $existing_files,
 	);
 }
@@ -349,8 +494,8 @@ function mmr_ajax_scan_missing_files() {
 	}
 
 	// Perform the scan
-	$scan_results = mmr_scan_missing_files();
-	$missing_files = $scan_results['missing'];
+	$scan_results   = mmr_scan_missing_files();
+	$missing_files  = $scan_results['missing'];
 	$existing_files = $scan_results['existing'];
 
 	wp_send_json_success(
@@ -431,12 +576,12 @@ function mmr_process_batch_restore( $batch_number, $batch_size ) {
 
 	// Process each file in this batch
 	foreach ( $batch_files as $missing_file ) {
-		$filename    = $missing_file['filename'];
-		$target_path = $uploads_dir . '/' . $missing_file['full_path'];
-		$target_dir  = dirname( $target_path );
-		$status      = 'skipped';
-		$message     = 'File not uploaded';
-		$attachment_id = $missing_file['id'];
+		$filename       = $missing_file['filename'];
+		$target_path    = $uploads_dir . '/' . $missing_file['full_path'];
+		$target_dir     = dirname( $target_path );
+		$status         = 'skipped';
+		$message        = 'File not uploaded';
+		$attachment_id  = $missing_file['id'];
 		$files_restored = 0;
 
 		// Check if this is a thumbnail - if so, skip (handled with main file)
@@ -473,9 +618,9 @@ function mmr_process_batch_restore( $batch_number, $batch_size ) {
 		}
 
 		// Get file info to find related thumbnails
-		$file_parts    = pathinfo( $filename );
-		$basename      = $file_parts['filename']; // Without extension
-		$extension     = isset( $file_parts['extension'] ) ? $file_parts['extension'] : '';
+		$file_parts = pathinfo( $filename );
+		$basename   = $file_parts['filename']; // Without extension
+		$extension  = isset( $file_parts['extension'] ) ? $file_parts['extension'] : '';
 
 		// Copy the main file
 		$source_file = $temp_upload_dir . $filename;
@@ -483,16 +628,16 @@ function mmr_process_batch_restore( $batch_number, $batch_size ) {
 
 		if ( copy( $source_file, $dest_file ) ) {
 			$copy_success = true;
-			$files_restored++;
-			// Remove from temp after successful copy
-			@unlink( $source_file );
+			++$files_restored;
+			// Remove from temp after successful copy.
+			wp_delete_file( $source_file );
 		}
 
 		// Look for and copy related thumbnail files
 		// Pattern: basename-*x*.ext (e.g., image-300x300.jpg)
 		if ( ! empty( $extension ) ) {
 			$thumbnail_pattern = $basename . '-*.' . $extension;
-			$thumbnails = glob( $temp_upload_dir . $thumbnail_pattern );
+			$thumbnails        = glob( $temp_upload_dir . $thumbnail_pattern );
 
 			if ( is_array( $thumbnails ) && ! empty( $thumbnails ) ) {
 				foreach ( $thumbnails as $thumb_file ) {
@@ -500,9 +645,9 @@ function mmr_process_batch_restore( $batch_number, $batch_size ) {
 					$thumb_dest = $target_dir . '/' . $thumb_name;
 
 					if ( copy( $thumb_file, $thumb_dest ) ) {
-						$files_restored++;
-						// Remove from temp after successful copy
-						@unlink( $thumb_file );
+						++$files_restored;
+					// Remove from temp after successful copy.
+					wp_delete_file( $thumb_file );
 					}
 				}
 			}
@@ -692,7 +837,7 @@ function mmr_ajax_upload_files() {
 			$new_name    = $name_parts['filename'] . '_' . $counter . '.' . $name_parts['extension'];
 			$destination = $temp_upload_dir . $new_name;
 			$filename    = $new_name;
-			$counter++;
+			++$counter;
 		}
 
 		if ( move_uploaded_file( $tmp_name, $destination ) ) {
@@ -752,9 +897,8 @@ function mmr_ajax_clear_temp_files() {
 		if ( is_array( $files ) ) {
 			foreach ( $files as $file ) {
 				if ( is_file( $file ) ) {
-					if ( @unlink( $file ) ) {
-						++$cleared_count;
-					}
+					wp_delete_file( $file );
+					++$cleared_count;
 				}
 			}
 		}
