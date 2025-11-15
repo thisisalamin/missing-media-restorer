@@ -246,9 +246,24 @@ function mmr_render_admin_page() {
 					</h2>
 				</div>
 				<div class="mmr-card-body">
-					<p class="mmr-description"><?php esc_html_e( 'Review which files will be restored. Files are automatically matched by filename.', 'missing-media-restorer' ); ?></p>
+					<p class="mmr-description">
+						<?php esc_html_e( 'Review and confirm the files to be restored. Files are matched automatically by filename.', 'missing-media-restorer' ); ?>
+					</p>
 
-					<div id="mmr-match-summary" class="mmr-match-summary"></div>
+					<div id="mmr-match-summary" class="mmr-match-summary">
+						<table class="mmr-match-table">
+							<thead>
+								<tr>
+									<th><?php esc_html_e( 'Filename', 'missing-media-restorer' ); ?></th>
+									<th><?php esc_html_e( 'Status', 'missing-media-restorer' ); ?></th>
+									<th><?php esc_html_e( 'Action', 'missing-media-restorer' ); ?></th>
+								</tr>
+							</thead>
+							<tbody>
+								<!-- Dynamic rows will be added here via JavaScript -->
+							</tbody>
+						</table>
+					</div>
 
 					<div class="mmr-action-buttons">
 						<button id="mmr-back-to-upload-btn" class="mmr-button mmr-button-secondary">
