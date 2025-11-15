@@ -137,7 +137,7 @@ function mmr_render_admin_page() {
 
 			<div style="margin-top: 15px; padding: 15px; background: #e7f3ff; border-left: 4px solid #0073aa; border-radius: 4px;">
 				<p style="margin: 0; font-size: 13px; color: #0073aa;">
-					<strong>💡 Tip:</strong> For large files (4GB+), upload directly to the server via FTP to avoid browser timeouts:<br>
+					<strong>💡 Tip:</strong> For large files (2GB+), upload directly to the server via FTP to avoid browser timeouts:<br>
 					<code style="background: white; padding: 3px 6px; border-radius: 3px;">/wp-content/uploads/mmr-temp/</code>
 				</p>
 			</div>
@@ -241,30 +241,6 @@ add_action( 'wp_ajax_mmr_get_available_files', 'mmr_ajax_get_available_files' );
 function mmr_get_uploads_dir() {
 	$upload_dir = wp_upload_dir();
 	return $upload_dir['basedir'];
-}
-
-/**
- * Count all files in the uploads directory (including thumbnails and variants)
- *
- * @return int Total file count
- */
-function mmr_count_total_files() {
-	$uploads_dir = mmr_get_uploads_dir();
-	$file_count  = 0;
-
-	// Recursively count all files in the uploads directory
-	$iterator = new RecursiveIteratorIterator(
-		new RecursiveDirectoryIterator( $uploads_dir ),
-		RecursiveIteratorIterator::SELF_FIRST
-	);
-
-	foreach ( $iterator as $file ) {
-		if ( $file->isFile() ) {
-			$file_count++;
-		}
-	}
-
-	return $file_count;
 }
 
 /**
@@ -376,17 +352,15 @@ function mmr_ajax_scan_missing_files() {
 	$scan_results = mmr_scan_missing_files();
 	$missing_files = $scan_results['missing'];
 	$existing_files = $scan_results['existing'];
-	$total_actual_files = mmr_count_total_files();
 
 	wp_send_json_success(
 		array(
 			'missing_count'  => count( $missing_files ),
 			'existing_count' => count( $existing_files ),
 			'total_count'    => count( $missing_files ) + count( $existing_files ),
-			'total_actual_files' => $total_actual_files,
 			'missing_files'  => $missing_files,
 			'existing_files' => $existing_files,
-			'message'        => 'Scan completed. Found ' . count( $missing_files ) . ' missing and ' . count( $existing_files ) . ' existing attachment entries (' . $total_actual_files . ' total files including thumbnails).',
+			'message'        => 'Scan completed. Found ' . count( $missing_files ) . ' missing and ' . count( $existing_files ) . ' existing attachment entries.',
 		)
 	);
 }
@@ -607,9 +581,6 @@ add_action( 'wp_ajax_mmr_batch_restore', 'mmr_ajax_batch_restore' );
  * @since 1.0.0
  */
 function mmr_ajax_upload_files() {
-	// @phpstan-ignore-next-line
-	global $_FILES;
-
 	// Security check
 	check_ajax_referer( 'mmr_ajax_nonce', 'nonce' );
 
@@ -619,7 +590,6 @@ function mmr_ajax_upload_files() {
 	}
 
 	// Check if files were uploaded
-	// @phpstan-ignore-next-line
 	if ( ! isset( $_FILES['files'] ) || empty( $_FILES['files'] ) ) {
 		wp_send_json_error( array( 'message' => 'No files provided. Please select files to upload.' ) );
 	}
@@ -644,8 +614,8 @@ function mmr_ajax_upload_files() {
 		wp_send_json_error( array( 'message' => 'Temporary upload directory is not writable: ' . $temp_upload_dir ) );
 	}
 
-	// @phpstan-ignore-next-line
-	$files          = $_FILES['files'];
+	// @var array $_FILES - PHP Superglobal
+	$files          = isset( $_FILES['files'] ) ? wp_unslash( $_FILES['files'] ) : array();
 	$uploaded_files = array();
 	$failed_files   = array();
 

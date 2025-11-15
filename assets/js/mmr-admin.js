@@ -737,98 +737,14 @@
 				restoreBtn.style.cursor = 'pointer';
 			}
 		}
-	}	/**
-	 * Handle upload response
-	 *
-	 * @param {Object} response - The response from the server
-	 */
-	function handleUploadResponse( response ) {
-		const uploadList = document.getElementById( 'mmr-upload-list' );
-
-		if ( response.success ) {
-			const data = response.data;
-			let html = '<h4>Upload Results:</h4>';
-			html += '<p><strong>' + data.uploaded_count + ' file(s) uploaded successfully</strong></p>';
-
-			if ( data.uploaded_files.length > 0 ) {
-				html += '<div style="margin-top: 15px;">';
-				html += '<h5 style="color: #28a745; margin-bottom: 10px;">✓ Available Files:</h5>';
-				html += '<div style="background: #d4edda; border-left: 4px solid #28a745; padding: 15px; border-radius: 4px; max-height: 250px; overflow-y: auto;">';
-				html += '<ul style="list-style: none; padding: 0; margin: 0;">';
-				data.uploaded_files.forEach( function( file ) {
-					html += '<li style="padding: 6px 0; border-bottom: 1px solid #c3e6cb; font-size: 13px;">';
-					html += '<strong style="color: #155724;">' + file.name + '</strong>';
-					html += ' <small style="color: #0c5460;">(' + formatFileSize( file.size ) + ')</small>';
-					html += '</li>';
-				} );
-				html += '</ul>';
-				html += '</div>';
-				html += '</div>';
-			}
-
-			if ( mmrState.missingFiles.length > 0 ) {
-				html += '<div style="margin-top: 15px;">';
-				html += '<h5 style="color: #ffc107; margin-bottom: 10px;">! Missing Files (Need to Upload):</h5>';
-				html += '<div style="background: #fff3cd; border-left: 4px solid #ffc107; padding: 15px; border-radius: 4px; max-height: 250px; overflow-y: auto;">';
-				html += '<ul style="list-style: none; padding: 0; margin: 0;">';
-				mmrState.missingFiles.forEach( function( file ) {
-					const isAvailable = data.uploaded_files.some( f => f.name === file.filename );
-					const status = isAvailable ? '✓' : '✗';
-					const statusColor = isAvailable ? '#28a745' : '#dc3545';
-					html += '<li style="padding: 6px 0; border-bottom: 1px solid #ffe69c; font-size: 13px;">';
-					html += '<span style="color: ' + statusColor + '; font-weight: bold;">' + status + '</span> ';
-					html += '<strong style="color: #856404;">' + file.filename + '</strong>';
-					html += ' <small style="color: #664d03;">(' + file.full_path + ')</small>';
-					html += '</li>';
-				} );
-				html += '</ul>';
-				html += '</div>';
-				html += '</div>';
-			}
-
-			if ( data.failed_files.length > 0 ) {
-				html += '<div style="margin-top: 15px;">';
-				html += '<h5 style="color: #dc3545; margin-bottom: 10px;">✗ Failed Files:</h5>';
-				html += '<div style="background: #f8d7da; border-left: 4px solid #dc3545; padding: 15px; border-radius: 4px;">';
-				html += '<ul style="list-style: none; padding: 0; margin: 0;">';
-				data.failed_files.forEach( function( file ) {
-					html += '<li style="padding: 6px 0; border-bottom: 1px solid #f5c6cb; font-size: 13px;">';
-					html += '<strong style="color: #721c24;">' + file.name + '</strong> - ' + file.error;
-					html += '</li>';
-				} );
-				html += '</ul>';
-				html += '</div>';
-				html += '</div>';
-			}
-
-			if ( uploadList ) {
-				uploadList.innerHTML = html;
-			}
-
-			console.log( 'Upload complete:', data );
-		} else {
-			showUploadError( response.data?.message || 'Upload failed' );
-		}
 	}
 
 	/**
-	 * Show upload error message
-	 *
-	 * @param {string} message - The error message
-	 */
-	function showUploadError( message ) {
-		const uploadList = document.getElementById( 'mmr-upload-list' );
-		if ( uploadList ) {
-			uploadList.innerHTML = '<p style="color: #dc3545;"><strong>Error:</strong> ' + message + '</p>';
-		}
-		console.error( 'Upload Error:', message );
-	}
-
-	/**
-	 * Clear temporary files from the server
+	 * Clear temporary files
 	 */
 	function clearTemporaryFiles() {
 		const clearTempBtn = document.getElementById( 'mmr-clear-temp-btn' );
+
 		if ( clearTempBtn ) {
 			clearTempBtn.disabled = true;
 			clearTempBtn.textContent = 'Clearing...';
