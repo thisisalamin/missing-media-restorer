@@ -128,7 +128,7 @@
 	border: 1px solid rgba(245,158,11,0.2);
 }
 
-/* Scan Summary Section - minimal styling */
+/* Scan Summary Section - simple but noticeable styling */
 .mmr-scan-summary {
 	background: rgba(248,250,252,0.5);
 	border: 1px solid rgba(71,85,105,0.15);
@@ -137,15 +137,29 @@
 }
 
 .mmr-scan-summary .mmr-scan-label {
-	background: #334155;
-	color: white;
-	padding: 0.25rem 0.625rem;
-	border-radius: 9999px;
-	font-weight: 600;
-	font-size: 0.6875rem;
+	color: #374151;
+	font-weight: 700;
+	font-size: 1rem;
 	display: inline-flex;
 	align-items: center;
 	gap: 0.375rem;
+}
+
+/* Force dashicon colors in scan summary badges */
+.mmr-scan-summary .dashicons.dashicons-yes {
+	color: #15803d !important;
+}
+
+.mmr-scan-summary .dashicons.dashicons-no {
+	color: #dc2626 !important;
+}
+
+.mmr-scan-summary .dashicons.dashicons-admin-media {
+	color: #374151 !important;
+}
+
+.mmr-scan-summary .dashicons.dashicons-update {
+	color: #2563eb !important;
 }
 
 /* Scan Results Section - minimal */
