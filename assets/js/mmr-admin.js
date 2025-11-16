@@ -349,7 +349,6 @@ function showScanProgress() {
 					html += '<ul>';
 					existingFiles.forEach( function( file ) {
 						html += '<li>';
-						html += '<span class="mmr-file-name">' + file.filename + '</span>';
 						html += '<span class="mmr-file-path">' + file.full_path + '</span>';
 						html += '</li>';
 					} );
@@ -373,7 +372,6 @@ function showScanProgress() {
 					html += '<ul>';
 					missingFiles.forEach( function( file ) {
 						html += '<li>';
-						html += '<span class="mmr-file-name">' + file.filename + '</span>';
 						html += '<span class="mmr-file-path">' + file.full_path + '</span>';
 						html += '</li>';
 					} );
@@ -732,8 +730,7 @@ function showScanProgress() {
 			html += '<ul>';
 			matchedItems.forEach( function( it ) {
 				html += '<li>';
-				html += '<span class="mmr-file-name text-emerald-900">' + it.filename + '</span>';
-				html += '<span class="mmr-file-path">' + it.path + '</span>';
+				html += '<span class="mmr-file-path text-emerald-900">' + it.full_path + '</span>';
 				html += '</li>';
 			} );
 			html += '</ul>';
@@ -751,8 +748,7 @@ function showScanProgress() {
 			html += '<ul>';
 			unmatchedItems.forEach( function( it ) {
 				html += '<li>';
-				html += '<span class="mmr-file-name text-amber-900">' + it.filename + '</span>';
-				html += '<span class="mmr-file-path">' + it.path + '</span>';
+				html += '<span class="mmr-file-path text-amber-900">' + it.full_path + '</span>';
 				html += '</li>';
 			} );
 			html += '</ul>';
