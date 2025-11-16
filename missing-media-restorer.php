@@ -178,7 +178,10 @@ function mmr_render_admin_page() {
 						</li>
 					</ol>
 					<div class="flex items-center gap-2 text-[11px] text-slate-400">
-						<span class="hidden sm:inline-block"><?php esc_html_e( 'Designed to feel calm & compact.', 'missing-media-restorer' ); ?></span>
+						<button id="mmr-btn-pro" type="button" class="mmr-btn-pro inline-flex items-center gap-1 rounded-full px-3 py-1.5 text-xs font-medium">
+							<span class="dashicons dashicons-star-filled text-[13px]"></span>
+							<span><?php esc_html_e( 'Upgrade to Pro', 'missing-media-restorer' ); ?></span>
+						</button>
 					</div>
 				</nav>
 			</header>
@@ -284,22 +287,6 @@ function mmr_render_admin_page() {
 							<span><span class="font-bold text-slate-900"><?php esc_html_e( 'Restore safely:', 'missing-media-restorer' ); ?></span> <?php esc_html_e( 'Files are restored in batches to prevent server overload.', 'missing-media-restorer' ); ?></span>
 						</li>
 					</ul>
-				</div>					<!-- Tips & Info -->
-				<div class="grid gap-4 md:grid-cols-2">
-					<div class="mmr-tips-card mmr-tips-card-safety">
-						<p class="mb-2 flex items-center gap-1.5 font-bold text-slate-900 text-[11px]">
-							<span class="dashicons dashicons-shield-alt text-[14px] text-blue-600"></span>
-							<?php esc_html_e( 'Safe & Non-Invasive', 'missing-media-restorer' ); ?>
-						</p>
-						<p class="text-[11px] text-slate-600"><?php esc_html_e( 'This scan only reads your media library data. No database changes or file modifications are made during the scan.', 'missing-media-restorer' ); ?></p>
-					</div>
-					<div class="mmr-tips-card mmr-tips-card-performance">
-						<p class="mb-2 flex items-center gap-1.5 font-bold text-slate-900 text-[11px]">
-							<span class="dashicons dashicons-clock text-[14px] text-amber-600"></span>
-							<?php esc_html_e( 'Performance Optimized', 'missing-media-restorer' ); ?>
-						</p>
-						<p class="text-[11px] text-slate-600"><?php esc_html_e( 'The scan processes attachments efficiently and restores files in small batches to keep your site responsive.', 'missing-media-restorer' ); ?></p>
-					</div>
 				</div>
 			</div>
 		</section>			<!-- Step 2: Upload -->
@@ -454,6 +441,90 @@ function mmr_render_admin_page() {
 			</section>
 		</div>
 	</div>
+
+	<!-- Pro Features Modal -->
+	<div id="mmr-pro-modal" class="fixed inset-0 z-50 hidden bg-black/50 backdrop-blur-sm">
+		<div class="flex min-h-screen items-center justify-center p-4">
+			<div class="w-full max-w-md rounded-2xl bg-white shadow-2xl">
+				<div class="relative">
+					<!-- Header -->
+					<div class="flex items-center justify-between border-b border-slate-100 px-6 py-4">
+						<div class="flex items-center gap-3">
+							<div class="flex h-10 w-10 items-center justify-center rounded-full bg-blue-500">
+								<span class="dashicons dashicons-star-filled text-white text-lg"></span>
+							</div>
+							<div>
+								<h3 class="text-lg font-semibold text-slate-900"><?php esc_html_e( 'Upgrade to Pro', 'missing-media-restorer' ); ?></h3>
+								<p class="text-sm text-slate-500"><?php esc_html_e( 'Unlock advanced features', 'missing-media-restorer' ); ?></p>
+							</div>
+						</div>
+						<button id="mmr-close-pro-modal" type="button" class="flex h-8 w-8 items-center justify-center rounded-full text-slate-400 hover:bg-slate-100 hover:text-slate-600">
+							<span class="dashicons dashicons-no text-lg"></span>
+						</button>
+					</div>
+
+					<!-- Content -->
+					<div class="px-6 py-6">
+						<div class="space-y-4">
+							<div class="flex items-start gap-3">
+								<span class="flex h-6 w-6 items-center justify-center rounded-full bg-blue-100 text-blue-600 mt-0.5">
+									<span class="dashicons dashicons-cloud-upload text-sm"></span>
+								</span>
+								<div>
+									<p class="font-medium text-slate-900"><?php esc_html_e( 'Bulk Upload Support', 'missing-media-restorer' ); ?></p>
+									<p class="text-sm text-slate-600"><?php esc_html_e( 'Upload thousands of files at once with drag & drop folders', 'missing-media-restorer' ); ?></p>
+								</div>
+							</div>
+
+							<div class="flex items-start gap-3">
+								<span class="flex h-6 w-6 items-center justify-center rounded-full bg-green-100 text-green-600 mt-0.5">
+									<span class="dashicons dashicons-admin-tools text-sm"></span>
+								</span>
+								<div>
+									<p class="font-medium text-slate-900"><?php esc_html_e( 'Advanced Matching', 'missing-media-restorer' ); ?></p>
+									<p class="text-sm text-slate-600"><?php esc_html_e( 'Smart filename matching and duplicate detection', 'missing-media-restorer' ); ?></p>
+								</div>
+							</div>
+
+							<div class="flex items-start gap-3">
+								<span class="flex h-6 w-6 items-center justify-center rounded-full bg-purple-100 text-purple-600 mt-0.5">
+									<span class="dashicons dashicons-chart-line text-sm"></span>
+								</span>
+								<div>
+									<p class="font-medium text-slate-900"><?php esc_html_e( 'Progress Analytics', 'missing-media-restorer' ); ?></p>
+									<p class="text-sm text-slate-600"><?php esc_html_e( 'Detailed reports and restoration statistics', 'missing-media-restorer' ); ?></p>
+								</div>
+							</div>
+
+							<div class="flex items-start gap-3">
+								<span class="flex h-6 w-6 items-center justify-center rounded-full bg-amber-100 text-amber-600 mt-0.5">
+									<span class="dashicons dashicons-shield text-sm"></span>
+								</span>
+								<div>
+									<p class="font-medium text-slate-900"><?php esc_html_e( 'Priority Support', 'missing-media-restorer' ); ?></p>
+									<p class="text-sm text-slate-600"><?php esc_html_e( 'Get help from our expert support team', 'missing-media-restorer' ); ?></p>
+								</div>
+							</div>
+						</div>
+
+						<div class="mt-6 rounded-xl bg-blue-50 p-4">
+							<div class="flex items-center justify-between">
+								<div>
+									<p class="font-semibold text-slate-900"><?php esc_html_e( 'Starting at $29/year', 'missing-media-restorer' ); ?></p>
+									<p class="text-sm text-slate-600"><?php esc_html_e( 'One-time payment, lifetime updates', 'missing-media-restorer' ); ?></p>
+								</div>
+								<a href="https://missingmediarestorer.com/pro" target="_blank" class="inline-flex items-center gap-2 rounded-full bg-blue-500 px-4 py-2 text-sm font-medium text-white hover:bg-blue-600 hover:text-white transition-all">
+									<span><?php esc_html_e( 'Try Now', 'missing-media-restorer' ); ?></span>
+									<span class="dashicons dashicons-arrow-right-alt text-sm"></span>
+								</a>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+
 	<?php
 }
 

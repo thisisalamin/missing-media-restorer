@@ -46,6 +46,8 @@
 		const selectFilesBtn = document.getElementById( 'mmr-select-files-btn' );
 		const selectFolderBtn = document.getElementById( 'mmr-select-folder-btn' );
 		const refreshFilesBtn = document.getElementById( 'mmr-refresh-files-btn' );
+		const proBtn = document.getElementById( 'mmr-btn-pro' );
+		const closeProModalBtn = document.getElementById( 'mmr-close-pro-modal' );
 
 		console.log( 'Attaching event listeners. Scan button found:', !!scanBtn );
 		if ( scanBtn ) {
@@ -100,6 +102,30 @@
 		if ( refreshFilesBtn ) {
 			refreshFilesBtn.addEventListener( 'click', refreshFilesList );
 		}
+
+		// Pro modal events
+		if ( proBtn ) {
+			proBtn.addEventListener( 'click', showProModal );
+		}
+
+		if ( closeProModalBtn ) {
+			closeProModalBtn.addEventListener( 'click', hideProModal );
+		}
+
+		// Close modal when clicking outside
+		document.addEventListener( 'click', function( e ) {
+			const modal = document.getElementById( 'mmr-pro-modal' );
+			if ( modal && e.target === modal ) {
+				hideProModal();
+			}
+		} );
+
+		// Close modal on Escape key
+		document.addEventListener( 'keydown', function( e ) {
+			if ( e.key === 'Escape' ) {
+				hideProModal();
+			}
+		} );
 
 		const continueMatchBtn = document.getElementById( 'mmr-continue-match-btn' );
 		if ( continueMatchBtn ) {
@@ -211,55 +237,41 @@ function showScanProgress() {
 	}, 450 );
 }
 
-/**
- * Stop and finalize the scan progress UI
- * @param {boolean} error - if true, show error state
- */
-function completeScanProgress( error ) {
-	const container = document.getElementById( 'mmr-scan-progress-container' );
-	const fill = document.getElementById( 'mmr-scan-progress-fill' );
-	const text = document.getElementById( 'mmr-scan-progress-text' );
-
-	if ( mmrState.scanProgressInterval ) {
-		clearInterval( mmrState.scanProgressInterval );
-		mmrState.scanProgressInterval = null;
-	}
-
-	if ( ! container || ! fill || ! text ) {
-		return;
-	}
-
-	if ( error ) {
-		text.textContent = 'Scan failed';
-		text.style.color = '#dc3545';
-		fill.style.width = '100%';
-		fill.style.background = 'linear-gradient(90deg, #ef4444, #f97316)';
-		// hide after short delay
-		setTimeout( function() {
-			container.classList.add( 'hidden' );
-			fill.style.width = '0%';
-			fill.style.background = '';
-		}, 2200 );
-		return;
-	}
-
-	// show completion
-	fill.style.width = '100%';
-	text.textContent = 'Scan complete';
-	text.style.color = '#059669';
-
-	// clean up and hide after a short delay
-	setTimeout( function() {
-		if ( container ) {
-			container.classList.add( 'hidden' );
-		}
-		if ( fill ) {
-			fill.style.width = '0%';
-		}
-	}, 1400 );
-}
-
 	/**
+	 * Stop and finalize the scan progress UI
+	 * @param {boolean} error - if true, show error state
+	 */
+	function completeScanProgress( error ) {
+		const container = document.getElementById( 'mmr-scan-progress-container' );
+		const fill = document.getElementById( 'mmr-scan-progress-fill' );
+		const text = document.getElementById( 'mmr-scan-progress-text' );
+
+		if ( mmrState.scanProgressInterval ) {
+			clearInterval( mmrState.scanProgressInterval );
+			mmrState.scanProgressInterval = null;
+		}
+
+		if ( ! container || ! fill || ! text ) {
+			return;
+		}
+
+		if ( error ) {
+			text.textContent = 'Scan failed';
+			text.style.color = '#dc3545';
+			fill.style.width = '100%';
+			fill.style.background = 'linear-gradient(90deg, #ef4444, #f97316)';
+			// hide after short delay
+			setTimeout( function() {
+				container.classList.add( 'hidden' );
+				fill.style.width = '0%';
+				fill.style.background = '';
+			}, 2200 );
+			return;
+		}
+
+		// hide immediately on success
+		container.classList.add( 'hidden' );
+	}	/**
 	 * Handle scan response
 	 *
 	 * @param {Object} response - The response from the server
@@ -373,8 +385,6 @@ function completeScanProgress( error ) {
 					} );
 				}
 			}
-
-			console.log( 'Scan complete:', response.data );
 		} else {
 			showError( response.data?.message || 'Scan failed' );
 		}
@@ -1205,6 +1215,28 @@ function completeScanProgress( error ) {
 		const i = Math.floor( Math.log( bytes ) / Math.log( k ) );
 
 		return Math.round( ( bytes / Math.pow( k, i ) ) * 100 ) / 100 + ' ' + sizes[ i ];
+	}
+
+	/**
+	 * Show the Pro features modal
+	 */
+	function showProModal() {
+		const modal = document.getElementById( 'mmr-pro-modal' );
+		if ( modal ) {
+			modal.classList.remove( 'hidden' );
+			document.body.style.overflow = 'hidden'; // Prevent background scrolling
+		}
+	}
+
+	/**
+	 * Hide the Pro features modal
+	 */
+	function hideProModal() {
+		const modal = document.getElementById( 'mmr-pro-modal' );
+		if ( modal ) {
+			modal.classList.add( 'hidden' );
+			document.body.style.overflow = ''; // Restore scrolling
+		}
 	}
 
 	/**

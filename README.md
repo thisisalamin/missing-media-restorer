@@ -103,11 +103,18 @@ Missing folder paths are auto-created if necessary.
 
 ---
 
+## Pro Features
+
+* **Smart Local Scan & Selective Upload**: Scan local directories for files that are missing on the server and upload only the matching files automatically. This prevents unnecessary uploads and saves bandwidth.
+
+---
+
 ## Future Enhancements
 
 * Resume incomplete restore sessions
 * Export CSV of missing vs restored files
 * Remote backup synchronization
+
 
 ---
 
