@@ -200,69 +200,75 @@
 			if ( resultsDiv && outputDiv ) {
 				resultsDiv.classList.remove( 'hidden' );
 				let html = '';
-				html += '<div class="rounded-xl mmr-info-box p-3 mb-3">';
-				html += '<div class="flex flex-wrap items-center justify-between gap-3 text-[11px] text-slate-600">';
-				html += '<div class="flex items-center gap-2">';
-				html += '<span class="inline-flex h-5 w-5 items-center justify-center rounded-full bg-slate-900 text-slate-50 text-[11px]">Σ</span>';
-				html += '<span class="font-medium text-slate-800">Scan summary</span>';
-				html += '</div>';
-				html += '<div class="flex flex-wrap items-center gap-3">';
-				html += '<span class="inline-flex items-center gap-1 text-slate-500"><span class="text-slate-400">Total</span><span class="font-semibold text-slate-800">' + data.total_count + '</span></span>';
-				html += '<span class="inline-flex items-center gap-1 text-emerald-700"><span class="h-1.5 w-1.5 rounded-full bg-emerald-500"></span><span class="font-medium">' + existingFiles.length + ' existing</span></span>';
-				html += '<span class="inline-flex items-center gap-1 text-rose-700"><span class="h-1.5 w-1.5 rounded-full bg-rose-500"></span><span class="font-medium">' + missingFiles.length + ' missing</span></span>';
+
+				// Scan Summary Section with new styling
+				html += '<div class="mmr-scan-summary mb-4">';
+				html += '<div class="flex flex-col gap-3">';
+				html += '<div class="flex items-center justify-between flex-wrap gap-2">';
+				html += '<span class="mmr-scan-label">';
+				html += '<span class="dashicons dashicons-chart-line text-[16px]"></span>';
+				html += '<span>Scan Summary</span>';
+				html += '</span>';
+				html += '<div class="flex flex-wrap items-center gap-2 text-[11px]">';
+				html += '<span class="inline-flex items-center gap-1 px-2 py-1 rounded-full bg-slate-100 text-slate-700"><span class="font-semibold">' + data.total_count + '</span> total items</span>';
+				html += '<span class="inline-flex items-center gap-1 px-2 py-1 rounded-full bg-emerald-100 text-emerald-700"><span class="h-1.5 w-1.5 rounded-full bg-emerald-500"></span><span class="font-semibold">' + existingFiles.length + '</span> existing</span>';
+				html += '<span class="inline-flex items-center gap-1 px-2 py-1 rounded-full bg-red-100 text-red-700"><span class="h-1.5 w-1.5 rounded-full bg-red-500"></span><span class="font-semibold">' + missingFiles.length + '</span> missing</span>';
 				if ( missingFiles.length > 0 ) {
-					html += '<span class="inline-flex items-center gap-1 text-slate-500"><span class="dashicons dashicons-update text-[12px] text-slate-400"></span><span>' + mmrState.totalBatches + ' batch' + ( mmrState.totalBatches > 1 ? 'es' : '' ) + ' · ' + mmrState.batchSize + '/batch</span></span>';
+					html += '<span class="inline-flex items-center gap-1 px-2 py-1 rounded-full bg-blue-100 text-blue-700"><span class="dashicons dashicons-update text-[12px]"></span><span class="font-semibold">' + mmrState.totalBatches + '</span> batches</span>';
 				}
 				html += '</div>';
 				html += '</div>';
 				html += '</div>';
-
-				html += '<div class="grid gap-3 md:grid-cols-2 text-[11px]">';
-				// Existing files
-				html += '<div class="rounded-xl border border-emerald-100 bg-emerald-50/60 p-3">';
-				html += '<div class="mb-2 flex items-center justify-between">';
-				html += '<span class="inline-flex items-center gap-1 text-emerald-800 font-medium">';
-				html += '<span class="dashicons dashicons-yes text-[12px]"></span>';
-				html += '<span>Existing (' + existingFiles.length + ')</span>';
-				html += '</span>';
 				html += '</div>';
-				html += '<div class="max-h-52 overflow-auto rounded-lg bg-white/90 border border-emerald-100">';
-				html += '<ul class="divide-y divide-slate-100">';
+
+				// Existing and Missing Files Cards
+				html += '<div class="grid gap-4 md:grid-cols-2 text-[11px]">';
+
+				// Existing files card
+				html += '<div class="mmr-scan-result-card mmr-existing-card">';
+				html += '<div class="mmr-card-header">';
+				html += '<span class="dashicons dashicons-yes text-[14px]"></span>';
+				html += '<span>Existing Files (' + existingFiles.length + ')</span>';
+				html += '</div>';
+				html += '<div class="p-3">';
 				if ( existingFiles.length ) {
+					html += '<div class="mmr-files-list-container">';
+					html += '<ul>';
 					existingFiles.forEach( function( file ) {
-						html += '<li class="px-3 py-2 flex flex-col gap-0.5">';
-						html += '<span class="font-medium text-slate-800 truncate">' + file.filename + '</span>';
-						html += '<span class="text-[10px] text-slate-400">' + file.full_path + '</span>';
+						html += '<li>';
+						html += '<span class="mmr-file-name">' + file.filename + '</span>';
+						html += '<span class="mmr-file-path">' + file.full_path + '</span>';
 						html += '</li>';
 					} );
+					html += '</ul>';
+					html += '</div>';
 				} else {
-					html += '<li class="px-3 py-2 text-emerald-700/80">No existing files detected.</li>';
+					html += '<p class="text-emerald-700/80 px-2 py-1">No existing files detected.</p>';
 				}
-				html += '</ul>';
 				html += '</div>';
 				html += '</div>';
 
-				// Missing files
-				html += '<div class="rounded-xl border border-rose-100 bg-rose-50/60 p-3">';
-				html += '<div class="mb-2 flex items-center justify-between">';
-				html += '<span class="inline-flex items-center gap-1 text-rose-800 font-medium">';
-				html += '<span class="dashicons dashicons-warning text-[12px] text-rose-500"></span>';
-				html += '<span>Missing (' + missingFiles.length + ')</span>';
-				html += '</span>';
+				// Missing files card
+				html += '<div class="mmr-scan-result-card mmr-missing-card">';
+				html += '<div class="mmr-card-header">';
+				html += '<span class="dashicons dashicons-warning text-[14px]"></span>';
+				html += '<span>Missing Files (' + missingFiles.length + ')</span>';
 				html += '</div>';
-				html += '<div class="max-h-52 overflow-auto rounded-lg bg-white/90 border border-rose-100">';
-				html += '<ul class="divide-y divide-slate-100">';
+				html += '<div class="p-3">';
 				if ( missingFiles.length ) {
+					html += '<div class="mmr-files-list-container">';
+					html += '<ul>';
 					missingFiles.forEach( function( file ) {
-						html += '<li class="px-3 py-2 flex flex-col gap-0.5">';
-						html += '<span class="font-medium text-slate-800 truncate">' + file.filename + '</span>';
-						html += '<span class="text-[10px] text-slate-400">' + file.full_path + '</span>';
+						html += '<li>';
+						html += '<span class="mmr-file-name">' + file.filename + '</span>';
+						html += '<span class="mmr-file-path">' + file.full_path + '</span>';
 						html += '</li>';
 					} );
+					html += '</ul>';
+					html += '</div>';
 				} else {
-					html += '<li class="px-3 py-2 text-rose-700/80">No missing files detected.</li>';
+					html += '<p class="text-red-700/80 px-2 py-1">No missing files detected.</p>';
 				}
-				html += '</ul>';
 				html += '</div>';
 				html += '</div>';
 				html += '</div>';
@@ -574,39 +580,49 @@
 			}
 		} );
 
-		html += '<div class="mb-3 grid gap-3 md:grid-cols-2 text-[11px]">';
-		html += '<div class="rounded-lg border border-emerald-100 bg-emerald-50/70 px-3 py-3">';
-		html += '<div class="flex items-center justify-between mb-1">';
-		html += '<span class="inline-flex items-center gap-1 text-emerald-700 font-medium">';
-		html += '<span class="h-1.5 w-1.5 rounded-full bg-emerald-500"></span>';
-		html += '<span>Matched</span>';
+		// Match Summary Cards (Status Overview)
+		html += '<div class="grid gap-4 md:grid-cols-2 mb-4 text-[11px]">';
+
+		// Matched Files Card
+		html += '<div class="mmr-match-card mmr-matched-card">';
+		html += '<div class="flex items-center justify-between mb-2">';
+		html += '<span class="mmr-match-title">';
+		html += '<span class="dashicons dashicons-yes-alt text-[14px]"></span>';
+		html += '<span>Matched Files</span>';
 		html += '</span>';
-		html += '<span class="text-[11px] font-semibold text-emerald-700">' + matched + '</span>';
+		html += '<span class="text-[12px] font-bold text-emerald-700">' + matched + '</span>';
 		html += '</div>';
-		html += '<p class="text-[11px] text-emerald-800">These files have a backup ready and will be restored.</p>';
+		html += '<p class="text-[10px] text-emerald-700/90 leading-relaxed">These files have a backup ready and will be restored in the next step.</p>';
 		html += '</div>';
-		html += '<div class="rounded-lg border border-amber-100 bg-amber-50/80 px-3 py-3">';
-		html += '<div class="flex items-center justify-between mb-1">';
-		html += '<span class="inline-flex items-center gap-1 text-amber-800 font-medium">';
-		html += '<span class="h-1.5 w-1.5 rounded-full bg-amber-400"></span>';
-		html += '<span>Unmatched</span>';
+
+		// Unmatched Files Card
+		html += '<div class="mmr-match-card mmr-unmatched-card">';
+		html += '<div class="flex items-center justify-between mb-2">';
+		html += '<span class="mmr-match-title">';
+		html += '<span class="dashicons dashicons-warning text-[14px]"></span>';
+		html += '<span>Unmatched Files</span>';
 		html += '</span>';
-		html += '<span class="text-[11px] font-semibold text-slate-700">' + unmatched + '</span>';
+		html += '<span class="text-[12px] font-bold text-amber-700">' + unmatched + '</span>';
 		html += '</div>';
-		html += '<p class="text-[11px] text-amber-800">These remain missing until their files appear in the backup set.</p>';
+		html += '<p class="text-[10px] text-amber-700/90 leading-relaxed">These remain missing until their backup files appear with matching names.</p>';
 		html += '</div>';
 		html += '</div>';
 
-		html += '<div class="grid gap-3 md:grid-cols-2 text-[11px]">';
+		// Detailed File Lists
+		html += '<div class="grid gap-4 md:grid-cols-2 text-[11px]">';
+
 		if ( matchedItems.length > 0 ) {
 			html += '<div>';
-			html += '<h4 class="mb-1 text-[11px] font-medium text-slate-700">Matched files</h4>';
-			html += '<div class="max-h-52 overflow-auto rounded-lg border border-slate-100 bg-white/80">';
-			html += '<ul class="divide-y divide-slate-100">';
+			html += '<h4 class="mb-2 text-[11px] font-bold text-emerald-900 flex items-center gap-1">';
+			html += '<span class="dashicons dashicons-yes text-[12px] text-emerald-600"></span>';
+			html += '<span>Matched Files (' + matchedItems.length + ')</span>';
+			html += '</h4>';
+			html += '<div class="mmr-files-list-container border-2 border-emerald-200">';
+			html += '<ul>';
 			matchedItems.forEach( function( it ) {
-				html += '<li class="px-3 py-2 flex flex-col gap-0.5">';
-				html += '<span class="font-medium text-slate-800 truncate">' + it.filename + '</span>';
-				html += '<span class="text-[10px] text-slate-400">' + it.path + '</span>';
+				html += '<li>';
+				html += '<span class="mmr-file-name text-emerald-900">' + it.filename + '</span>';
+				html += '<span class="mmr-file-path">' + it.path + '</span>';
 				html += '</li>';
 			} );
 			html += '</ul>';
@@ -616,13 +632,16 @@
 
 		if ( unmatchedItems.length > 0 ) {
 			html += '<div>';
-			html += '<h4 class="mb-1 text-[11px] font-medium text-slate-700">Unmatched files</h4>';
-			html += '<div class="max-h-52 overflow-auto rounded-lg border border-slate-100 bg-white/80">';
-			html += '<ul class="divide-y divide-slate-100">';
+			html += '<h4 class="mb-2 text-[11px] font-bold text-amber-900 flex items-center gap-1">';
+			html += '<span class="dashicons dashicons-warning text-[12px] text-amber-600"></span>';
+			html += '<span>Unmatched Files (' + unmatchedItems.length + ')</span>';
+			html += '</h4>';
+			html += '<div class="mmr-files-list-container border-2 border-amber-200">';
+			html += '<ul>';
 			unmatchedItems.forEach( function( it ) {
-				html += '<li class="px-3 py-2 flex flex-col gap-0.5">';
-				html += '<span class="font-medium text-slate-800 truncate">' + it.filename + '</span>';
-				html += '<span class="text-[10px] text-slate-400">' + it.path + '</span>';
+				html += '<li>';
+				html += '<span class="mmr-file-name text-amber-900">' + it.filename + '</span>';
+				html += '<span class="mmr-file-path">' + it.path + '</span>';
 				html += '</li>';
 			} );
 			html += '</ul>';
@@ -952,17 +971,26 @@
 			if ( uploadedFiles.length === 0 ) {
 				html += '<p class="text-[11px] text-slate-500">No files detected yet. Drag files above or use the buttons.</p>';
 			} else {
-				html += '<div class="rounded-xl border border-emerald-100 bg-emerald-50/70 px-3 py-3 text-[11px] text-emerald-800">';
-				html += '<p class="mb-1 font-medium">' + uploadedFiles.length + ' file(s) ready in the temp folder.</p>';
-				html += '<p class="mb-2 text-emerald-900">We keep the list simple—no thumbnails, just clean filenames.</p>';
-				html += '<details class="mt-1">';
-				html += '<summary class="cursor-pointer text-[11px] font-medium text-emerald-800">View uploaded files</summary>';
-				html += '<div class="mt-2 max-h-48 overflow-auto rounded-lg border border-emerald-100 bg-white/90">';
-				html += '<ul class="divide-y divide-emerald-50">';
+				// Upload Summary Box
+				html += '<div class="mmr-upload-summary mb-3">';
+				html += '<div class="mb-2 flex items-center justify-between">';
+				html += '<span class="mmr-upload-label">';
+				html += '<span class="dashicons dashicons-media-default text-[16px]"></span>';
+				html += '<span>' + uploadedFiles.length + ' File(s) Ready</span>';
+				html += '</span>';
+				html += '</div>';
+				html += '<p class="text-[11px] text-emerald-800 mb-2">Files are prepared in the temporary upload folder and ready for matching.</p>';
+				html += '<details class="mt-2">';
+				html += '<summary class="cursor-pointer text-[11px] font-semibold text-emerald-900 hover:text-emerald-700 flex items-center gap-1">';
+				html += '<span class="dashicons dashicons-visibility text-[13px]"></span>';
+				html += '<span>View uploaded files (' + uploadedFiles.length + ')</span>';
+				html += '</summary>';
+				html += '<div class="mmr-upload-files-list">';
+				html += '<ul class="divide-y divide-slate-100">';
 				uploadedFiles.forEach( function( file ) {
-					html += '<li class="px-3 py-2 flex items-center justify-between gap-2">';
-					html += '<span class="truncate font-medium text-slate-800">' + file.name + '</span>';
-					html += '<span class="shrink-0 text-[10px] text-slate-400">' + formatFileSize( file.size ) + '</span>';
+					html += '<li class="px-3 py-2 flex items-center justify-between gap-2 hover:bg-slate-50 transition">';
+					html += '<span class="truncate font-medium text-slate-800 text-[11px]">' + file.name + '</span>';
+					html += '<span class="shrink-0 text-[10px] text-slate-500 font-medium">' + formatFileSize( file.size ) + '</span>';
 					html += '</li>';
 				} );
 				html += '</ul>';
@@ -970,6 +998,7 @@
 				html += '</details>';
 				html += '</div>';
 
+				// Matching Status Section
 				if ( mmrState.missingFiles.length > 0 ) {
 					let matchedCount = 0;
 					mmrState.missingFiles.forEach( function( missingFile ) {
@@ -979,10 +1008,30 @@
 						}
 					} );
 
-					html += '<div class="mt-3 rounded-xl mmr-warning-box px-3 py-3 text-[11px] text-slate-700">';
-					html += '<p class="mb-1 font-medium">Matching status</p>';
-					html += '<p class="mb-1">' + matchedCount + ' of ' + mmrState.missingFiles.length + ' missing files have a backup file with the same name.</p>';
-					html += '<p class="text-[10px] text-slate-500">We keep this view compact—full detail is available in the next step.</p>';
+					html += '<div class="mmr-matching-status">';
+					html += '<div class="mb-3 flex items-center justify-between flex-wrap gap-2">';
+					html += '<span class="mmr-matching-label">';
+					html += '<span class="dashicons dashicons-search text-[16px]"></span>';
+					html += '<span>Matching Status</span>';
+					html += '</span>';
+					html += '<span class="text-[10px] font-semibold text-amber-900">' + matchedCount + ' / ' + mmrState.missingFiles.length + ' Matched</span>';
+					html += '</div>';
+
+					// Matching bar indicator
+					const matchPercent = ( matchedCount / mmrState.missingFiles.length ) * 100;
+					html += '<div class="mb-3 w-full h-2 bg-amber-100 rounded-full overflow-hidden border border-amber-200">';
+					html += '<div class="h-full rounded-full" style="width: ' + matchPercent + '%; background: linear-gradient(90deg, #10b981, #059669); box-shadow: 0 0 8px rgba(16,185,129,0.4);"></div>';
+					html += '</div>';
+
+					html += '<p class="text-[11px] text-amber-900">';
+					if ( matchedCount === mmrState.missingFiles.length ) {
+						html += '<span class="font-semibold text-emerald-700">✓ Perfect match!</span> All missing files have a backup ready. Proceed to the next step.';
+					} else if ( matchedCount > 0 ) {
+						html += '<span class="font-semibold">' + matchedCount + ' file(s) matched.</span> ' + ( mmrState.missingFiles.length - matchedCount ) + ' file(s) remain unmatched until their backups appear.';
+					} else {
+						html += '<span class="font-semibold text-red-700">No matches found.</span> Upload files with matching names to proceed with restoration.';
+					}
+					html += '</p>';
 					html += '</div>';
 				}
 			}
