@@ -200,7 +200,7 @@
 			if ( resultsDiv && outputDiv ) {
 				resultsDiv.classList.remove( 'hidden' );
 				let html = '';
-				html += '<div class="rounded-xl border border-slate-200 bg-white/70 p-3 mb-3">';
+				html += '<div class="rounded-xl mmr-info-box p-3 mb-3">';
 				html += '<div class="flex flex-wrap items-center justify-between gap-3 text-[11px] text-slate-600">';
 				html += '<div class="flex items-center gap-2">';
 				html += '<span class="inline-flex h-5 w-5 items-center justify-center rounded-full bg-slate-900 text-slate-50 text-[11px]">Σ</span>';
@@ -482,25 +482,25 @@
 			}
 
 			btn.classList.remove( 'mmr-step-chip-active' );
+			btn.classList.remove( 'mmr-step-chip-inactive' );
 			btn.classList.remove( 'bg-slate-900', 'text-slate-50' );
-			btn.classList.remove( 'text-slate-500' );
+			btn.classList.remove( 'text-slate-500', 'text-slate-700' );
 
 			if ( badge ) {
+				badge.classList.remove( 'mmr-step-active-icon', 'mmr-step-inactive-icon' );
 				badge.classList.remove( 'border-slate-700', 'border-slate-300' );
 			}
 
 			if ( thisStep === step ) {
-				btn.classList.add( 'mmr-step-chip-active', 'bg-slate-900', 'text-slate-50' );
+				btn.classList.add( 'mmr-step-chip-active' );
 				if ( badge ) {
-					badge.classList.add( 'border-slate-700' );
-				}
-			} else if ( thisStep < step ) {
-				btn.classList.add( 'text-slate-700' );
-				if ( badge ) {
-					badge.classList.add( 'border-slate-300' );
+					badge.classList.add( 'mmr-step-active-icon' );
 				}
 			} else {
-				btn.classList.add( 'text-slate-500' );
+				btn.classList.add( 'mmr-step-chip-inactive' );
+				if ( badge ) {
+					badge.classList.add( 'mmr-step-inactive-icon' );
+				}
 			}
 		} );
 	}
@@ -979,7 +979,7 @@
 						}
 					} );
 
-					html += '<div class="mt-3 rounded-xl border border-slate-200 bg-slate-50/80 px-3 py-3 text-[11px] text-slate-700">';
+					html += '<div class="mt-3 rounded-xl mmr-warning-box px-3 py-3 text-[11px] text-slate-700">';
 					html += '<p class="mb-1 font-medium">Matching status</p>';
 					html += '<p class="mb-1">' + matchedCount + ' of ' + mmrState.missingFiles.length + ' missing files have a backup file with the same name.</p>';
 					html += '<p class="text-[10px] text-slate-500">We keep this view compact—full detail is available in the next step.</p>';

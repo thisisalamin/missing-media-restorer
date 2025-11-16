@@ -5,17 +5,17 @@
 .mmr-btn-primary {
 	border-radius: 9999px;
 	border-width: 1px;
-	border-color: #020617;
-	background-color: #020617;
-	color: #f9fafb;
-	box-shadow: 0 1px 2px rgba(15,23,42,0.45);
+	border-color: #3b82f6;
+	background-color: #3b82f6;
+	color: #ffffff;
+	box-shadow: 0 1px 2px rgba(59,130,246,0.45);
 	transition: background-color 150ms ease-out, border-color 150ms ease-out, box-shadow 150ms ease-out, opacity 150ms ease-out;
 }
 
 .mmr-btn-primary:hover:not(:disabled) {
-	background-color: #020617;
-	border-color: #020617;
-	box-shadow: 0 2px 5px rgba(15,23,42,0.6);
+	background-color: #2563eb;
+	border-color: #2563eb;
+	box-shadow: 0 2px 5px rgba(59,130,246,0.6);
 }
 
 .mmr-btn-primary:disabled {
@@ -33,9 +33,9 @@
 }
 
 .mmr-btn-ghost:hover:not(:disabled) {
-	background-color: #f8fafc;
-	border-color: #cbd5f5;
-	color: #0f172a;
+	background-color: #f0f9ff;
+	border-color: #7dd3fc;
+	color: #0369a1;
 }
 
 .mmr-btn-ghost:disabled {
@@ -48,11 +48,17 @@
 }
 
 .mmr-step-chip-active {
-	background-color: #020617;
-	color: #f9fafb;
+	background-color: #3b82f6;
+	color: #ffffff;
 }
 
-/* Dark console log entries with subtle state color accents */
+.mmr-step-chip-inactive {
+	background-color: #f3f4f6;
+	color: #6b7280;
+	border-color: #d1d5db;
+}
+
+/* Colorful console log entries with soft state color accents */
 
 .mmr-log-entry {
 	border-radius: 0.375rem;
@@ -63,18 +69,64 @@
 }
 
 .mmr-log-entry.mmr-restored {
-	background: linear-gradient(90deg, rgba(34,197,94,0.18), transparent);
-	border-left: 2px solid rgba(34,197,94,0.9);
+	background: linear-gradient(90deg, rgba(34,197,94,0.15), rgba(34,197,94,0.05));
+	border-left: 3px solid #22c55e;
+	color: #166534;
 }
 
 .mmr-log-entry.mmr-failed,
 .mmr-log-entry.mmr-error {
-	background: linear-gradient(90deg, rgba(248,113,113,0.2), transparent);
-	border-left: 2px solid rgba(248,113,113,0.95);
+	background: linear-gradient(90deg, rgba(239,68,68,0.15), rgba(239,68,68,0.05));
+	border-left: 3px solid #ef4444;
+	color: #991b1b;
 }
 
 .mmr-log-entry.mmr-skipped {
-	background: linear-gradient(90deg, rgba(250,204,21,0.18), transparent);
-	border-left: 2px solid rgba(250,204,21,0.9);
+	background: linear-gradient(90deg, rgba(245,158,11,0.15), rgba(245,158,11,0.05));
+	border-left: 3px solid #f59e0b;
+	color: #92400e;
+}
+
+/* Additional colorful elements */
+.mmr-header-icon {
+	background-color: #8b5cf6;
+	color: #ffffff;
+}
+
+.mmr-step-active-icon {
+	background-color: #3b82f6;
+	color: #ffffff;
+}
+
+.mmr-step-inactive-icon {
+	background-color: #e5e7eb;
+	color: #9ca3af;
+}
+
+.mmr-progress-fill {
+	background: linear-gradient(90deg, #3b82f6, #8b5cf6, #06b6d4);
+}
+
+.mmr-section-bg {
+	background: linear-gradient(135deg, rgba(255,255,255,0.9), rgba(248,250,252,0.8));
+}
+
+.mmr-console-bg {
+	background: linear-gradient(135deg, #1e293b, #334155);
+}
+
+.mmr-info-box {
+	background: linear-gradient(135deg, rgba(59,130,246,0.05), rgba(147,197,253,0.05));
+	border-color: #3b82f6;
+}
+
+.mmr-success-box {
+	background: linear-gradient(135deg, rgba(34,197,94,0.05), rgba(134,239,172,0.05));
+	border-color: #22c55e;
+}
+
+.mmr-warning-box {
+	background: linear-gradient(135deg, rgba(245,158,11,0.05), rgba(254,240,138,0.05));
+	border-color: #f59e0b;
 }
 
