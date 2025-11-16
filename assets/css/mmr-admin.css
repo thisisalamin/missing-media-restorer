@@ -412,3 +412,45 @@
 	color: #f59e0b;
 }
 
+/* Header card — keep the title and nav visually separate from content */
+.mmr-admin > header {
+	background: #ffffff;
+	border: 1px solid rgba(2,6,23,0.06);
+	border-radius: 1rem;
+	padding: 1rem 1.25rem;
+	box-shadow: 0 6px 18px rgba(2,6,23,0.06);
+}
+
+.mmr-admin > header .mmr-header-icon {
+	height: 44px;
+	width: 44px;
+	border-radius: 0.75rem;
+	background: linear-gradient(135deg, #7c3aed 0%, #4f46e5 100%);
+	color: #ffffff;
+	box-shadow: 0 3px 8px rgba(79,70,229,0.12);
+}
+
+.mmr-admin > header nav {
+	margin-top: 0.6rem;
+	background: #ffffff;
+	border-color: rgba(2,6,23,0.06);
+	border-width: 1px;
+	box-shadow: 0 2px 8px rgba(2,6,23,0.04);
+}
+
+.mmr-admin > header h1 { color: #0f172a; font-size: 1.375rem; }
+
+/* Scan progress bar specific styles */
+.mmr-scan-progress-fill {
+	background: linear-gradient(90deg, #3b82f6, #06b6d4);
+	box-shadow: 0 0 8px rgba(59,130,246,0.12);
+}
+
+/* Re-style the restore progress to be slightly stronger contrast */
+.mmr-progress-fill {
+	background: linear-gradient(90deg, #4f46e5, #06b6d4);
+}
+
+/* Small visual gap below header */
+.mmr-admin .mt-4.mb-4 { height: 6px; }
+

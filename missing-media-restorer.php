@@ -183,6 +183,9 @@ function mmr_render_admin_page() {
 				</nav>
 			</header>
 
+	            <!-- Add a small visual separator between header and the main content -->
+	            <div class="mt-4 mb-4" aria-hidden="true"></div>
+
 			<!-- Step 1: Scan -->
 			<section id="mmr-step-1" class="mmr-step-container mmr-step-active">
 				<div class="flex flex-col gap-4">
@@ -251,6 +254,14 @@ function mmr_render_admin_page() {
 								<p class="text-slate-600 leading-relaxed"><?php esc_html_e( 'Also checks for missing thumbnail variations and image sizes.', 'missing-media-restorer' ); ?></p>
 							</div>
 						</div>
+				</div>
+
+				<!-- Scanning progress bar for a calm, centred progress indicator (indeterminate while scanning) -->
+				<div id="mmr-scan-progress-container" class="hidden mt-4">
+					<div class="h-1.5 w-full overflow-hidden rounded-full bg-slate-100">
+						<div id="mmr-scan-progress-fill" class="h-full w-0 mmr-scan-progress-fill rounded-full transition-all"></div>
+					</div>
+					<p id="mmr-scan-progress-text" class="text-[11px] text-slate-500 mt-2">Preparing scan…</p>
 				</div>
 			</div>					<!-- Key Features -->
 				<div class="mmr-key-features-box">
@@ -423,7 +434,7 @@ function mmr_render_admin_page() {
 							</div>
 						</div>
 					</div>
-					<div class="rounded-2xl border border-slate-200 mmr-console-bg text-slate-50 shadow-sm flex flex-col">
+					<div class="rounded-2xl bg-white border border-slate-200 mmr-console-bg text-slate-50 shadow-sm flex flex-col">
 						<div class="border-b border-slate-800/60 px-4 py-3 flex items-center justify-between text-[11px]">
 							<span class="font-medium text-slate-100"><?php esc_html_e( 'Batch progress', 'missing-media-restorer' ); ?></span>
 							<button id="mmr-clear-temp-btn" type="button" class="hidden rounded-full border border-slate-700 px-2 py-1 text-[10px] font-medium text-slate-200 hover:bg-slate-800">

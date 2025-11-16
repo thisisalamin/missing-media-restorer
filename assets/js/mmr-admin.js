@@ -19,6 +19,7 @@
 		filesRestored: 0,
 		uploadedFiles: [],
 		missingFiles: [],
+		scanProgressInterval: null,
 	};
 
 	/**
@@ -138,6 +139,9 @@
 		scanBtn.disabled = true;
 		scanBtn.innerHTML = '<span class="dashicons dashicons-search"></span> Scanning...';
 
+		// Show (indeterminate) scan progress UI
+		showScanProgress();
+
 		// Make AJAX request to scan for missing files
 		const xhr = new XMLHttpRequest();
 		xhr.open( 'POST', mmrConfig.ajaxUrl, true );
@@ -160,6 +164,8 @@
 				showError( 'Scan request failed with status ' + xhr.status );
 			}
 
+			// finalize indeterminate scan progress
+			completeScanProgress();
 			mmrState.scanning = false;
 			scanBtn.disabled = false;
 			scanBtn.innerHTML = '<span class="dashicons dashicons-search"></span> Start Scanning';
@@ -167,6 +173,7 @@
 
 		xhr.onerror = function() {
 			showError( 'Network error during scan' );
+			completeScanProgress( true );
 			mmrState.scanning = false;
 			scanBtn.disabled = false;
 			scanBtn.innerHTML = '<span class="dashicons dashicons-search"></span> Start Scanning';
@@ -174,6 +181,83 @@
 
 		xhr.send( data );
 	}
+
+/**
+ * Show a simple indeterminate scan progress animation while scanning
+ */
+function showScanProgress() {
+	const container = document.getElementById( 'mmr-scan-progress-container' );
+	const fill = document.getElementById( 'mmr-scan-progress-fill' );
+	const text = document.getElementById( 'mmr-scan-progress-text' );
+
+	if ( ! container || ! fill || ! text ) {
+		return;
+	}
+
+	// Ensure container is visible
+	container.classList.remove( 'hidden' );
+	fill.style.width = '6%';
+	text.textContent = 'Scanning…';
+	text.style.color = '#64748b';
+
+	// create an indeterminate animated progress - increases until 70% then resets
+	let width = 6;
+	mmrState.scanProgressInterval = setInterval( function() {
+		width += Math.random() * 8;
+		if ( width > 72 ) {
+			width = 25; // loop a little to keep the motion fair
+		}
+		fill.style.width = Math.min( width, 72 ) + '%';
+	}, 450 );
+}
+
+/**
+ * Stop and finalize the scan progress UI
+ * @param {boolean} error - if true, show error state
+ */
+function completeScanProgress( error ) {
+	const container = document.getElementById( 'mmr-scan-progress-container' );
+	const fill = document.getElementById( 'mmr-scan-progress-fill' );
+	const text = document.getElementById( 'mmr-scan-progress-text' );
+
+	if ( mmrState.scanProgressInterval ) {
+		clearInterval( mmrState.scanProgressInterval );
+		mmrState.scanProgressInterval = null;
+	}
+
+	if ( ! container || ! fill || ! text ) {
+		return;
+	}
+
+	if ( error ) {
+		text.textContent = 'Scan failed';
+		text.style.color = '#dc3545';
+		fill.style.width = '100%';
+		fill.style.background = 'linear-gradient(90deg, #ef4444, #f97316)';
+		// hide after short delay
+		setTimeout( function() {
+			container.classList.add( 'hidden' );
+			fill.style.width = '0%';
+			fill.style.background = '';
+		}, 2200 );
+		return;
+	}
+
+	// show completion
+	fill.style.width = '100%';
+	text.textContent = 'Scan complete';
+	text.style.color = '#059669';
+
+	// clean up and hide after a short delay
+	setTimeout( function() {
+		if ( container ) {
+			container.classList.add( 'hidden' );
+		}
+		if ( fill ) {
+			fill.style.width = '0%';
+		}
+	}, 1400 );
+}
 
 	/**
 	 * Handle scan response
