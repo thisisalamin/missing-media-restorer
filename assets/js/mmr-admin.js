@@ -389,7 +389,7 @@ function showScanProgress() {
 				// Continue button
 				html += '<div class="mt-3 flex items-center justify-between text-[11px]">';
 				html += '<p class="text-slate-500">Next, bring in the backup files you want to restore.</p>';
-				html += '<button id="mmr-continue-upload-btn" type="button" class="mmr-btn-primary inline-flex items-center gap-1 rounded-full px-3 py-1.5 text-xs font-medium">';
+				html += '<button id="mmr-continue-upload-btn" type="button" class="mmr-btn-primary inline-flex items-center gap-1 rounded-full px-3 py-1.5 text-sm font-medium">';
 				html += '<span>Continue to upload</span>';
 				html += '<span class="dashicons dashicons-arrow-right-alt2 text-[13px]"></span>';
 				html += '</button>';
