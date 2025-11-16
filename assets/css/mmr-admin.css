@@ -326,3 +326,89 @@
 	font-family: 'Courier New', monospace;
 }
 
+/* How it Works Grid - Enhanced */
+.mmr-how-works-card {
+	background: #ffffff;
+	border: 1px solid #e5e7eb;
+	border-radius: 0.75rem;
+	padding: 1rem;
+	transition: all 150ms ease-out;
+	box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+}
+
+.mmr-how-works-card:hover {
+	box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+	transform: translateY(-2px);
+	border-color: #d0d5dd;
+}
+
+.mmr-how-works-icon-blue {
+	background: linear-gradient(135deg, #dbeafe, #bfdbfe);
+	color: #1e40af;
+}
+
+.mmr-how-works-icon-amber {
+	background: linear-gradient(135deg, #fef3c7, #fed7aa);
+	color: #b45309;
+}
+
+.mmr-how-works-icon-green {
+	background: linear-gradient(135deg, #dcfce7, #bbf7d0);
+	color: #15803d;
+}
+
+/* Key Features Box - Enhanced */
+.mmr-key-features-box {
+	background: #ffffff;
+	border: 1px solid #e5e7eb;
+	border-radius: 0.75rem;
+	padding: 1.25rem;
+	box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+}
+
+.mmr-key-features-box h3 {
+	margin-bottom: 1rem;
+}
+
+.mmr-key-features-box ul li span:first-child {
+	background: linear-gradient(135deg, #dbeafe, #bfdbfe);
+	color: #1e40af;
+	font-weight: 600;
+	min-width: 24px;
+}
+
+/* Tips & Info Grid - Enhanced */
+.mmr-tips-card {
+	background: #ffffff;
+	border: 1px solid #e5e7eb;
+	border-radius: 0.75rem;
+	padding: 1rem;
+	box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+	transition: all 150ms ease-out;
+}
+
+.mmr-tips-card:hover {
+	box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+	border-color: #d0d5dd;
+}
+
+.mmr-tips-card p span.dashicons {
+	margin-right: 0.375rem;
+}
+
+.mmr-tips-card-safety {
+	border-left: 3px solid #3b82f6;
+}
+
+.mmr-tips-card-safety span.dashicons {
+	color: #3b82f6;
+}
+
+.mmr-tips-card-performance {
+	border-left: 3px solid #f59e0b;
+}
+
+.mmr-tips-card-performance span.dashicons {
+	color: #f59e0b;
+}
+
