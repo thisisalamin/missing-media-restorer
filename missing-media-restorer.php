@@ -481,8 +481,8 @@ function mmr_render_admin_page() {
 									<p class="font-semibold text-slate-900"><?php esc_html_e( 'Starting at $29/year', 'missing-media-restorer' ); ?></p>
 									<p class="text-sm text-slate-600"><?php esc_html_e( 'One-time payment, lifetime updates', 'missing-media-restorer' ); ?></p>
 								</div>
-								<a href="https://missingmediarestorer.com/pro" target="_blank" class="inline-flex items-center gap-2 rounded-full bg-blue-500 px-4 py-2 text-sm font-medium text-white hover:bg-blue-600 hover:text-white transition-all">
-									<span><?php esc_html_e( 'Try Now', 'missing-media-restorer' ); ?></span>
+								<a href="#" target="_blank" class="inline-flex items-center gap-2 rounded-full bg-blue-500 px-4 py-2 text-sm font-medium text-white hover:bg-blue-600 hover:text-white transition-all whitespace-nowrap">
+									<span><?php esc_html_e( 'Coming Soon!', 'missing-media-restorer' ); ?></span>
 									<span class="dashicons dashicons-arrow-right-alt text-sm"></span>
 								</a>
 							</div>
