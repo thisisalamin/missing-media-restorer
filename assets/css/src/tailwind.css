@@ -68,6 +68,18 @@
 	cursor: not-allowed;
 }
 
+.mmr-btn-pro.mmr-pro-active {
+	border-color: #10b981;
+	background-color: #10b981;
+	box-shadow: 0 1px 2px rgba(16,185,129,0.45);
+}
+
+.mmr-btn-pro.mmr-pro-active:hover:not(:disabled) {
+	background-color: #059669;
+	border-color: #059669;
+	box-shadow: 0 2px 5px rgba(16,185,129,0.6);
+}
+
 .mmr-step-chip {
 	transition: background-color 150ms ease-out, color 150ms ease-out;
 }
