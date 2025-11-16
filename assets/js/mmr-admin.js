@@ -197,98 +197,92 @@
 			const resultsDiv = document.getElementById( 'mmr-scan-results' );
 			const outputDiv = document.getElementById( 'mmr-scan-output' );
 
-			if ( resultsDiv ) {
-				resultsDiv.style.display = 'block';
-				let html = '<div style="margin-bottom: 20px; background: #f8f9fa; border: 1px solid #e9ecef; border-radius: 6px; padding: 16px;">';
-				html += '<div style="display: flex; align-items: center; gap: 20px; flex-wrap: wrap;">';
-				html += '<div style="font-weight: 600; color: #23282d; font-size: 15px;">Scan Summary</div>';
-				html += '<div style="display: flex; gap: 16px; align-items: center;">';
-				html += '<span style="color: #6c757d; font-size: 14px;">Total: <strong style="color: #0073aa;">' + data.total_count + '</strong></span>';
-				html += '<span style="color: #6c757d; font-size: 14px;">Existing: <strong style="color: #28a745;">' + existingFiles.length + ' ✓</strong></span>';
-				html += '<span style="color: #6c757d; font-size: 14px;">Missing: <strong style="color: #dc3545;">' + missingFiles.length + ' ✗</strong></span>';
-
+			if ( resultsDiv && outputDiv ) {
+				resultsDiv.classList.remove( 'hidden' );
+				let html = '';
+				html += '<div class="rounded-xl border border-slate-200 bg-white/70 p-3 mb-3">';
+				html += '<div class="flex flex-wrap items-center justify-between gap-3 text-[11px] text-slate-600">';
+				html += '<div class="flex items-center gap-2">';
+				html += '<span class="inline-flex h-5 w-5 items-center justify-center rounded-full bg-slate-900 text-slate-50 text-[11px]">Σ</span>';
+				html += '<span class="font-medium text-slate-800">Scan summary</span>';
+				html += '</div>';
+				html += '<div class="flex flex-wrap items-center gap-3">';
+				html += '<span class="inline-flex items-center gap-1 text-slate-500"><span class="text-slate-400">Total</span><span class="font-semibold text-slate-800">' + data.total_count + '</span></span>';
+				html += '<span class="inline-flex items-center gap-1 text-emerald-700"><span class="h-1.5 w-1.5 rounded-full bg-emerald-500"></span><span class="font-medium">' + existingFiles.length + ' existing</span></span>';
+				html += '<span class="inline-flex items-center gap-1 text-rose-700"><span class="h-1.5 w-1.5 rounded-full bg-rose-500"></span><span class="font-medium">' + missingFiles.length + ' missing</span></span>';
 				if ( missingFiles.length > 0 ) {
-					html += '<span style="color: #6c757d; font-size: 13px; font-style: italic;">' + mmrState.totalBatches + ' batches (' + mmrState.batchSize + ' files each)</span>';
+					html += '<span class="inline-flex items-center gap-1 text-slate-500"><span class="dashicons dashicons-update text-[12px] text-slate-400"></span><span>' + mmrState.totalBatches + ' batch' + ( mmrState.totalBatches > 1 ? 'es' : '' ) + ' · ' + mmrState.batchSize + '/batch</span></span>';
 				}
-
 				html += '</div>';
 				html += '</div>';
 				html += '</div>';
 
-				// Display existing and missing files in two columns
-				html += '<div style="display: flex; gap: 20px; margin-top: 20px;">';
-
-				// Display existing files (left column)
-				html += '<div style="flex: 1;">';
-				if ( existingFiles.length > 0 ) {
-					html += '<h4 style="color: #28a745; margin-bottom: 10px;">✓ Existing Files (' + existingFiles.length + '):</h4>';
-					html += '<div style="background: #d4edda; border-left: 4px solid #28a745; padding: 15px; border-radius: 4px; max-height: 300px; overflow-y: auto;">';
-					html += '<ul style="list-style: none; padding: 0; margin: 0;">';
-
+				html += '<div class="grid gap-3 md:grid-cols-2 text-[11px]">';
+				// Existing files
+				html += '<div class="rounded-xl border border-emerald-100 bg-emerald-50/60 p-3">';
+				html += '<div class="mb-2 flex items-center justify-between">';
+				html += '<span class="inline-flex items-center gap-1 text-emerald-800 font-medium">';
+				html += '<span class="dashicons dashicons-yes text-[12px]"></span>';
+				html += '<span>Existing (' + existingFiles.length + ')</span>';
+				html += '</span>';
+				html += '</div>';
+				html += '<div class="max-h-52 overflow-auto rounded-lg bg-white/90 border border-emerald-100">';
+				html += '<ul class="divide-y divide-slate-100">';
+				if ( existingFiles.length ) {
 					existingFiles.forEach( function( file ) {
-						html += '<li style="padding: 8px 0; border-bottom: 1px solid #c3e6cb; font-size: 13px;">';
-						html += '<strong style="color: #155724;">✓ ' + file.filename + '</strong><br>';
-						html += '<small style="color: #0c5460;">📁 ' + file.full_path + '</small>';
+						html += '<li class="px-3 py-2 flex flex-col gap-0.5">';
+						html += '<span class="font-medium text-slate-800 truncate">' + file.filename + '</span>';
+						html += '<span class="text-[10px] text-slate-400">' + file.full_path + '</span>';
 						html += '</li>';
 					} );
-
-					html += '</ul>';
-					html += '</div>';
 				} else {
-					html += '<h4 style="color: #28a745; margin-bottom: 10px;">✓ Existing Files (0):</h4>';
-					html += '<div style="background: #d4edda; border-left: 4px solid #28a745; padding: 15px; border-radius: 4px;">';
-					html += '<p style="margin: 0; color: #155724; font-style: italic;">No existing files found.</p>';
-					html += '</div>';
+					html += '<li class="px-3 py-2 text-emerald-700/80">No existing files detected.</li>';
 				}
+				html += '</ul>';
+				html += '</div>';
 				html += '</div>';
 
-				// Display missing files (right column)
-				html += '<div style="flex: 1;">';
-				if ( missingFiles.length > 0 ) {
-					html += '<h4 style="color: #dc3545; margin-bottom: 10px;">✗ Missing Files (' + missingFiles.length + '):</h4>';
-					html += '<div style="background: #f8d7da; border-left: 4px solid #dc3545; padding: 15px; border-radius: 4px; max-height: 300px; overflow-y: auto;">';
-					html += '<ul style="list-style: none; padding: 0; margin: 0;">';
-
+				// Missing files
+				html += '<div class="rounded-xl border border-rose-100 bg-rose-50/60 p-3">';
+				html += '<div class="mb-2 flex items-center justify-between">';
+				html += '<span class="inline-flex items-center gap-1 text-rose-800 font-medium">';
+				html += '<span class="dashicons dashicons-warning text-[12px] text-rose-500"></span>';
+				html += '<span>Missing (' + missingFiles.length + ')</span>';
+				html += '</span>';
+				html += '</div>';
+				html += '<div class="max-h-52 overflow-auto rounded-lg bg-white/90 border border-rose-100">';
+				html += '<ul class="divide-y divide-slate-100">';
+				if ( missingFiles.length ) {
 					missingFiles.forEach( function( file ) {
-						html += '<li style="padding: 8px 0; border-bottom: 1px solid #f5c6cb; font-size: 13px;">';
-						html += '<strong style="color: #721c24;">✗ ' + file.filename + '</strong><br>';
-						html += '<small style="color: #721c24;">📁 ' + file.full_path + '</small>';
+						html += '<li class="px-3 py-2 flex flex-col gap-0.5">';
+						html += '<span class="font-medium text-slate-800 truncate">' + file.filename + '</span>';
+						html += '<span class="text-[10px] text-slate-400">' + file.full_path + '</span>';
 						html += '</li>';
 					} );
-
-					html += '</ul>';
-					html += '</div>';
 				} else {
-					html += '<h4 style="color: #dc3545; margin-bottom: 10px;">✗ Missing Files (0):</h4>';
-					html += '<div style="background: #f8d7da; border-left: 4px solid #dc3545; padding: 15px; border-radius: 4px;">';
-					html += '<p style="margin: 0; color: #721c24; font-style: italic;">No missing files found.</p>';
-					html += '</div>';
+					html += '<li class="px-3 py-2 text-rose-700/80">No missing files detected.</li>';
 				}
+				html += '</ul>';
+				html += '</div>';
+				html += '</div>';
 				html += '</div>';
 
-				html += '</div>'; // End flex container
-
-				// Add continue button after scan results
-				html += '<div class="mmr-action-center" style="margin-top: 20px;">';
-				html += '<button id="mmr-continue-upload-btn" class="mmr-button mmr-button-primary">';
-				html += 'Continue to Upload';
+				// Continue button
+				html += '<div class="mt-3 flex items-center justify-between text-[11px]">';
+				html += '<p class="text-slate-500">Next, bring in the backup files you want to restore.</p>';
+				html += '<button id="mmr-continue-upload-btn" type="button" class="mmr-btn-primary inline-flex items-center gap-1 rounded-full px-3 py-1.5 text-xs font-medium">';
+				html += '<span>Continue to upload</span>';
+				html += '<span class="dashicons dashicons-arrow-right-alt2 text-[13px]"></span>';
 				html += '</button>';
 				html += '</div>';
 
 				outputDiv.innerHTML = html;
 
-				// Re-attach event listener for the dynamically created button
 				const continueUploadBtn = document.getElementById( 'mmr-continue-upload-btn' );
 				if ( continueUploadBtn ) {
 					continueUploadBtn.addEventListener( 'click', function() {
-						console.log( 'Continue to Upload button clicked' );
 						navigateToStep( 2 );
-					});
-					console.log( 'Showing continue upload button' );
-					continueUploadBtn.style.display = 'inline-block';
-					continueUploadBtn.disabled = false;
-				} else {
-					console.log( 'Continue upload button not found' );
+					} );
 				}
 			}
 
@@ -464,6 +458,7 @@
 	 * Update step indicator visuals
 	 */
 	function updateStepIndicator( step ) {
+		// Update logical step state (for any legacy step markers if present)
 		document.querySelectorAll( '.mmr-step' ).forEach( function( el ) {
 			const stepNum = parseInt( el.getAttribute( 'data-step' ), 10 );
 			el.classList.remove( 'mmr-step-active' );
@@ -472,6 +467,40 @@
 				el.classList.add( 'mmr-step-completed' );
 			} else if ( stepNum === step ) {
 				el.classList.add( 'mmr-step-active' );
+			}
+		} );
+
+		// Update new Tailwind-based step chips
+		const stepItems = document.querySelectorAll( 'nav ol li[data-step]' );
+		stepItems.forEach( function( li ) {
+			const btn = li.querySelector( '.mmr-step-chip' );
+			const badge = btn ? btn.querySelector( 'span:first-child' ) : null;
+			const thisStep = parseInt( li.getAttribute( 'data-step' ), 10 );
+
+			if ( ! btn ) {
+				return;
+			}
+
+			btn.classList.remove( 'mmr-step-chip-active' );
+			btn.classList.remove( 'bg-slate-900', 'text-slate-50' );
+			btn.classList.remove( 'text-slate-500' );
+
+			if ( badge ) {
+				badge.classList.remove( 'border-slate-700', 'border-slate-300' );
+			}
+
+			if ( thisStep === step ) {
+				btn.classList.add( 'mmr-step-chip-active', 'bg-slate-900', 'text-slate-50' );
+				if ( badge ) {
+					badge.classList.add( 'border-slate-700' );
+				}
+			} else if ( thisStep < step ) {
+				btn.classList.add( 'text-slate-700' );
+				if ( badge ) {
+					badge.classList.add( 'border-slate-300' );
+				}
+			} else {
+				btn.classList.add( 'text-slate-500' );
 			}
 		} );
 	}
@@ -494,7 +523,7 @@
 		let html = '';
 
 		if ( missingList.length === 0 ) {
-			html = '<p>No missing files found. Please run scan first.</p>';
+			html = '<p class="text-[11px] text-slate-500">No missing files found. Please run a scan first.</p>';
 			matchWrap.innerHTML = html;
 			return;
 		}
@@ -545,35 +574,61 @@
 			}
 		} );
 
-		html += '<div class="mmr-match-stats">';
-		html += '<div class="mmr-match-stat stat-matched"><div class="mmr-match-stat-number">' + matched + '</div><div class="mmr-match-stat-label">Matched files</div></div>';
-		html += '<div class="mmr-match-stat stat-unmatched"><div class="mmr-match-stat-number">' + unmatched + '</div><div class="mmr-match-stat-label">Unmatched files</div></div>';
+		html += '<div class="mb-3 grid gap-3 md:grid-cols-2 text-[11px]">';
+		html += '<div class="rounded-lg border border-emerald-100 bg-emerald-50/70 px-3 py-3">';
+		html += '<div class="flex items-center justify-between mb-1">';
+		html += '<span class="inline-flex items-center gap-1 text-emerald-700 font-medium">';
+		html += '<span class="h-1.5 w-1.5 rounded-full bg-emerald-500"></span>';
+		html += '<span>Matched</span>';
+		html += '</span>';
+		html += '<span class="text-[11px] font-semibold text-emerald-700">' + matched + '</span>';
+		html += '</div>';
+		html += '<p class="text-[11px] text-emerald-800">These files have a backup ready and will be restored.</p>';
+		html += '</div>';
+		html += '<div class="rounded-lg border border-amber-100 bg-amber-50/80 px-3 py-3">';
+		html += '<div class="flex items-center justify-between mb-1">';
+		html += '<span class="inline-flex items-center gap-1 text-amber-800 font-medium">';
+		html += '<span class="h-1.5 w-1.5 rounded-full bg-amber-400"></span>';
+		html += '<span>Unmatched</span>';
+		html += '</span>';
+		html += '<span class="text-[11px] font-semibold text-slate-700">' + unmatched + '</span>';
+		html += '</div>';
+		html += '<p class="text-[11px] text-amber-800">These remain missing until their files appear in the backup set.</p>';
+		html += '</div>';
 		html += '</div>';
 
-		// show lists
-		html += '<div class="mmr-file-list-section">';
+		html += '<div class="grid gap-3 md:grid-cols-2 text-[11px]">';
 		if ( matchedItems.length > 0 ) {
-			html += '<h4 class="mmr-file-list-title">Matched Files</h4>';
-			html += '<div class="mmr-file-list">';
+			html += '<div>';
+			html += '<h4 class="mb-1 text-[11px] font-medium text-slate-700">Matched files</h4>';
+			html += '<div class="max-h-52 overflow-auto rounded-lg border border-slate-100 bg-white/80">';
+			html += '<ul class="divide-y divide-slate-100">';
 			matchedItems.forEach( function( it ) {
-				html += '<div class="mmr-file-item">';
-				html += '<div class="mmr-file-info"><div class="mmr-file-name">' + it.filename + '</div><div class="mmr-file-size">' + it.path + '</div></div>';
-				html += '</div>';
+				html += '<li class="px-3 py-2 flex flex-col gap-0.5">';
+				html += '<span class="font-medium text-slate-800 truncate">' + it.filename + '</span>';
+				html += '<span class="text-[10px] text-slate-400">' + it.path + '</span>';
+				html += '</li>';
 			} );
+			html += '</ul>';
+			html += '</div>';
 			html += '</div>';
 		}
 
 		if ( unmatchedItems.length > 0 ) {
-			html += '<h4 class="mmr-file-list-title list-missing">Unmatched Files</h4>';
-			html += '<div class="mmr-file-list">';
+			html += '<div>';
+			html += '<h4 class="mb-1 text-[11px] font-medium text-slate-700">Unmatched files</h4>';
+			html += '<div class="max-h-52 overflow-auto rounded-lg border border-slate-100 bg-white/80">';
+			html += '<ul class="divide-y divide-slate-100">';
 			unmatchedItems.forEach( function( it ) {
-				html += '<div class="mmr-file-item">';
-				html += '<div class="mmr-file-info"><div class="mmr-file-name">' + it.filename + '</div><div class="mmr-file-size">' + it.path + '</div></div>';
-				html += '</div>';
+				html += '<li class="px-3 py-2 flex flex-col gap-0.5">';
+				html += '<span class="font-medium text-slate-800 truncate">' + it.filename + '</span>';
+				html += '<span class="text-[10px] text-slate-400">' + it.path + '</span>';
+				html += '</li>';
 			} );
+			html += '</ul>';
+			html += '</div>';
 			html += '</div>';
 		}
-
 		html += '</div>';
 
 		matchWrap.innerHTML = html;
@@ -893,70 +948,55 @@
 		mmrState.uploadedFiles = uploadedFiles || [];
 
 		if ( uploadList ) {
-			let html = '<div style="background: #d4edda; border-left: 4px solid #28a745; padding: 15px; border-radius: 4px;">';
-			html += '<p style="margin: 0 0 10px 0; color: #155724;"><strong>✓ Upload Complete!</strong></p>';
-			html += '<p style="margin: 0; color: #155724;"><strong>' + uploadedFiles.length + ' file(s)</strong> uploaded and ready to restore.</p>';
-
-			if ( uploadedFiles.length > 0 ) {
-				html += '<p style="margin: 10px 0 0 0; font-size: 12px; color: #0c5460;">Files are stored in: /mmr-temp/</p>';
-				html += '<details style="margin-top: 10px; cursor: pointer;"><summary style="cursor: pointer; color: #155724; font-weight: bold;">📁 View uploaded files (' + uploadedFiles.length + ')</summary>';
-				html += '<div style="margin-top: 10px; max-height: 300px; overflow-y: auto; background: white; padding: 10px; border-radius: 3px;">';
-				html += '<ul style="list-style: none; padding: 0; margin: 0;">';
-
+			let html = '';
+			if ( uploadedFiles.length === 0 ) {
+				html += '<p class="text-[11px] text-slate-500">No files detected yet. Drag files above or use the buttons.</p>';
+			} else {
+				html += '<div class="rounded-xl border border-emerald-100 bg-emerald-50/70 px-3 py-3 text-[11px] text-emerald-800">';
+				html += '<p class="mb-1 font-medium">' + uploadedFiles.length + ' file(s) ready in the temp folder.</p>';
+				html += '<p class="mb-2 text-emerald-900">We keep the list simple—no thumbnails, just clean filenames.</p>';
+				html += '<details class="mt-1">';
+				html += '<summary class="cursor-pointer text-[11px] font-medium text-emerald-800">View uploaded files</summary>';
+				html += '<div class="mt-2 max-h-48 overflow-auto rounded-lg border border-emerald-100 bg-white/90">';
+				html += '<ul class="divide-y divide-emerald-50">';
 				uploadedFiles.forEach( function( file ) {
-					html += '<li style="padding: 6px 0; font-size: 12px; border-bottom: 1px solid #c3e6cb;">';
-					html += '✓ <strong style="color: #155724;">' + file.name + '</strong> <small style="color: #0c5460;">(' + formatFileSize( file.size ) + ')</small>';
+					html += '<li class="px-3 py-2 flex items-center justify-between gap-2">';
+					html += '<span class="truncate font-medium text-slate-800">' + file.name + '</span>';
+					html += '<span class="shrink-0 text-[10px] text-slate-400">' + formatFileSize( file.size ) + '</span>';
 					html += '</li>';
 				} );
-
 				html += '</ul>';
 				html += '</div>';
 				html += '</details>';
-			}
-
-			html += '</div>';
-
-			// Also show comparison with missing files
-			if ( mmrState.missingFiles.length > 0 ) {
-				html += '<div style="margin-top: 15px;">';
-				html += '<h5 style="color: #ffc107; margin-bottom: 10px;">! File Matching Status:</h5>';
-				html += '<div style="background: #fff3cd; border-left: 4px solid #ffc107; padding: 15px; border-radius: 4px; max-height: 300px; overflow-y: auto;">';
-				html += '<ul style="list-style: none; padding: 0; margin: 0;">';
-
-				let matchedCount = 0;
-				mmrState.missingFiles.forEach( function( missingFile ) {
-					const isAvailable = uploadedFiles.some( f => f.name === missingFile.filename );
-					if ( isAvailable ) {
-						matchedCount++;
-						html += '<li style="padding: 6px 0; border-bottom: 1px solid #ffe69c; font-size: 12px;">';
-						html += '<span style="color: #28a745; font-weight: bold;">✓</span> ' + missingFile.filename;
-						html += '</li>';
-					} else {
-						html += '<li style="padding: 6px 0; border-bottom: 1px solid #ffe69c; font-size: 12px;">';
-						html += '<span style="color: #dc3545; font-weight: bold;">✗</span> ' + missingFile.filename;
-						html += '</li>';
-					}
-				} );
-
-				html += '</ul>';
 				html += '</div>';
-				html += '<p style="margin-top: 10px; font-size: 12px; color: #666;"><strong>' + matchedCount + '</strong> of <strong>' + mmrState.missingFiles.length + '</strong> missing files are available to restore.</p>';
-				html += '</div>';
+
+				if ( mmrState.missingFiles.length > 0 ) {
+					let matchedCount = 0;
+					mmrState.missingFiles.forEach( function( missingFile ) {
+						const isAvailable = uploadedFiles.some( f => f.name === missingFile.filename );
+						if ( isAvailable ) {
+							matchedCount++;
+						}
+					} );
+
+					html += '<div class="mt-3 rounded-xl border border-slate-200 bg-slate-50/80 px-3 py-3 text-[11px] text-slate-700">';
+					html += '<p class="mb-1 font-medium">Matching status</p>';
+					html += '<p class="mb-1">' + matchedCount + ' of ' + mmrState.missingFiles.length + ' missing files have a backup file with the same name.</p>';
+					html += '<p class="text-[10px] text-slate-500">We keep this view compact—full detail is available in the next step.</p>';
+					html += '</div>';
+				}
 			}
 
 			uploadList.innerHTML = html;
 
-			// Enable restore button
 			const restoreBtn = document.getElementById( 'mmr-restore-btn' );
 			if ( restoreBtn && uploadedFiles.length > 0 ) {
 				restoreBtn.disabled = false;
-				restoreBtn.style.opacity = '1';
-				restoreBtn.style.cursor = 'pointer';
-				// If we have uploaded files, show continue-to-match
-				const continueMatchBtn = document.getElementById( 'mmr-continue-match-btn' );
-				if ( continueMatchBtn ) {
-					continueMatchBtn.style.display = 'inline-block';
-				}
+			}
+
+			const hint = document.getElementById( 'mmr-upload-hint' );
+			if ( hint && uploadedFiles.length > 0 ) {
+				hint.classList.remove( 'hidden' );
 			}
 		}
 	}

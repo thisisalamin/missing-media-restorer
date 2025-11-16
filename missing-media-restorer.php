@@ -77,6 +77,14 @@ function mmr_enqueue_admin_assets( $hook ) {
 		return;
 	}
 
+	// Enqueue Tailwind CSS from CDN for the plugin admin UI
+	wp_enqueue_style(
+		'mmr-tailwind-cdn',
+		'https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css',
+		array(),
+		MMR_PLUGIN_VERSION
+	);
+
 	// Enqueue the main admin JavaScript
 	wp_enqueue_script(
 		'mmr-admin-js',
@@ -96,11 +104,11 @@ function mmr_enqueue_admin_assets( $hook ) {
 		)
 	);
 
-	// Enqueue admin stylesheet
+	// Minimal custom overrides on top of Tailwind for shared tokens
 	wp_enqueue_style(
 		'mmr-admin-css',
 		MMR_PLUGIN_URL . 'assets/css/mmr-admin.css',
-		array(),
+		array( 'mmr-tailwind-cdn' ),
 		MMR_PLUGIN_VERSION
 	);
 }
@@ -111,236 +119,241 @@ add_action( 'admin_enqueue_scripts', 'mmr_enqueue_admin_assets' );
  */
 function mmr_render_admin_page() {
 	?>
-	<div class="wrap mmr-wrap">
-		<div class="mmr-header">
-			<h1 class="mmr-title">
-				<span class="dashicons dashicons-format-image"></span>
-				<?php esc_html_e( 'Missing Media Restorer', 'missing-media-restorer' ); ?>
-			</h1>
-			<p class="mmr-subtitle"><?php esc_html_e( 'Restore missing WordPress media files in a safe, step-by-step process', 'missing-media-restorer' ); ?></p>
-		</div>
-
-		<!-- Step Progress Indicator -->
-		<div class="mmr-steps-indicator">
-			<div class="mmr-step mmr-step-active" data-step="1">
-				<div class="mmr-step-number">1</div>
-				<div class="mmr-step-label">Scan Files</div>
-			</div>
-			<div class="mmr-step-connector"></div>
-			<div class="mmr-step" data-step="2">
-				<div class="mmr-step-number">2</div>
-				<div class="mmr-step-label">Upload Files</div>
-			</div>
-			<div class="mmr-step-connector"></div>
-			<div class="mmr-step" data-step="3">
-				<div class="mmr-step-number">3</div>
-				<div class="mmr-step-label">Match & Review</div>
-			</div>
-			<div class="mmr-step-connector"></div>
-			<div class="mmr-step" data-step="4">
-				<div class="mmr-step-number">4</div>
-				<div class="mmr-step-label">Restore</div>
-			</div>
-		</div>
-
-		<!-- Step 1: Scan for Missing Files -->
-		<div id="mmr-step-1" class="mmr-step-container mmr-step-active">
-			<div class="mmr-card">
-				<div class="mmr-card-header">
-					<h2 class="mmr-card-title">
-						<span class="dashicons dashicons-search"></span>
-						<?php esc_html_e( 'Scan Your Media Library', 'missing-media-restorer' ); ?>
-					</h2>
-				</div>
-				<div class="mmr-card-body">
-					<div class="mmr-scan-intro mmr-info-box">
-						<span class="dashicons dashicons-info"></span>
+	<div class="wrap">
+		<div class="mmr-admin max-w-8xl mx-auto mt-8 mb-10 px-4">
+			<header class="flex flex-col gap-4 mb-8">
+				<div class="flex items-center justify-between gap-4">
+					<div class="flex items-center gap-3">
+						<div class="h-9 w-9 rounded-xl bg-slate-900 text-slate-50 flex items-center justify-center shadow-sm">
+							<span class="dashicons dashicons-format-image text-base"></span>
+						</div>
 						<div>
-							<strong><?php esc_html_e( 'Scan Your Media Library', 'missing-media-restorer' ); ?></strong>
-							<p><?php esc_html_e( "Analyzes attachments and thumbnails, reports missing items, and lets you restore them safely in batched steps using uploaded backups.", 'missing-media-restorer' ); ?></p>
+							<h1 class="text-xl font-semibold tracking-tight text-slate-900">
+								<?php esc_html_e( 'Missing Media Restorer', 'missing-media-restorer' ); ?>
+							</h1>
+							<p class="text-xs font-medium text-slate-500">
+								<?php esc_html_e( 'Minimal recovery workspace for lost media files.', 'missing-media-restorer' ); ?>
+							</p>
 						</div>
 					</div>
-
-					<div class="mmr-action-center">
-						<button id="mmr-scan-btn" class="mmr-button mmr-button-primary mmr-button-large">
-							<span class="dashicons dashicons-search"></span>
-							<?php esc_html_e( 'Start Scanning', 'missing-media-restorer' ); ?>
-						</button>
-					</div>
-
-					<div id="mmr-scan-results" class="mmr-scan-results" style="display: none;">
-						<div id="mmr-scan-output"></div>
-					</div>
-				</div>
-			</div>
-		</div>
-
-		<!-- Step 2: Upload Backup Files -->
-		<div id="mmr-step-2" class="mmr-step-container" style="display: none;">
-			<div class="mmr-card">
-				<div class="mmr-card-header">
-					<h2 class="mmr-card-title">
-						<span class="dashicons dashicons-upload"></span>
-						<?php esc_html_e( 'Upload Your Backup Files', 'missing-media-restorer' ); ?>
-					</h2>
-				</div>
-				<div class="mmr-card-body">
-					<p class="mmr-description"><?php esc_html_e( 'Upload your backup media files. You can drag and drop files, select them from your computer, or upload via FTP for large files.', 'missing-media-restorer' ); ?></p>
-
-					<div class="mmr-upload-methods">
-						<div class="mmr-upload-method">
-							<div class="mmr-method-icon">
-								<span class="dashicons dashicons-laptop"></span>
-							</div>
-							<h3><?php esc_html_e( 'Browser Upload', 'missing-media-restorer' ); ?></h3>
-							<p><?php esc_html_e( 'Drag & drop or select files from your computer', 'missing-media-restorer' ); ?></p>
-						</div>
-						<div class="mmr-upload-method">
-							<div class="mmr-method-icon">
-								<span class="dashicons dashicons-database"></span>
-							</div>
-							<h3><?php esc_html_e( 'FTP Upload', 'missing-media-restorer' ); ?></h3>
-							<p><?php esc_html_e( 'Upload to', 'missing-media-restorer' ); ?> <code>/wp-content/uploads/mmr-temp/</code></p>
-						</div>
-					</div>
-
-					<div class="mmr-dropzone" id="mmr-upload-dropzone">
-						<span class="dashicons dashicons-cloud-upload"></span>
-						<p class="mmr-dropzone-text"><?php esc_html_e( 'Drag and drop files here', 'missing-media-restorer' ); ?></p>
-						<p class="mmr-dropzone-subtext"><?php esc_html_e( 'or', 'missing-media-restorer' ); ?></p>
-						<input type="file" id="mmr-file-input" multiple webkitdirectory style="display: none;">
-						<input type="file" id="mmr-files-input" multiple style="display: none;">
-					</div>
-
-					<div class="mmr-upload-buttons">
-						<button id="mmr-select-files-btn" class="mmr-button mmr-button-secondary">
-							<span class="dashicons dashicons-media-default"></span>
-							<?php esc_html_e( 'Select Files', 'missing-media-restorer' ); ?>
-						</button>
-						<button id="mmr-select-folder-btn" class="mmr-button mmr-button-secondary">
-							<span class="dashicons dashicons-category"></span>
-							<?php esc_html_e( 'Select Folder', 'missing-media-restorer' ); ?>
-						</button>
-						<button id="mmr-refresh-files-btn" class="mmr-button mmr-button-secondary">
-							<span class="dashicons dashicons-update"></span>
-							<?php esc_html_e( 'Refresh List', 'missing-media-restorer' ); ?>
-						</button>
-					</div>
-
-					<div id="mmr-upload-list" class="mmr-upload-list"></div>
-				</div>
-			</div>
-
-			<div class="mmr-action-center" style="margin-top: 12px;">
-				<button id="mmr-continue-match-btn" class="mmr-button mmr-button-primary" style="display:none;"><?php esc_html_e( 'Continue to Match', 'missing-media-restorer' ); ?></button>
-			</div>
-		</div>
-
-		<!-- Step 3: Match & Review -->
-		<div id="mmr-step-3" class="mmr-step-container" style="display: none;">
-			<div class="mmr-card">
-				<div class="mmr-card-header">
-					<h2 class="mmr-card-title">
-						<span class="dashicons dashicons-yes"></span>
-						<?php esc_html_e( 'Review File Matches', 'missing-media-restorer' ); ?>
-					</h2>
-				</div>
-				<div class="mmr-card-body">
-					<p class="mmr-description">
-						<?php esc_html_e( 'Review and confirm the files to be restored. Files are matched automatically by filename.', 'missing-media-restorer' ); ?>
-					</p>
-
-					<div id="mmr-match-summary" class="mmr-match-summary">
-						<table class="mmr-match-table">
-							<thead>
-								<tr>
-									<th><?php esc_html_e( 'Filename', 'missing-media-restorer' ); ?></th>
-									<th><?php esc_html_e( 'Status', 'missing-media-restorer' ); ?></th>
-									<th><?php esc_html_e( 'Action', 'missing-media-restorer' ); ?></th>
-								</tr>
-							</thead>
-							<tbody>
-								<!-- Dynamic rows will be added here via JavaScript -->
-							</tbody>
-						</table>
-					</div>
-
-					<div class="mmr-action-buttons">
-						<button id="mmr-back-to-upload-btn" class="mmr-button mmr-button-secondary">
-							<span class="dashicons dashicons-arrow-left-alt2"></span>
-							<?php esc_html_e( 'Back to Upload', 'missing-media-restorer' ); ?>
-						</button>
-						<button id="mmr-continue-restore-btn" class="mmr-button mmr-button-primary">
-							<?php esc_html_e( 'Continue to Restore', 'missing-media-restorer' ); ?>
-							<span class="dashicons dashicons-arrow-right-alt2"></span>
-						</button>
+					<div class="hidden sm:flex items-center gap-3 text-[11px] text-slate-500">
+						<span class="inline-flex items-center gap-1 rounded-full border border-slate-200 px-2 py-1">
+							<span class="h-1.5 w-1.5 rounded-full bg-emerald-500"></span>
+							<?php esc_html_e( 'Safe batch restore', 'missing-media-restorer' ); ?>
+						</span>
+						<span class="inline-flex items-center gap-1 rounded-full border border-slate-200 px-2 py-1">
+							<span class="dashicons dashicons-shield-alt text-[13px]"></span>
+							<?php esc_html_e( 'No database changes', 'missing-media-restorer' ); ?>
+						</span>
 					</div>
 				</div>
-			</div>
-		</div>
+				<nav class="mt-2 flex items-center justify-between border border-slate-200 rounded-xl bg-white/70 backdrop-blur px-3 py-2 shadow-sm">
+					<ol class="flex items-center gap-2 text-[11px] text-slate-500 font-medium">
+						<li class="flex items-center gap-2" data-step="1">
+							<button type="button" class="mmr-step-chip mmr-step-chip-active inline-flex items-center gap-2 rounded-full px-2 py-1 bg-slate-900 text-slate-50">
+								<span class="flex h-4 w-4 items-center justify-center rounded-full border border-slate-700 text-[10px]">1</span>
+								<span><?php esc_html_e( 'Scan', 'missing-media-restorer' ); ?></span>
+							</button>
+						</li>
+						<li class="flex items-center gap-2" data-step="2">
+							<div class="h-px w-5 bg-slate-200"></div>
+							<button type="button" class="mmr-step-chip inline-flex items-center gap-2 rounded-full px-2 py-1 text-slate-500">
+								<span class="flex h-4 w-4 items-center justify-center rounded-full border border-slate-300 text-[10px]">2</span>
+								<span><?php esc_html_e( 'Upload', 'missing-media-restorer' ); ?></span>
+							</button>
+						</li>
+						<li class="flex items-center gap-2" data-step="3">
+							<div class="h-px w-5 bg-slate-200"></div>
+							<button type="button" class="mmr-step-chip inline-flex items-center gap-2 rounded-full px-2 py-1 text-slate-500">
+								<span class="flex h-4 w-4 items-center justify-center rounded-full border border-slate-300 text-[10px]">3</span>
+								<span><?php esc_html_e( 'Match', 'missing-media-restorer' ); ?></span>
+							</button>
+						</li>
+						<li class="flex items-center gap-2" data-step="4">
+							<div class="h-px w-5 bg-slate-200"></div>
+							<button type="button" class="mmr-step-chip inline-flex items-center gap-2 rounded-full px-2 py-1 text-slate-500">
+								<span class="flex h-4 w-4 items-center justify-center rounded-full border border-slate-300 text-[10px]">4</span>
+								<span><?php esc_html_e( 'Restore', 'missing-media-restorer' ); ?></span>
+							</button>
+						</li>
+					</ol>
+					<div class="flex items-center gap-2 text-[11px] text-slate-400">
+						<span class="hidden sm:inline-block"><?php esc_html_e( 'Designed to feel calm & compact.', 'missing-media-restorer' ); ?></span>
+					</div>
+				</nav>
+			</header>
 
-		<!-- Step 4: Restore Files -->
-		<div id="mmr-step-4" class="mmr-step-container" style="display: none;">
-			<div class="mmr-card">
-				<div class="mmr-card-header">
-					<h2 class="mmr-card-title">
-						<span class="dashicons dashicons-image-rotate"></span>
-						<?php esc_html_e( 'Restore Missing Files', 'missing-media-restorer' ); ?>
-					</h2>
-				</div>
-				<div class="mmr-card-body">
-					<p class="mmr-description"><?php esc_html_e( 'Files will be restored in controlled batches to prevent server timeouts. This process is safe and can be monitored in real-time.', 'missing-media-restorer' ); ?></p>
-
-					<div class="mmr-restore-info">
-						<div class="mmr-restore-info-item">
-							<span class="dashicons dashicons-clock"></span>
+			<!-- Step 1: Scan -->
+			<section id="mmr-step-1" class="mmr-step-container mmr-step-active">
+				<div class="rounded-2xl border border-slate-200 bg-white/80 shadow-sm">
+					<div class="flex items-center justify-between border-b border-slate-100 px-4 py-3">
+						<div class="flex items-center gap-2">
+							<span class="inline-flex h-6 w-6 items-center justify-center rounded-full bg-slate-900 text-slate-50 text-xs">
+								<span class="dashicons dashicons-search text-[13px]"></span>
+							</span>
 							<div>
-								<strong>Batch Processing</strong>
-								<p>Files restored in small batches</p>
+								<h2 class="text-sm font-semibold tracking-tight text-slate-900"><?php esc_html_e( 'Scan library for missing media', 'missing-media-restorer' ); ?></h2>
+								<p class="text-[11px] text-slate-500"><?php esc_html_e( 'We only read metadata and file paths—no changes are made.', 'missing-media-restorer' ); ?></p>
 							</div>
 						</div>
-						<div class="mmr-restore-info-item">
-							<span class="dashicons dashicons-yes-alt"></span>
-							<div>
-								<strong>Safe & Secure</strong>
-								<p>No database modifications</p>
-							</div>
-						</div>
-						<div class="mmr-restore-info-item">
-							<span class="dashicons dashicons-admin-site-alt3"></span>
-							<div>
-								<strong>Auto-Organize</strong>
-								<p>Files placed in correct folders</p>
-							</div>
-						</div>
-					</div>
-
-					<div class="mmr-action-center">
-						<button id="mmr-restore-btn" class="mmr-button mmr-button-primary mmr-button-large">
-							<span class="dashicons dashicons-image-rotate"></span>
-							<?php esc_html_e( 'Start Restoration', 'missing-media-restorer' ); ?>
+						<button id="mmr-scan-btn" type="button" class="mmr-btn-primary inline-flex items-center gap-2 rounded-full px-3 py-1.5 text-xs font-medium">
+							<span class="dashicons dashicons-search text-[13px]"></span>
+							<span><?php esc_html_e( 'Run scan', 'missing-media-restorer' ); ?></span>
 						</button>
 					</div>
-
-					<div id="mmr-progress-container" class="mmr-progress-container" style="display: none;">
-						<div class="mmr-progress-wrapper">
-							<div class="mmr-progress-bar">
-								<div id="mmr-progress-fill" class="mmr-progress-fill"></div>
+					<div class="px-4 py-4">
+						<div class="mb-4 rounded-xl border border-dashed border-slate-200 bg-slate-50/80 px-4 py-3 text-[11px] text-slate-600 flex items-start gap-2">
+							<span class="mt-0.5 dashicons dashicons-info text-[13px] text-slate-400"></span>
+							<div>
+								<p class="font-medium text-slate-700 mb-0.5"><?php esc_html_e( 'What this scan does', 'missing-media-restorer' ); ?></p>
+								<p class="leading-relaxed"><?php esc_html_e( 'Checks every attachment and registered thumbnail, then highlights files that are missing from the uploads folder.', 'missing-media-restorer' ); ?></p>
 							</div>
-							<p id="mmr-progress-text" class="mmr-progress-text">Initializing...</p>
 						</div>
+						<div id="mmr-scan-results" class="mt-3 hidden">
+							<div id="mmr-scan-output" class="text-[11px] text-slate-700"></div>
+						</div>
+					</div>
+				</div>
+			</section>
 
-						<div id="mmr-restore-output" class="mmr-restore-output"></div>
-
-						<div class="mmr-action-center" style="margin-top: 20px;">
-							<button id="mmr-clear-temp-btn" class="mmr-button mmr-button-secondary" style="display: none;">
-								<span class="dashicons dashicons-trash"></span>
-								Clear Temporary Files
+			<!-- Step 2: Upload -->
+			<section id="mmr-step-2" class="mmr-step-container hidden">
+				<div class="grid gap-4 md:grid-cols-[minmax(0,3fr)_minmax(0,2fr)]">
+					<div class="rounded-2xl border border-slate-200 bg-white/80 shadow-sm">
+						<div class="border-b border-slate-100 px-4 py-3">
+							<h2 class="text-sm font-semibold tracking-tight text-slate-900"><?php esc_html_e( 'Bring your backup media', 'missing-media-restorer' ); ?></h2>
+							<p class="mt-0.5 text-[11px] text-slate-500"><?php esc_html_e( 'Upload only the files you want to restore—no bulky UI, just a focused drop area.', 'missing-media-restorer' ); ?></p>
+						</div>
+						<div class="px-4 py-4 flex flex-col gap-3">
+							<div id="mmr-upload-dropzone" class="group flex flex-col items-center justify-center rounded-xl border border-dashed border-slate-200 bg-slate-50/60 px-4 py-6 text-center text-[11px] text-slate-500 cursor-pointer transition">
+								<span class="mb-2 inline-flex h-8 w-8 items-center justify-center rounded-full bg-white shadow-sm text-slate-400">
+									<span class="dashicons dashicons-cloud-upload text-[16px]"></span>
+								</span>
+								<p class="font-medium text-slate-700"><?php esc_html_e( 'Drop media here', 'missing-media-restorer' ); ?></p>
+								<p class="text-[11px] text-slate-500"><?php esc_html_e( 'We keep the layout calm while files upload in the background.', 'missing-media-restorer' ); ?></p>
+								<p class="mt-2 text-[10px] uppercase tracking-wide text-slate-400"><?php esc_html_e( 'Or use the buttons below', 'missing-media-restorer' ); ?></p>
+								<input type="file" id="mmr-file-input" multiple webkitdirectory class="hidden">
+								<input type="file" id="mmr-files-input" multiple class="hidden">
+							</div>
+							<div class="flex flex-wrap items-center gap-2 text-[11px]">
+								<button id="mmr-select-files-btn" type="button" class="mmr-btn-ghost inline-flex items-center gap-1 rounded-full px-3 py-1.5">
+									<span class="dashicons dashicons-media-default text-[13px]"></span>
+									<span><?php esc_html_e( 'Pick files', 'missing-media-restorer' ); ?></span>
+								</button>
+								<button id="mmr-select-folder-btn" type="button" class="mmr-btn-ghost inline-flex items-center gap-1 rounded-full px-3 py-1.5">
+									<span class="dashicons dashicons-category text-[13px]"></span>
+									<span><?php esc_html_e( 'Pick folder', 'missing-media-restorer' ); ?></span>
+								</button>
+								<button id="mmr-refresh-files-btn" type="button" class="mmr-btn-ghost inline-flex items-center gap-1 rounded-full px-3 py-1.5">
+									<span class="dashicons dashicons-update text-[13px]"></span>
+									<span><?php esc_html_e( 'Check FTP uploads', 'missing-media-restorer' ); ?></span>
+								</button>
+							</div>
+							<div id="mmr-upload-list" class="mt-2 text-[11px] text-slate-600"></div>
+						</div>
+					</div>
+					<div class="flex flex-col gap-3">
+						<div class="rounded-2xl border border-slate-200 bg-white/80 p-4 shadow-sm text-[11px] text-slate-600">
+							<p class="mb-2 font-medium text-slate-800"><?php esc_html_e( 'Prefer FTP?', 'missing-media-restorer' ); ?></p>
+							<p class="mb-1 leading-relaxed"><?php esc_html_e( 'Upload your backup set directly to the temp folder, then refresh.', 'missing-media-restorer' ); ?></p>
+							<p class="inline-flex items-center gap-1 rounded-full border border-slate-200 bg-slate-50 px-2 py-1 text-[10px] font-mono text-slate-700">
+								<span class="dashicons dashicons-admin-network text-[13px]"></span>
+								<span>/wp-content/uploads/mmr-temp/</span>
+							</p>
+						</div>
+						<div class="rounded-2xl border border-dashed border-emerald-200 bg-emerald-50/60 p-4 text-[11px] text-emerald-700 hidden" id="mmr-upload-hint">
+							<p class="mb-1 font-medium"><?php esc_html_e( 'Files ready to match', 'missing-media-restorer' ); ?></p>
+							<p class="mb-2"><?php esc_html_e( 'When you are happy with the list, move on to matching.', 'missing-media-restorer' ); ?></p>
+							<button id="mmr-continue-match-btn" type="button" class="mmr-btn-primary inline-flex items-center gap-1 rounded-full px-3 py-1.5 text-xs font-medium">
+								<span><?php esc_html_e( 'Continue to match', 'missing-media-restorer' ); ?></span>
+								<span class="dashicons dashicons-arrow-right-alt2 text-[13px]"></span>
 							</button>
 						</div>
 					</div>
 				</div>
-			</div>
+			</section>
+
+			<!-- Step 3: Match & Review -->
+			<section id="mmr-step-3" class="mmr-step-container hidden">
+				<div class="rounded-2xl border border-slate-200 bg-white/80 shadow-sm">
+					<div class="flex items-center justify-between border-b border-slate-100 px-4 py-3">
+						<div class="flex flex-col">
+							<h2 class="text-sm font-semibold tracking-tight text-slate-900"><?php esc_html_e( 'Quick match overview', 'missing-media-restorer' ); ?></h2>
+							<p class="mt-0.5 text-[11px] text-slate-500"><?php esc_html_e( 'We compare filenames to your missing list—no noisy controls, just a clean summary.', 'missing-media-restorer' ); ?></p>
+						</div>
+						<div class="flex items-center gap-2 text-[11px] text-slate-400">
+							<button id="mmr-back-to-upload-btn" type="button" class="mmr-btn-ghost inline-flex items-center gap-1 rounded-full px-3 py-1.5">
+								<span class="dashicons dashicons-arrow-left-alt2 text-[13px]"></span>
+								<span><?php esc_html_e( 'Adjust uploads', 'missing-media-restorer' ); ?></span>
+							</button>
+						</div>
+					</div>
+					<div class="px-4 py-4">
+						<div id="mmr-match-summary" class="text-[11px] text-slate-700"></div>
+						<div class="mt-4 flex items-center justify-between border-t border-slate-100 pt-3">
+							<p class="text-[11px] text-slate-500"><?php esc_html_e( 'Only matched files will be processed in the next step.', 'missing-media-restorer' ); ?></p>
+							<button id="mmr-continue-restore-btn" type="button" class="mmr-btn-primary inline-flex items-center gap-1 rounded-full px-3 py-1.5 text-xs font-medium">
+								<span><?php esc_html_e( 'Continue to restore', 'missing-media-restorer' ); ?></span>
+								<span class="dashicons dashicons-arrow-right-alt2 text-[13px]"></span>
+							</button>
+						</div>
+					</div>
+				</div>
+			</section>
+
+			<!-- Step 4: Restore -->
+			<section id="mmr-step-4" class="mmr-step-container hidden">
+				<div class="grid gap-4 md:grid-cols-[minmax(0,2fr)_minmax(0,3fr)]">
+					<div class="rounded-2xl border border-slate-200 bg-white/80 shadow-sm flex flex-col">
+						<div class="border-b border-slate-100 px-4 py-3">
+							<h2 class="text-sm font-semibold tracking-tight text-slate-900"><?php esc_html_e( 'Restore in calm batches', 'missing-media-restorer' ); ?></h2>
+							<p class="mt-0.5 text-[11px] text-slate-500"><?php esc_html_e( 'We restore files in small controlled groups to keep your dashboard responsive.', 'missing-media-restorer' ); ?></p>
+						</div>
+						<div class="px-4 py-4 flex flex-col gap-3">
+							<ul class="space-y-2 text-[11px] text-slate-600">
+								<li class="flex items-start gap-2">
+									<span class="mt-0.5 h-1.5 w-1.5 rounded-full bg-emerald-500"></span>
+									<span><?php esc_html_e( 'Original folder structure is respected using your attachment metadata.', 'missing-media-restorer' ); ?></span>
+								</li>
+								<li class="flex items-start gap-2">
+									<span class="mt-0.5 h-1.5 w-1.5 rounded-full bg-slate-400"></span>
+									<span><?php esc_html_e( 'Thumbnails are regenerated so the media library stays consistent.', 'missing-media-restorer' ); ?></span>
+								</li>
+								<li class="flex items-start gap-2">
+									<span class="mt-0.5 h-1.5 w-1.5 rounded-full bg-slate-300"></span>
+									<span><?php esc_html_e( 'You can clear temporary uploads when you are done.', 'missing-media-restorer' ); ?></span>
+								</li>
+							</ul>
+							<div class="mt-2">
+								<button id="mmr-restore-btn" type="button" class="mmr-btn-primary inline-flex items-center gap-2 rounded-full px-3 py-1.5 text-xs font-medium">
+									<span class="dashicons dashicons-image-rotate text-[13px]"></span>
+									<span><?php esc_html_e( 'Start restore', 'missing-media-restorer' ); ?></span>
+								</button>
+							</div>
+							<div class="mt-3 inline-flex items-center gap-2 rounded-full border border-slate-200 bg-slate-50 px-3 py-1 text-[10px] text-slate-500">
+								<span class="dashicons dashicons-clock text-[13px]"></span>
+								<span><?php esc_html_e( 'You can leave this tab open in the background.', 'missing-media-restorer' ); ?></span>
+							</div>
+						</div>
+					</div>
+					<div class="rounded-2xl border border-slate-200 bg-slate-950 text-slate-50 shadow-sm flex flex-col">
+						<div class="border-b border-slate-800/60 px-4 py-3 flex items-center justify-between text-[11px]">
+							<span class="font-medium text-slate-100"><?php esc_html_e( 'Batch progress', 'missing-media-restorer' ); ?></span>
+							<button id="mmr-clear-temp-btn" type="button" class="hidden rounded-full border border-slate-700 px-2 py-1 text-[10px] font-medium text-slate-200 hover:bg-slate-800">
+								<span class="dashicons dashicons-trash text-[12px]"></span>
+								<span><?php esc_html_e( 'Clear temp files', 'missing-media-restorer' ); ?></span>
+							</button>
+						</div>
+						<div id="mmr-progress-container" class="flex flex-col gap-3 px-4 py-4">
+							<div class="h-1.5 w-full overflow-hidden rounded-full bg-slate-800/80">
+								<div id="mmr-progress-fill" class="h-full w-0 rounded-full bg-gradient-to-r from-emerald-400 to-sky-400 transition-all"></div>
+							</div>
+							<p id="mmr-progress-text" class="text-[11px] text-slate-300"><?php esc_html_e( 'Waiting to start…', 'missing-media-restorer' ); ?></p>
+							<div id="mmr-restore-output" class="mt-2 max-h-64 overflow-auto rounded-xl bg-slate-950/60 p-3 text-[11px] font-mono leading-relaxed text-slate-200"></div>
+						</div>
+					</div>
+				</div>
+			</section>
 		</div>
 	</div>
 	<?php
