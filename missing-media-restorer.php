@@ -238,25 +238,53 @@ function mmr_render_admin_page() {
 				</div>
 			</div>					<!-- Key Features -->
 				<div class="mmr-key-features-box">
-					<h3 class="text-sm font-bold text-slate-900"><?php esc_html_e( 'How this tool works', 'missing-media-restorer' ); ?></h3>
-					<ul class="space-y-3 text-sm text-slate-600">
-						<li class="flex items-start gap-3">
-							<span class="inline-flex h-6 w-6 items-center justify-center rounded-full bg-blue-100 text-blue-700 text-sm mt-0.5 shrink-0 font-bold">1</span>
-							<span><span class="font-bold text-slate-900"><?php esc_html_e( 'Run the scan:', 'missing-media-restorer' ); ?></span> <?php esc_html_e( 'We analyze your WordPress media library to find missing files.', 'missing-media-restorer' ); ?></span>
-						</li>
-						<li class="flex items-start gap-3">
-							<span class="inline-flex h-6 w-6 items-center justify-center rounded-full bg-amber-100 text-amber-700 text-sm mt-0.5 shrink-0 font-bold">2</span>
-							<span><span class="font-bold text-slate-900"><?php esc_html_e( 'Upload backups:', 'missing-media-restorer' ); ?></span> <?php esc_html_e( 'Provide your backup media files from your local storage or FTP.', 'missing-media-restorer' ); ?></span>
-						</li>
-						<li class="flex items-start gap-3">
-							<span class="inline-flex h-6 w-6 items-center justify-center rounded-full bg-emerald-100 text-emerald-700 text-sm mt-0.5 shrink-0 font-bold">3</span>
-							<span><span class="font-bold text-slate-900"><?php esc_html_e( 'Match files:', 'missing-media-restorer' ); ?></span> <?php esc_html_e( 'We compare uploaded files with missing entries and show matches.', 'missing-media-restorer' ); ?></span>
-						</li>
-						<li class="flex items-start gap-3">
-							<span class="inline-flex h-6 w-6 items-center justify-center rounded-full bg-cyan-100 text-cyan-700 text-sm mt-0.5 shrink-0 font-bold">4</span>
-							<span><span class="font-bold text-slate-900"><?php esc_html_e( 'Restore safely:', 'missing-media-restorer' ); ?></span> <?php esc_html_e( 'Files are restored in batches to prevent server overload.', 'missing-media-restorer' ); ?></span>
-						</li>
-					</ul>
+					<h3 class="text-sm font-bold text-slate-900 mb-4"><?php esc_html_e( 'How it works', 'missing-media-restorer' ); ?></h3>
+					<div class="grid gap-4 md:grid-cols-2">
+						<div class="mmr-workflow-card">
+							<div class="flex items-start gap-3">
+								<span class="mmr-workflow-icon mmr-workflow-icon-blue">
+									<span class="dashicons dashicons-search"></span>
+								</span>
+								<div>
+									<p class="mmr-workflow-title"><?php esc_html_e( 'Scan Library', 'missing-media-restorer' ); ?></p>
+									<p class="mmr-workflow-description"><?php esc_html_e( 'Quickly identify missing media files in your WordPress uploads.', 'missing-media-restorer' ); ?></p>
+								</div>
+							</div>
+						</div>
+						<div class="mmr-workflow-card">
+							<div class="flex items-start gap-3">
+								<span class="mmr-workflow-icon mmr-workflow-icon-amber">
+									<span class="dashicons dashicons-cloud-upload"></span>
+								</span>
+								<div>
+									<p class="mmr-workflow-title"><?php esc_html_e( 'Upload Backups', 'missing-media-restorer' ); ?></p>
+									<p class="mmr-workflow-description"><?php esc_html_e( 'Drag & drop or FTP your backup files to the temp folder.', 'missing-media-restorer' ); ?></p>
+								</div>
+							</div>
+						</div>
+						<div class="mmr-workflow-card">
+							<div class="flex items-start gap-3">
+								<span class="mmr-workflow-icon mmr-workflow-icon-emerald">
+									<span class="dashicons dashicons-yes"></span>
+								</span>
+								<div>
+									<p class="mmr-workflow-title"><?php esc_html_e( 'Smart Matching', 'missing-media-restorer' ); ?></p>
+									<p class="mmr-workflow-description"><?php esc_html_e( 'Automatically match backup files with missing entries.', 'missing-media-restorer' ); ?></p>
+								</div>
+							</div>
+						</div>
+						<div class="mmr-workflow-card">
+							<div class="flex items-start gap-3">
+								<span class="mmr-workflow-icon mmr-workflow-icon-cyan">
+									<span class="dashicons dashicons-image-rotate"></span>
+								</span>
+								<div>
+									<p class="mmr-workflow-title"><?php esc_html_e( 'Batch Restore', 'missing-media-restorer' ); ?></p>
+									<p class="mmr-workflow-description"><?php esc_html_e( 'Restore files safely in small batches to avoid timeouts.', 'missing-media-restorer' ); ?></p>
+								</div>
+							</div>
+						</div>
+					</div>
 				</div>
 			</div>
 		</section>			<!-- Step 2: Upload -->

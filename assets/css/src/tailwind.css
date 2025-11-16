@@ -365,8 +365,8 @@
 	font-family: 'Courier New', monospace;
 }
 
-/* How it Works Grid - Enhanced */
-.mmr-how-works-card {
+/* How it Works Cards - Consistent with plugin design */
+.mmr-workflow-card {
 	background: #ffffff;
 	border: 1px solid #e5e7eb;
 	border-radius: 0.75rem;
@@ -375,25 +375,103 @@
 	box-shadow: 0 1px 3px rgba(0,0,0,0.05);
 }
 
-.mmr-how-works-card:hover {
+.mmr-workflow-card:hover {
 	box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-	transform: translateY(-2px);
+	transform: translateY(-1px);
 	border-color: #d0d5dd;
 }
 
+.mmr-workflow-icon {
+	width: 2rem;
+	height: 2rem;
+	border-radius: 50%;
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	font-size: 0.875rem;
+	font-weight: 600;
+	color: white;
+	flex-shrink: 0;
+}
+
+.mmr-workflow-icon-blue {
+	background: linear-gradient(135deg, #3b82f6, #2563eb);
+}
+
+.mmr-workflow-icon-amber {
+	background: linear-gradient(135deg, #f59e0b, #d97706);
+}
+
+.mmr-workflow-icon-emerald {
+	background: linear-gradient(135deg, #10b981, #059669);
+}
+
+.mmr-workflow-icon-cyan {
+	background: linear-gradient(90deg, #06b6d4, #0891b2);
+}
+
+.mmr-workflow-title {
+	font-weight: 600;
+	font-size: 0.875rem;
+	color: #1f2937;
+	margin-bottom: 0.25rem;
+}
+
+.mmr-workflow-description {
+	font-size: 0.75rem;
+	color: #6b7280;
+	line-height: 1.4;
+}
+
+/* How it Works Grid Cards - Simple styling for the scan process steps */
+.mmr-how-works-card {
+	background: #ffffff;
+	border: 1px solid #e5e7eb;
+	border-radius: 0.5rem;
+	padding: 1rem;
+	transition: background-color 150ms ease-out;
+}
+
+.mmr-how-works-card:hover {
+	background-color: #f9fafb;
+}
+
+.mmr-how-works-icon-blue,
+.mmr-how-works-icon-amber,
+.mmr-how-works-icon-green {
+	width: 2rem;
+	height: 2rem;
+	border-radius: 0.5rem;
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	font-size: 1rem;
+	font-weight: 600;
+	color: #ffffff;
+	flex-shrink: 0;
+}
+
 .mmr-how-works-icon-blue {
-	background: linear-gradient(135deg, #dbeafe, #bfdbfe);
-	color: #1e40af;
+	background: linear-gradient(135deg, #3b82f6, #2563eb);
 }
 
 .mmr-how-works-icon-amber {
-	background: linear-gradient(135deg, #fef3c7, #fed7aa);
-	color: #b45309;
+	background: linear-gradient(135deg, #f59e0b, #d97706);
 }
 
 .mmr-how-works-icon-green {
-	background: linear-gradient(135deg, #dcfce7, #bbf7d0);
-	color: #15803d;
+	background: linear-gradient(135deg, #10b981, #059669);
+}
+
+/* Ensure dashicons display properly in icon containers */
+.mmr-how-works-icon-blue .dashicons,
+.mmr-how-works-icon-amber .dashicons,
+.mmr-how-works-icon-green .dashicons,
+.mmr-workflow-icon .dashicons {
+	font-size: 1rem !important;
+	width: 1rem !important;
+	height: 1rem !important;
+	line-height: 1 !important;
 }
 
 /* Key Features Box - Enhanced */
