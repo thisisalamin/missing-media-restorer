@@ -199,7 +199,13 @@ function mmr_render_admin_page() {
 						<div id="mmr-scan-output" class="text-sm text-slate-700"></div>
 					</div>
 				</div>
-
+				<!-- Scanning progress bar for a calm, centred progress indicator (indeterminate while scanning) -->
+				<div id="mmr-scan-progress-container" class="hidden mt-4">
+					<div class="h-1.5 w-full overflow-hidden rounded-full bg-slate-100">
+						<div id="mmr-scan-progress-fill" class="h-full w-0 mmr-scan-progress-fill rounded-full transition-all"></div>
+					</div>
+					<p id="mmr-scan-progress-text" class="text-sm text-slate-500 mt-2">Preparing scan…</p>
+				</div>
 				<!-- How it Works Grid -->
 				<div class="grid gap-4 md:grid-cols-3 text-sm">
 					<div class="mmr-how-works-card">
@@ -234,14 +240,6 @@ function mmr_render_admin_page() {
 								<p class="text-slate-600 leading-relaxed"><?php esc_html_e( 'Also checks for missing thumbnail variations and image sizes.', 'missing-media-restorer' ); ?></p>
 							</div>
 						</div>
-				</div>
-
-				<!-- Scanning progress bar for a calm, centred progress indicator (indeterminate while scanning) -->
-				<div id="mmr-scan-progress-container" class="hidden mt-4">
-					<div class="h-1.5 w-full overflow-hidden rounded-full bg-slate-100">
-						<div id="mmr-scan-progress-fill" class="h-full w-0 mmr-scan-progress-fill rounded-full transition-all"></div>
-					</div>
-					<p id="mmr-scan-progress-text" class="text-sm text-slate-500 mt-2">Preparing scan…</p>
 				</div>
 			</div>					<!-- Key Features -->
 				<div class="mmr-key-features-box">
