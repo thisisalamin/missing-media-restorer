@@ -325,7 +325,7 @@ function showScanProgress() {
 				const missingCount = missingFiles.length;
 				const batches = mmrState.totalBatches || Math.ceil( missingCount / mmrState.batchSize );
 
-				html += '<span class="inline-flex items-center gap-1 px-2 py-1 rounded-full bg-slate-100 text-slate-700 border border-slate-200 shadow-sm"><span class="dashicons dashicons-admin-media text-[12px]"></span><span class="font-semibold">' + totalCount + '</span> total items</span>';
+				html += '<span class="inline-flex items-center gap-1 px-2 py-1 rounded-full bg-slate-100 text-slate-700 border border-slate-200 shadow-sm"><span class="dashicons dashicons-images-alt2 text-[12px]"></span><span class="font-semibold">' + totalCount + '</span> total items</span>';
 				html += '<span class="inline-flex items-center gap-1 px-2 py-1 rounded-full bg-green-100 text-green-700 border border-green-200 shadow-sm"><span class="dashicons dashicons-yes text-green-600 text-[12px]"></span><span class="font-semibold">' + existingCount + '</span> existing</span>';
 				html += '<span class="inline-flex items-center gap-1 px-2 py-1 rounded-full bg-red-100 text-red-700 border border-red-200 shadow-sm"><span class="dashicons dashicons-no text-[12px]"></span><span class="font-semibold">' + missingCount + '</span> missing</span>';
 				html += '<span class="inline-flex items-center gap-1 px-2 py-1 rounded-full bg-blue-100 text-blue-700 border border-blue-200 shadow-sm"><span class="dashicons dashicons-update text-[12px]"></span><span class="font-semibold">' + batches + '</span> batches</span>';
