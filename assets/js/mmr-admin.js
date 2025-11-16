@@ -46,6 +46,7 @@
 		const selectFilesBtn = document.getElementById( 'mmr-select-files-btn' );
 		const selectFolderBtn = document.getElementById( 'mmr-select-folder-btn' );
 		const refreshFilesBtn = document.getElementById( 'mmr-refresh-files-btn' );
+		const newScanBtn = document.getElementById( 'mmr-new-scan-btn' );
 		const proBtn = document.getElementById( 'mmr-btn-pro' );
 		const closeProModalBtn = document.getElementById( 'mmr-close-pro-modal' );
 
@@ -103,7 +104,13 @@
 			refreshFilesBtn.addEventListener( 'click', refreshFilesList );
 		}
 
-		// Pro modal events
+	// Run Scan button - start a new scan from anywhere
+	if ( newScanBtn ) {
+		newScanBtn.addEventListener( 'click', function() {
+			console.log( 'Run Scan button clicked from header' );
+			startNewScan();
+		} );
+	}		// Pro modal events
 		if ( proBtn ) {
 			proBtn.addEventListener( 'click', showProModal );
 		}
@@ -162,8 +169,10 @@
 
 		mmrState.scanning = true;
 		const scanBtn = document.getElementById( 'mmr-scan-btn' );
-		scanBtn.disabled = true;
-		scanBtn.innerHTML = '<span class="dashicons dashicons-search"></span> Scanning...';
+		if ( scanBtn ) {
+			scanBtn.disabled = true;
+			scanBtn.innerHTML = '<span class="dashicons dashicons-search"></span> Scanning...';
+		}
 
 		// Show (indeterminate) scan progress UI
 		showScanProgress();
@@ -193,16 +202,20 @@
 			// finalize indeterminate scan progress
 			completeScanProgress();
 			mmrState.scanning = false;
-			scanBtn.disabled = false;
-			scanBtn.innerHTML = '<span class="dashicons dashicons-search"></span> Start Scanning';
+			if ( scanBtn ) {
+				scanBtn.disabled = false;
+				scanBtn.innerHTML = '<span class="dashicons dashicons-search"></span> Start Scanning';
+			}
 		};
 
 		xhr.onerror = function() {
 			showError( 'Network error during scan' );
 			completeScanProgress( true );
 			mmrState.scanning = false;
-			scanBtn.disabled = false;
-			scanBtn.innerHTML = '<span class="dashicons dashicons-search"></span> Start Scanning';
+			if ( scanBtn ) {
+				scanBtn.disabled = false;
+				scanBtn.innerHTML = '<span class="dashicons dashicons-search"></span> Start Scanning';
+			}
 		};
 
 		xhr.send( data );
@@ -1215,6 +1228,65 @@ function showScanProgress() {
 		const i = Math.floor( Math.log( bytes ) / Math.log( k ) );
 
 		return Math.round( ( bytes / Math.pow( k, i ) ) * 100 ) / 100 + ' ' + sizes[ i ];
+	}
+
+	/**
+	 * Start a new scan - reset state, navigate to scan step, and run scan
+	 */
+	function startNewScan() {
+		// Reset the global state
+		mmrState.scanning = false;
+		mmrState.restoring = false;
+		mmrState.currentBatch = 1;
+		mmrState.totalBatches = 0;
+		mmrState.totalFiles = 0;
+		mmrState.filesRestored = 0;
+		mmrState.uploadedFiles = [];
+		mmrState.missingFiles = [];
+
+		// Clear the scan results display
+		const resultsDiv = document.getElementById( 'mmr-scan-results' );
+		if ( resultsDiv ) {
+			resultsDiv.classList.add( 'hidden' );
+			const outputDiv = document.getElementById( 'mmr-scan-output' );
+			if ( outputDiv ) {
+				outputDiv.innerHTML = '';
+			}
+		}
+
+		// Clear upload list
+		const uploadList = document.getElementById( 'mmr-upload-list' );
+		if ( uploadList ) {
+			uploadList.innerHTML = '';
+		}
+
+		// Clear match summary
+		const matchSummary = document.getElementById( 'mmr-match-summary' );
+		if ( matchSummary ) {
+			matchSummary.innerHTML = '';
+		}
+
+		// Clear restore output
+		const restoreOutput = document.getElementById( 'mmr-restore-output' );
+		if ( restoreOutput ) {
+			restoreOutput.innerHTML = '';
+		}
+
+		// Reset progress
+		const progressFill = document.getElementById( 'mmr-progress-fill' );
+		const progressText = document.getElementById( 'mmr-progress-text' );
+		if ( progressFill ) {
+			progressFill.style.width = '0%';
+		}
+		if ( progressText ) {
+			progressText.textContent = 'Waiting to start…';
+		}
+
+		// Navigate back to scan step
+		navigateToStep( 1 );
+
+		// Now trigger the scan
+		startScan();
 	}
 
 	/**

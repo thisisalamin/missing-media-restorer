@@ -178,6 +178,10 @@ function mmr_render_admin_page() {
 						</li>
 					</ol>
 					<div class="flex items-center gap-2 text-[11px] text-slate-400">
+						<button id="mmr-new-scan-btn" type="button" class="mmr-btn-primary inline-flex items-center gap-1 rounded-full px-3 py-1.5 text-xs font-medium">
+							<span class="dashicons dashicons-search text-[13px]"></span>
+							<span><?php esc_html_e( 'Run Scan', 'missing-media-restorer' ); ?></span>
+						</button>
 						<button id="mmr-btn-pro" type="button" class="mmr-btn-pro inline-flex items-center gap-1 rounded-full px-3 py-1.5 text-xs font-medium">
 							<span class="dashicons dashicons-star-filled text-[13px]"></span>
 							<span><?php esc_html_e( 'Upgrade to Pro', 'missing-media-restorer' ); ?></span>
@@ -186,42 +190,15 @@ function mmr_render_admin_page() {
 				</nav>
 			</header>
 
-	            <!-- Add a small visual separator between header and the main content -->
-	            <div class="mt-4 mb-4" aria-hidden="true"></div>
-
 			<!-- Step 1: Scan -->
 			<section id="mmr-step-1" class="mmr-step-container mmr-step-active">
 				<div class="flex flex-col gap-4">
-					<!-- Main Scan Panel -->
-					<div class="rounded-2xl border border-slate-200 mmr-section-bg shadow-sm">
-						<div class="flex items-center justify-between border-b border-slate-100 px-4 py-3">
-							<div class="flex items-center gap-2">
-								<span class="inline-flex h-6 w-6 items-center justify-center rounded-full bg-blue-100 text-blue-600 text-xs">
-									<span class="dashicons dashicons-search text-[13px]"></span>
-								</span>
-								<div>
-									<h2 class="text-sm font-semibold tracking-tight text-slate-900"><?php esc_html_e( 'Scan library for missing media', 'missing-media-restorer' ); ?></h2>
-									<p class="text-[11px] text-slate-500"><?php esc_html_e( 'We only read metadata and file paths—no changes are made.', 'missing-media-restorer' ); ?></p>
-								</div>
-							</div>
-							<button id="mmr-scan-btn" type="button" class="mmr-btn-primary inline-flex items-center gap-2 rounded-full px-3 py-1.5 text-xs font-medium">
-								<span class="dashicons dashicons-search text-[13px]"></span>
-								<span><?php esc_html_e( 'Run scan', 'missing-media-restorer' ); ?></span>
-							</button>
-						</div>
-						<div class="px-4 py-4">
-							<div class="mb-4 rounded-xl border mmr-info-box px-4 py-3 text-[11px] text-slate-600 flex items-start gap-2">
-								<span class="mt-0.5 dashicons dashicons-info text-[13px] text-slate-400"></span>
-								<div>
-									<p class="font-medium text-slate-700 mb-0.5"><?php esc_html_e( 'What this scan does', 'missing-media-restorer' ); ?></p>
-									<p class="leading-relaxed"><?php esc_html_e( 'Checks every attachment and registered thumbnail, then highlights files that are missing from the uploads folder.', 'missing-media-restorer' ); ?></p>
-								</div>
-							</div>
-							<div id="mmr-scan-results" class="mt-3 hidden">
-								<div id="mmr-scan-output" class="text-[11px] text-slate-700"></div>
-							</div>
-						</div>
+				<!-- Main Scan Panel -->
+				<div>
+					<div id="mmr-scan-results" class="mt-3 hidden px-4 py-4 rounded-2xl border border-slate-200 mmr-section-bg shadow-sm">
+						<div id="mmr-scan-output" class="text-[11px] text-slate-700"></div>
 					</div>
+				</div>
 
 				<!-- How it Works Grid -->
 				<div class="grid gap-4 md:grid-cols-3 text-[11px]">
@@ -395,19 +372,10 @@ function mmr_render_admin_page() {
 							</div>
 						</div>
 						<div class="px-4 py-4 flex flex-col gap-3">
-							<ul class="space-y-2 text-[11px] text-slate-600">
-								<li class="flex items-start gap-2">
-									<span class="mt-0.5 h-1.5 w-1.5 rounded-full bg-blue-500"></span>
-									<span><?php esc_html_e( 'Original folder structure is respected using your attachment metadata.', 'missing-media-restorer' ); ?></span>
-								</li>
-								<li class="flex items-start gap-2">
-									<span class="mt-0.5 h-1.5 w-1.5 rounded-full bg-purple-500"></span>
-									<span><?php esc_html_e( 'Thumbnails are regenerated so the media library stays consistent.', 'missing-media-restorer' ); ?></span>
-								</li>
-								<li class="flex items-start gap-2">
-									<span class="mt-0.5 h-1.5 w-1.5 rounded-full bg-cyan-500"></span>
-									<span><?php esc_html_e( 'You can clear temporary uploads when you are done.', 'missing-media-restorer' ); ?></span>
-								</li>
+							<ul class="list-disc list-inside space-y-1 text-[11px] text-slate-600">
+								<li><?php esc_html_e( 'Original folder structure is respected using your attachment metadata.', 'missing-media-restorer' ); ?></li>
+								<li><?php esc_html_e( 'Thumbnails are regenerated so the media library stays consistent.', 'missing-media-restorer' ); ?></li>
+								<li><?php esc_html_e( 'You can clear temporary uploads when you are done.', 'missing-media-restorer' ); ?></li>
 							</ul>
 							<div class="mt-2">
 								<button id="mmr-restore-btn" type="button" class="mmr-btn-primary inline-flex items-center gap-2 rounded-full px-3 py-1.5 text-xs font-medium">
