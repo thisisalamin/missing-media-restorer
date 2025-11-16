@@ -1,0 +1,494 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Minimal custom styling layered on top of Tailwind for this plugin.
+ * Focus: reusable tokens for buttons, step chips, and log entries.
+ */
+
+.mmr-btn-primary {
+	border-radius: 9999px;
+	border-width: 1px;
+	border-color: #3b82f6;
+	background-color: #3b82f6;
+	color: #ffffff;
+	box-shadow: 0 1px 2px rgba(59,130,246,0.45);
+	transition: background-color 150ms ease-out, border-color 150ms ease-out, box-shadow 150ms ease-out, opacity 150ms ease-out;
+}
+
+.mmr-btn-primary:hover:not(:disabled) {
+	background-color: #2563eb;
+	border-color: #2563eb;
+	box-shadow: 0 2px 5px rgba(59,130,246,0.6);
+}
+
+.mmr-btn-primary:disabled {
+	opacity: 0.5;
+	cursor: not-allowed;
+}
+
+.mmr-btn-ghost {
+	border-radius: 9999px;
+	border-width: 1px;
+	border-color: rgba(148,163,184,0.5);
+	background-color: rgba(255,255,255,0.8);
+	color: #64748b;
+	transition: background-color 150ms ease-out, border-color 150ms ease-out, color 150ms ease-out, opacity 150ms ease-out;
+}
+
+.mmr-btn-ghost:hover:not(:disabled) {
+	background-color: #f0f9ff;
+	border-color: #7dd3fc;
+	color: #0369a1;
+}
+
+.mmr-btn-ghost:disabled {
+	opacity: 0.5;
+	cursor: not-allowed;
+}
+
+.mmr-btn-pro {
+	border-radius: 9999px;
+	border-width: 1px;
+	border-color: #f97316;
+	background-color: #f97316;
+	color: #ffffff;
+	box-shadow: 0 1px 2px rgba(249,115,22,0.45);
+	transition: background-color 150ms ease-out, border-color 150ms ease-out, box-shadow 150ms ease-out, opacity 150ms ease-out;
+}
+
+.mmr-btn-pro:hover:not(:disabled) {
+	background-color: #ea580c;
+	border-color: #ea580c;
+	box-shadow: 0 2px 5px rgba(249,115,22,0.6);
+}
+
+.mmr-btn-pro:disabled {
+	opacity: 0.5;
+	cursor: not-allowed;
+}
+
+.mmr-step-chip {
+	transition: background-color 150ms ease-out, color 150ms ease-out;
+}
+
+.mmr-step-chip-active {
+	background-color: #3b82f6;
+	color: #ffffff;
+}
+
+.mmr-step-chip-inactive {
+	background-color: #f3f4f6;
+	color: #6b7280;
+	border-color: #d1d5db;
+}
+
+/* Colorful console log entries with soft state color accents */
+
+.mmr-log-entry {
+	border-radius: 0.375rem;
+	padding: 0.35rem 0.55rem;
+	margin-bottom: 0.25rem;
+	font-size: 0.875rem;
+	line-height: 1.5;
+}
+
+.mmr-log-entry.mmr-restored {
+	background: linear-gradient(90deg, rgba(34,197,94,0.15), rgba(34,197,94,0.05));
+	border-left: 3px solid #22c55e;
+	color: #166534;
+}
+
+.mmr-log-entry.mmr-failed,
+.mmr-log-entry.mmr-error {
+	background: linear-gradient(90deg, rgba(239,68,68,0.15), rgba(239,68,68,0.05));
+	border-left: 3px solid #ef4444;
+	color: #991b1b;
+}
+
+.mmr-log-entry.mmr-skipped {
+	background: linear-gradient(90deg, rgba(245,158,11,0.15), rgba(245,158,11,0.05));
+	border-left: 3px solid #f59e0b;
+	color: #92400e;
+}
+
+/* Additional colorful elements */
+.mmr-header-icon {
+	background-color: #8b5cf6;
+	color: #ffffff;
+}
+
+.mmr-step-active-icon {
+	background-color: #3b82f6;
+	color: #ffffff;
+}
+
+.mmr-step-inactive-icon {
+	background-color: #e5e7eb;
+	color: #9ca3af;
+}
+
+.mmr-progress-fill {
+	background: linear-gradient(90deg, #3b82f6, #8b5cf6, #06b6d4);
+}
+
+.mmr-section-bg {
+	background: linear-gradient(135deg, rgba(255,255,255,0.9), rgba(248,250,252,0.8));
+}
+
+
+/* Minimal box styling - subtle color only */
+.mmr-info-box {
+	background: rgba(59,130,246,0.05);
+	border: 1px solid rgba(59,130,246,0.2);
+}
+
+.mmr-success-box {
+	background: rgba(34,197,94,0.05);
+	border: 1px solid rgba(34,197,94,0.2);
+}
+
+.mmr-warning-box {
+	background: rgba(245,158,11,0.05);
+	border: 1px solid rgba(245,158,11,0.2);
+}
+
+/* Scan Summary Section - simple but noticeable styling */
+.mmr-scan-summary {
+	background: rgba(248,250,252,0.5);
+	border: 1px solid rgba(71,85,105,0.15);
+	border-radius: 0.5rem;
+	padding: 0.875rem;
+}
+
+.mmr-scan-summary .mmr-scan-label {
+	color: #374151;
+	font-weight: 700;
+	font-size: 1rem;
+	display: inline-flex;
+	align-items: center;
+	gap: 0.375rem;
+}
+
+/* Force dashicon colors in scan summary badges */
+.mmr-scan-summary .dashicons.dashicons-yes {
+	color: #15803d !important;
+}
+
+.mmr-scan-summary .dashicons.dashicons-no {
+	color: #dc2626 !important;
+}
+
+.mmr-scan-summary .dashicons.dashicons-admin-media {
+	color: #374151 !important;
+}
+
+.mmr-scan-summary .dashicons.dashicons-update {
+	color: #2563eb !important;
+}
+
+/* Scan Results Section - minimal */
+.mmr-scan-result-card {
+	border-radius: 0.5rem;
+	overflow: hidden;
+	transition: background-color 150ms ease-out;
+	border: 1px solid #e5e7eb;
+}
+
+.mmr-scan-result-card:hover {
+	background-color: rgba(248,250,252,0.8);
+}
+
+.mmr-existing-card {
+	background: rgba(16,185,129,0.04);
+}
+
+.mmr-missing-card {
+	background: rgba(239,68,68,0.04);
+}
+
+.mmr-existing-card .mmr-card-header {
+	background: rgba(16,185,129,0.15);
+	color: #059669;
+	border-bottom: 1px solid rgba(16,185,129,0.2);
+}
+
+.mmr-missing-card .mmr-card-header {
+	background: rgba(239,68,68,0.15);
+	color: #991b1b;
+	border-bottom: 1px solid rgba(239,68,68,0.2);
+}
+
+.mmr-card-header {
+	padding: 0.625rem;
+	font-weight: 600;
+	font-size: 0.875rem;
+	display: flex;
+	align-items: center;
+	gap: 0.375rem;
+	text-transform: uppercase;
+	letter-spacing: 0.3px;
+}
+
+/* Upload Summary Section - minimal */
+.mmr-upload-summary {
+	background: rgba(34,197,94,0.04);
+	border: 1px solid rgba(34,197,94,0.15);
+	border-radius: 0.5rem;
+	padding: 0.875rem;
+}
+
+.mmr-upload-summary .mmr-upload-label {
+	background: #059669;
+	color: white;
+	padding: 0.25rem 0.625rem;
+	border-radius: 9999px;
+	font-weight: 600;
+	font-size: 0.875rem;
+	display: inline-flex;
+	align-items: center;
+	gap: 0.375rem;
+}
+
+.mmr-upload-files-list {
+	background: white;
+	border: 1px solid #e5e7eb;
+	border-radius: 0.375rem;
+	margin-top: 0.625rem;
+	overflow: hidden;
+}
+
+/* Matching Status Section - minimal */
+.mmr-matching-status {
+	background: rgba(245,158,11,0.04);
+	border: 1px solid rgba(245,158,11,0.15);
+	border-radius: 0.5rem;
+	padding: 0.875rem;
+	margin-top: 0.625rem;
+}
+
+.mmr-matching-status .mmr-matching-label {
+	background: #d97706;
+	color: white;
+	padding: 0.25rem 0.625rem;
+	border-radius: 9999px;
+	font-weight: 600;
+	font-size: 0.875rem;
+	display: inline-flex;
+	align-items: center;
+	gap: 0.375rem;
+}
+
+/* Match Summary Cards - minimal */
+.mmr-match-card {
+	border-radius: 0.5rem;
+	border: 1px solid #e5e7eb;
+	padding: 0.875rem;
+	transition: background-color 150ms ease-out;
+	background: white;
+}
+
+.mmr-match-card:hover {
+	background-color: #f9fafb;
+}
+
+.mmr-matched-card {
+	background: rgba(16,185,129,0.04);
+	border-color: rgba(16,185,129,0.2);
+}
+
+.mmr-unmatched-card {
+	background: rgba(245,158,11,0.04);
+	border-color: rgba(245,158,11,0.2);
+}
+
+.mmr-match-card .mmr-match-title {
+	font-weight: 600;
+	font-size: 0.875rem;
+	display: flex;
+	align-items: center;
+	gap: 0.375rem;
+	margin-bottom: 0.375rem;
+}
+
+.mmr-matched-card .mmr-match-title {
+	color: #059669;
+}
+
+.mmr-unmatched-card .mmr-match-title {
+	color: #d97706;
+}
+
+.mmr-files-list-container {
+	border: 1px solid #e5e7eb;
+	border-radius: 0.375rem;
+	overflow: hidden;
+	background: white;
+	margin-top: 0.625rem;
+	max-height: 13rem;
+	overflow-y: auto;
+}
+
+.mmr-files-list-container ul {
+	margin: 0;
+	padding: 0;
+	list-style: none;
+}
+
+.mmr-files-list-container li {
+	padding: 0.5rem 0.625rem;
+	border-bottom: 1px solid #f3f4f6;
+	display: flex;
+	flex-direction: column;
+	gap: 0.25rem;
+	transition: background-color 150ms ease-out;
+}
+
+.mmr-files-list-container li:hover {
+	background-color: #f9fafb;
+}
+
+.mmr-files-list-container li:last-child {
+	border-bottom: none;
+}
+
+.mmr-file-name {
+	font-weight: 600;
+	color: #1f2937;
+	font-size: 0.875rem;
+	word-break: break-word;
+}
+
+.mmr-file-path {
+	font-size: 0.75rem;
+	color: #9ca3af;
+	font-family: 'Courier New', monospace;
+}
+
+/* How it Works Grid - Enhanced */
+.mmr-how-works-card {
+	background: #ffffff;
+	border: 1px solid #e5e7eb;
+	border-radius: 0.75rem;
+	padding: 1rem;
+	transition: all 150ms ease-out;
+	box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+}
+
+.mmr-how-works-card:hover {
+	box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+	transform: translateY(-2px);
+	border-color: #d0d5dd;
+}
+
+.mmr-how-works-icon-blue {
+	background: linear-gradient(135deg, #dbeafe, #bfdbfe);
+	color: #1e40af;
+}
+
+.mmr-how-works-icon-amber {
+	background: linear-gradient(135deg, #fef3c7, #fed7aa);
+	color: #b45309;
+}
+
+.mmr-how-works-icon-green {
+	background: linear-gradient(135deg, #dcfce7, #bbf7d0);
+	color: #15803d;
+}
+
+/* Key Features Box - Enhanced */
+.mmr-key-features-box {
+	background: #ffffff;
+	border: 1px solid #e5e7eb;
+	border-radius: 0.75rem;
+	padding: 1.25rem;
+	box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+}
+
+.mmr-key-features-box h3 {
+	margin-bottom: 1rem;
+}
+
+.mmr-key-features-box ul li span:first-child {
+	background: linear-gradient(135deg, #dbeafe, #bfdbfe);
+	color: #1e40af;
+	font-weight: 600;
+	min-width: 24px;
+}
+
+/* Tips & Info Grid - Enhanced */
+.mmr-tips-card {
+	background: #ffffff;
+	border: 1px solid #e5e7eb;
+	border-radius: 0.75rem;
+	padding: 1rem;
+	box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+	transition: all 150ms ease-out;
+}
+
+.mmr-tips-card:hover {
+	box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+	border-color: #d0d5dd;
+}
+
+.mmr-tips-card p span.dashicons {
+	margin-right: 0.375rem;
+}
+
+.mmr-tips-card-safety {
+	border-left: 3px solid #3b82f6;
+}
+
+.mmr-tips-card-safety span.dashicons {
+	color: #3b82f6;
+}
+
+.mmr-tips-card-performance {
+	border-left: 3px solid #f59e0b;
+}
+
+.mmr-tips-card-performance span.dashicons {
+	color: #f59e0b;
+}
+
+/* Header card — keep the title and nav visually separate from content */
+.mmr-admin > header {
+	background: #ffffff;
+	border: 1px solid rgba(2,6,23,0.06);
+	border-radius: 1rem;
+	padding: 1rem 1.25rem;
+	box-shadow: 0 6px 18px rgba(2,6,23,0.06);
+}
+
+.mmr-admin > header .mmr-header-icon {
+	height: 44px;
+	width: 44px;
+	border-radius: 0.75rem;
+	background: linear-gradient(135deg, #7c3aed 0%, #4f46e5 100%);
+	color: #ffffff;
+	box-shadow: 0 3px 8px rgba(79,70,229,0.12);
+}
+
+.mmr-admin > header nav {
+	margin-top: 0.6rem;
+	background: #ffffff;
+	border-color: rgba(2,6,23,0.06);
+	border-width: 1px;
+	box-shadow: 0 2px 8px rgba(2,6,23,0.04);
+}
+
+.mmr-admin > header h1 { color: #0f172a; font-size: 1.375rem; }
+
+/* Scan progress bar specific styles */
+.mmr-scan-progress-fill {
+	background: linear-gradient(90deg, #3b82f6, #06b6d4);
+	box-shadow: 0 0 8px rgba(59,130,246,0.12);
+}
+
+/* Re-style the restore progress to be slightly stronger contrast */
+.mmr-progress-fill {
+	background: linear-gradient(90deg, #4f46e5, #06b6d4);
+}
+
+/* Small visual gap below header */
+.mmr-admin .mt-4.mb-4 { height: 6px; }

@@ -1,0 +1,24 @@
+{
+  "name": "missing-media-restorer",
+  "version": "1.0.0",
+  "description": "WordPress plugin to restore missing media files",
+  "main": "missing-media-restorer.php",
+  "scripts": {
+    "build-css": "postcss ./assets/css/src/tailwind.css -o ./assets/css/mmr-admin.css --watch",
+    "prod-css": "postcss ./assets/css/src/tailwind.css -o ./assets/css/mmr-admin.css --minify"
+  },
+  "keywords": [
+    "wordpress",
+    "plugin",
+    "media",
+    "restorer"
+  ],
+  "author": "Crafely Development",
+  "license": "GPL-2.0-or-later",
+  "dependencies": {
+    "autoprefixer": "^10.4.22",
+    "postcss": "^8.5.6",
+    "postcss-cli": "^11.0.1",
+    "tailwindcss": "^2.2.19"
+  }
+}

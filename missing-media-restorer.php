@@ -19,7 +19,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 // Define plugin constants.
 define( 'MMR_PLUGIN_DIR', plugin_dir_path( __FILE__ ) );
 define( 'MMR_PLUGIN_URL', plugin_dir_url( __FILE__ ) );
-define( 'MMR_PLUGIN_VERSION', '1.0.0' );
+define( 'MMR_PLUGIN_VERSION', '1.0.3' );
 
 /**
  * Plugin activation hook
@@ -77,14 +77,6 @@ function mmr_enqueue_admin_assets( $hook ) {
 		return;
 	}
 
-	// Enqueue Tailwind CSS from CDN for the plugin admin UI
-	wp_enqueue_style(
-		'mmr-tailwind-cdn',
-		'https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css',
-		array(),
-		MMR_PLUGIN_VERSION
-	);
-
 	// Enqueue the main admin JavaScript
 	wp_enqueue_script(
 		'mmr-admin-js',
@@ -104,13 +96,16 @@ function mmr_enqueue_admin_assets( $hook ) {
 		)
 	);
 
-	// Minimal custom overrides on top of Tailwind for shared tokens
+	// Enqueue the main admin CSS (includes Tailwind + custom styles)
 	wp_enqueue_style(
 		'mmr-admin-css',
 		MMR_PLUGIN_URL . 'assets/css/mmr-admin.css',
-		array( 'mmr-tailwind-cdn' ),
+		array(),
 		MMR_PLUGIN_VERSION
 	);
+
+	// Enqueue Dashicons for admin icons
+	wp_enqueue_style( 'dashicons' );
 }
 add_action( 'admin_enqueue_scripts', 'mmr_enqueue_admin_assets' );
 
@@ -120,7 +115,7 @@ add_action( 'admin_enqueue_scripts', 'mmr_enqueue_admin_assets' );
 function mmr_render_admin_page() {
 	?>
 	<div class="wrap">
-		<div class="mmr-admin max-w-8xl mx-auto mt-8 mb-10 px-4">
+		<div class="mmr-admin max-w-[88rem] mx-auto mt-8 mb-10 px-4">
 			<header class="flex flex-col gap-4 mb-4">
 				<div class="flex items-center justify-between gap-4">
 					<div class="flex items-center gap-3">
@@ -136,9 +131,9 @@ function mmr_render_admin_page() {
 							</p>
 						</div>
 					</div>
-					<div class="hidden sm:flex items-center gap-3 text-sm text-slate-500">
+					<div class="sm:flex items-center gap-3 text-sm text-slate-500">
 						<span class="inline-flex items-center gap-1 rounded-full border border-emerald-200 bg-emerald-50 px-2 py-1">
-							<span class="h-1.5 w-1.5 rounded-full bg-emerald-500"></span>
+							<span class="dashicons dashicons-shield text-[13px] text-emerald-600"></span>
 							<?php esc_html_e( 'Safe batch restore', 'missing-media-restorer' ); ?>
 						</span>
 						<span class="inline-flex items-center gap-1 rounded-full border border-blue-200 bg-blue-50 px-2 py-1">
@@ -147,7 +142,7 @@ function mmr_render_admin_page() {
 						</span>
 					</div>
 				</div>
-				<nav class="mt-2 flex items-center justify-between border border-slate-200 rounded-xl bg-white/70 backdrop-blur px-3 py-2 shadow-sm">
+				<nav class="mt-2 flex items-center justify-between border border-slate-200 rounded-xl bg-white bg-opacity-70 backdrop-blur px-3 py-2 shadow-sm">
 					<ol class="flex items-center gap-2 text-sm text-slate-500 font-medium">
 						<li class="flex items-center gap-2" data-step="1">
 							<button type="button" class="mmr-step-chip mmr-step-chip-active inline-flex items-center gap-2 rounded-full px-2 py-1 bg-slate-900 text-slate-50">
@@ -273,7 +268,7 @@ function mmr_render_admin_page() {
 							<p class="mt-0.5 text-sm text-slate-500"><?php esc_html_e( 'Upload only the files you want to restore—no bulky UI, just a focused drop area.', 'missing-media-restorer' ); ?></p>
 						</div>
 						<div class="px-4 py-4 flex flex-col gap-3">
-							<div id="mmr-upload-dropzone" class="group flex flex-col items-center justify-center rounded-xl border border-dashed border-slate-200 bg-slate-50/60 px-4 py-6 text-center text-sm text-slate-500 cursor-pointer transition">
+							<div id="mmr-upload-dropzone" class="group flex flex-col items-center justify-center rounded-xl border border-dashed border-slate-200 bg-slate-50 bg-opacity-60 px-4 py-6 text-center text-sm text-slate-500 cursor-pointer transition">
 								<span class="mb-2 inline-flex h-8 w-8 items-center justify-center rounded-full bg-white shadow-sm text-slate-400">
 									<span class="dashicons dashicons-cloud-upload text-[16px]"></span>
 								</span>
@@ -388,7 +383,7 @@ function mmr_render_admin_page() {
 						</div>
 					</div>
 					<div class="rounded-2xl bg-white border border-slate-200 mmr-console-bg text-slate-50 shadow-sm flex flex-col">
-						<div class="border-b border-slate-800/60 px-4 py-3 flex items-center justify-between text-sm">
+						<div class="border-b border-slate-800 border-opacity-60 px-4 py-3 flex items-center justify-between text-sm">
 							<span class="font-medium text-slate-100"><?php esc_html_e( 'Batch progress', 'missing-media-restorer' ); ?></span>
 							<button id="mmr-clear-temp-btn" type="button" class="hidden rounded-full border border-slate-700 px-2 py-1 text-[10px] font-medium text-slate-200 hover:bg-slate-800">
 								<span class="dashicons dashicons-trash text-[12px]"></span>
@@ -396,11 +391,11 @@ function mmr_render_admin_page() {
 							</button>
 						</div>
 						<div id="mmr-progress-container" class="flex flex-col gap-3 px-4 py-4">
-							<div class="h-1.5 w-full overflow-hidden rounded-full bg-slate-800/80">
+							<div class="h-1.5 w-full overflow-hidden rounded-full bg-slate-800 bg-opacity-80">
 								<div id="mmr-progress-fill" class="h-full w-0 mmr-progress-fill rounded-full transition-all"></div>
 							</div>
 							<p id="mmr-progress-text" class="text-sm text-slate-300"><?php esc_html_e( 'Waiting to start…', 'missing-media-restorer' ); ?></p>
-							<div id="mmr-restore-output" class="mt-2 max-h-64 overflow-auto rounded-xl bg-slate-950/60 p-3 text-sm font-mono leading-relaxed text-slate-200"></div>
+							<div id="mmr-restore-output" class="mt-2 max-h-64 overflow-auto rounded-xl bg-slate-950 bg-opacity-60 p-3 text-sm font-mono leading-relaxed text-slate-200"></div>
 						</div>
 					</div>
 				</div>
@@ -409,7 +404,7 @@ function mmr_render_admin_page() {
 	</div>
 
 	<!-- Pro Features Modal -->
-	<div id="mmr-pro-modal" class="fixed inset-0 z-50 hidden bg-black/50 backdrop-blur-sm">
+	<div id="mmr-pro-modal" class="fixed inset-0 z-50 hidden bg-black bg-opacity-50 backdrop-blur-sm">
 		<div class="flex min-h-screen items-center justify-center p-4">
 			<div class="w-full max-w-md rounded-2xl bg-white shadow-2xl">
 				<div class="relative">

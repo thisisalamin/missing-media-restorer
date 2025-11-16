@@ -118,6 +118,52 @@ Missing folder paths are auto-created if necessary.
 
 ---
 
+## Development Setup
+
+### Prerequisites
+
+- Node.js and npm installed
+- WordPress environment
+
+### Installation
+
+1. Clone or download the plugin to your WordPress plugins directory.
+2. Navigate to the plugin directory and install dependencies:
+
+   ```bash
+   npm install
+   ```
+
+3. Build the CSS:
+
+   ```bash
+   npm run prod-css
+   ```
+
+   For development with watch mode:
+
+   ```bash
+   npm run build-css
+   ```
+
+### Technologies Used
+
+- **Tailwind CSS v4.1.17**: Latest version for modern CSS utilities
+- **PostCSS**: For processing CSS with Tailwind
+- **Autoprefixer**: For CSS vendor prefixes
+
+### File Structure
+
+- `missing-media-restorer.php`: Main plugin file
+- `assets/css/src/tailwind.css`: Source CSS with Tailwind import and custom styles
+- `assets/css/mmr-admin.css`: Compiled CSS (generated)
+- `assets/js/mmr-admin.js`: JavaScript for admin interface
+- `tailwind.config.js`: Tailwind configuration
+- `postcss.config.js`: PostCSS configuration
+- `package.json`: Node.js dependencies and scripts
+
+---
+
 ## Author
 
 Developed for automated restoration of large-scale missing media libraries in WordPress environments.
