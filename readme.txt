@@ -1,9 +1,9 @@
 === Missing Media Restorer ===
 Contributors: REVENTOR, alaminit
-Tags: media, restore, missing files, backup, upload, library, images, pdf, videos
+Tags: media, restore, missing files, backup, upload
 Requires at least: 5.0
 Tested up to: 6.9
-Stable tag: 1.0.3
+Stable tag: 1.0.0
 Requires PHP: 7.4
 License: GPL v2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
@@ -106,19 +106,7 @@ No. The interface is designed to be user-friendly with clear step-by-step instru
 
 == Changelog ==
 
-= 1.0.3 =
-* Improved batch processing performance
-* Added support for additional file types
-* Enhanced error handling and reporting
-* Fixed thumbnail regeneration issues
-
-= 1.0.2 =
-* Added progress indicators for long-running operations
-* Improved memory usage for large media libraries
-* Enhanced FTP upload detection
-* Fixed compatibility with WordPress 6.8+
-
-= 1.0.1 =
+= 1.0.0 =
 * Initial release with core functionality
 * Batch-based restoration system
 * Drag-and-drop upload interface

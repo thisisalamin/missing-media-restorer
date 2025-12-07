@@ -520,24 +520,57 @@ function mmr_render_admin_page() {
 }
 
 /**
- * Get list of files in the temporary upload directory
+	* Sanitize files array from $_FILES
+	*
+	* @param array $files The files array to sanitize
+	* @return array The sanitized files array
+	*/
+function mmr_sanitize_files_array( $files ) {
+	if ( ! is_array( $files ) ) {
+		return array();
+	}
+
+	$sanitized = array();
+	foreach ( $files as $key => $value ) {
+		if ( is_array( $value ) ) {
+			$sanitized[ $key ] = array();
+			foreach ( $value as $index => $item ) {
+				$sanitized[ $key ][ $index ] = is_string( $item ) ? sanitize_text_field( $item ) : $item;
+			}
+		} else {
+			$sanitized[ $key ] = is_string( $value ) ? sanitize_text_field( $value ) : $value;
+		}
+	}
+
+	return $sanitized;
+}
+
+/**
+	* Get list of files in the temporary upload directory
  *
  * @return array List of uploaded files
  */
 function mmr_get_temp_files() {
+	// Initialize WP_Filesystem
+	global $wp_filesystem;
+	if ( ! $wp_filesystem ) {
+		require_once ABSPATH . 'wp-admin/includes/file.php';
+		WP_Filesystem();
+	}
+
 	$upload_dir      = wp_upload_dir();
 	$temp_upload_dir = $upload_dir['basedir'] . '/mmr-temp/';
 	$files           = array();
 
-	if ( file_exists( $temp_upload_dir ) ) {
-		$file_list = glob( $temp_upload_dir . '*' );
+	if ( $wp_filesystem->exists( $temp_upload_dir ) ) {
+		$file_list = $wp_filesystem->dirlist( $temp_upload_dir );
 
 		if ( is_array( $file_list ) ) {
-			foreach ( $file_list as $file ) {
-				if ( is_file( $file ) ) {
+			foreach ( $file_list as $filename => $fileinfo ) {
+				if ( 'f' === $fileinfo['type'] ) { // It's a file
 					$files[] = array(
-						'name' => basename( $file ),
-						'size' => filesize( $file ),
+						'name' => $filename,
+						'size' => $fileinfo['size'],
 					);
 				}
 			}
@@ -615,8 +648,15 @@ function mmr_scan_missing_files() {
 		// Extract directory path (year/month)
 		$dir_path = dirname( $attached_file );
 
+		// Initialize WP_Filesystem if not already initialized
+		global $wp_filesystem;
+		if ( ! $wp_filesystem ) {
+			require_once ABSPATH . 'wp-admin/includes/file.php';
+			WP_Filesystem();
+		}
+
 		// Check if main file exists
-		if ( ! file_exists( $file_path ) ) {
+		if ( ! $wp_filesystem->exists( $file_path ) ) {
 			$missing_files[] = array(
 				'id'        => $attachment_id,
 				'filename'  => $filename,
@@ -646,7 +686,7 @@ function mmr_scan_missing_files() {
 						$thumb_full_path = $uploads_dir . '/' . $thumb_path;
 
 						// Check if thumbnail exists
-						if ( ! file_exists( $thumb_full_path ) ) {
+						if ( ! $wp_filesystem->exists( $thumb_full_path ) ) {
 							$missing_files[] = array(
 								'id'           => $attachment_id,
 								'filename'     => $thumb_filename,
@@ -806,8 +846,15 @@ function mmr_process_batch_restore( $batch_number, $batch_size ) {
 		// File is available - restore it and its thumbnails
 		$copy_success = false;
 
+		// Initialize WP_Filesystem if not already initialized
+		global $wp_filesystem;
+		if ( ! $wp_filesystem ) {
+			require_once ABSPATH . 'wp-admin/includes/file.php';
+			WP_Filesystem();
+		}
+
 		// Create target directory if it doesn't exist
-		if ( ! file_exists( $target_dir ) ) {
+		if ( ! $wp_filesystem->exists( $target_dir ) ) {
 			wp_mkdir_p( $target_dir );
 		}
 
@@ -820,28 +867,37 @@ function mmr_process_batch_restore( $batch_number, $batch_size ) {
 		$source_file = $temp_upload_dir . $filename;
 		$dest_file   = $target_dir . '/' . $filename;
 
-		if ( copy( $source_file, $dest_file ) ) {
+		if ( $wp_filesystem->copy( $source_file, $dest_file ) ) {
 			$copy_success = true;
 			++$files_restored;
 			// Remove from temp after successful copy.
-			wp_delete_file( $source_file );
+			$wp_filesystem->delete( $source_file );
 		}
 
 		// Look for and copy related thumbnail files
 		// Pattern: basename-*x*.ext (e.g., image-300x300.jpg)
 		if ( ! empty( $extension ) ) {
 			$thumbnail_pattern = $basename . '-*.' . $extension;
-			$thumbnails        = glob( $temp_upload_dir . $thumbnail_pattern );
+			$temp_files = $wp_filesystem->dirlist( $temp_upload_dir );
+			$thumbnails = array();
 
-			if ( is_array( $thumbnails ) && ! empty( $thumbnails ) ) {
+			if ( is_array( $temp_files ) ) {
+				foreach ( $temp_files as $temp_filename => $fileinfo ) {
+					if ( 'f' === $fileinfo['type'] && preg_match( '/^' . preg_quote( $basename, '/' ) . '-.*\.' . preg_quote( $extension, '/' ) . '$/', $temp_filename ) ) {
+						$thumbnails[] = $temp_upload_dir . $temp_filename;
+					}
+				}
+			}
+
+			if ( ! empty( $thumbnails ) ) {
 				foreach ( $thumbnails as $thumb_file ) {
 					$thumb_name = basename( $thumb_file );
 					$thumb_dest = $target_dir . '/' . $thumb_name;
 
-					if ( copy( $thumb_file, $thumb_dest ) ) {
+					if ( $wp_filesystem->copy( $thumb_file, $thumb_dest ) ) {
 						++$files_restored;
 					// Remove from temp after successful copy.
-					wp_delete_file( $thumb_file );
+					$wp_filesystem->delete( $thumb_file );
 					}
 				}
 			}
@@ -933,6 +989,13 @@ function mmr_ajax_upload_files() {
 		wp_send_json_error( array( 'message' => 'No files provided. Please select files to upload.' ) );
 	}
 
+	// Initialize WP_Filesystem
+	global $wp_filesystem;
+	if ( ! $wp_filesystem ) {
+		require_once ABSPATH . 'wp-admin/includes/file.php';
+		WP_Filesystem();
+	}
+
 	// Get upload directory info
 	$uploaded_dir = wp_upload_dir();
 	if ( $uploaded_dir['error'] ) {
@@ -942,19 +1005,20 @@ function mmr_ajax_upload_files() {
 	$temp_upload_dir = $uploaded_dir['basedir'] . '/mmr-temp/';
 
 	// Create temp directory if it doesn't exist
-	if ( ! file_exists( $temp_upload_dir ) ) {
+	if ( ! $wp_filesystem->exists( $temp_upload_dir ) ) {
 		if ( ! wp_mkdir_p( $temp_upload_dir ) ) {
 			wp_send_json_error( array( 'message' => 'Failed to create temporary upload directory: ' . $temp_upload_dir ) );
 		}
 	}
 
-	// Check if temp directory is writable
-	if ( ! is_writable( $temp_upload_dir ) ) {
+	// Check if temp directory is writable using WP_Filesystem
+	if ( ! $wp_filesystem->is_writable( $temp_upload_dir ) ) {
 		wp_send_json_error( array( 'message' => 'Temporary upload directory is not writable: ' . $temp_upload_dir ) );
 	}
 
-	// @var array $_FILES - PHP Superglobal
+	// Sanitize $_FILES input
 	$files          = isset( $_FILES['files'] ) ? wp_unslash( $_FILES['files'] ) : array();
+	$files          = mmr_sanitize_files_array( $files );
 	$uploaded_files = array();
 	$failed_files   = array();
 
@@ -1026,7 +1090,7 @@ function mmr_ajax_upload_files() {
 
 		// Handle filename conflicts
 		$counter = 1;
-		while ( file_exists( $destination ) ) {
+		while ( $wp_filesystem->exists( $destination ) ) {
 			$name_parts  = pathinfo( $filename );
 			$new_name    = $name_parts['filename'] . '_' . $counter . '.' . $name_parts['extension'];
 			$destination = $temp_upload_dir . $new_name;
@@ -1034,7 +1098,8 @@ function mmr_ajax_upload_files() {
 			++$counter;
 		}
 
-		if ( move_uploaded_file( $tmp_name, $destination ) ) {
+		// Use WP_Filesystem to move the uploaded file
+		if ( $wp_filesystem->move( $tmp_name, $destination ) ) {
 			$uploaded_files[] = array(
 				'name'     => $filename,
 				'original' => $name,
@@ -1080,18 +1145,26 @@ function mmr_ajax_clear_temp_files() {
 		wp_send_json_error( array( 'message' => 'Insufficient permissions' ) );
 	}
 
+	// Initialize WP_Filesystem
+	global $wp_filesystem;
+	if ( ! $wp_filesystem ) {
+		require_once ABSPATH . 'wp-admin/includes/file.php';
+		WP_Filesystem();
+	}
+
 	$uploaded_dir    = wp_upload_dir();
 	$temp_upload_dir = $uploaded_dir['basedir'] . '/mmr-temp/';
 
 	$cleared_count = 0;
 
-	if ( file_exists( $temp_upload_dir ) ) {
-		$files = glob( $temp_upload_dir . '*' );
+	if ( $wp_filesystem->exists( $temp_upload_dir ) ) {
+		$files = $wp_filesystem->dirlist( $temp_upload_dir );
 
 		if ( is_array( $files ) ) {
-			foreach ( $files as $file ) {
-				if ( is_file( $file ) ) {
-					wp_delete_file( $file );
+			foreach ( $files as $filename => $fileinfo ) {
+				if ( 'f' === $fileinfo['type'] ) { // It's a file
+					$file_path = $temp_upload_dir . $filename;
+					$wp_filesystem->delete( $file_path );
 					++$cleared_count;
 				}
 			}
