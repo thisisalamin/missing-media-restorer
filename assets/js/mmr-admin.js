@@ -325,10 +325,10 @@ function showScanProgress() {
 				const missingCount = missingFiles.length;
 				const batches = mmrState.totalBatches || Math.ceil( missingCount / mmrState.batchSize );
 
-				html += '<span class="inline-flex items-center gap-1 px-2 py-1 rounded-full bg-slate-100 text-slate-700 border border-slate-200 shadow-sm"><span class="dashicons dashicons-admin-media text-[12px]"></span><span class="font-semibold">' + totalCount + '</span> total items</span>';
-				html += '<span class="inline-flex items-center gap-1 px-2 py-1 rounded-full bg-green-100 text-green-700 border border-green-200 shadow-sm"><span class="dashicons dashicons-yes text-green-600 text-[12px]"></span><span class="font-semibold">' + existingCount + '</span> existing</span>';
-				html += '<span class="inline-flex items-center gap-1 px-2 py-1 rounded-full bg-red-100 text-red-700 border border-red-200 shadow-sm"><span class="dashicons dashicons-no text-[12px]"></span><span class="font-semibold">' + missingCount + '</span> missing</span>';
-				html += '<span class="inline-flex items-center gap-1 px-2 py-1 rounded-full bg-blue-100 text-blue-700 border border-blue-200 shadow-sm"><span class="dashicons dashicons-update text-[12px]"></span><span class="font-semibold">' + batches + '</span> batches</span>';
+				html += '<span class="inline-flex items-center gap-1 px-2 py-1 rounded-full bg-slate-100 text-slate-700 border border-slate-200 shadow-sm"><span class="dashicons dashicons-admin-media text-[15px]"></span><span class="font-semibold">' + totalCount + '</span> total items</span>';
+				html += '<span class="inline-flex items-center gap-1 px-2 py-1 rounded-full bg-green-100 text-green-700 border border-green-200 shadow-sm"><span class="dashicons dashicons-yes text-green-600 text-[15px]"></span><span class="font-semibold">' + existingCount + '</span> existing</span>';
+				html += '<span class="inline-flex items-center gap-1 px-2 py-1 rounded-full bg-red-100 text-red-700 border border-red-200 shadow-sm"><span class="dashicons dashicons-no text-[15px]"></span><span class="font-semibold">' + missingCount + '</span> missing</span>';
+				html += '<span class="inline-flex items-center gap-1 px-2 py-1 rounded-full bg-blue-100 text-blue-700 border border-blue-200 shadow-sm"><span class="dashicons dashicons-update text-[15px]"></span><span class="font-semibold">' + batches + '</span> batches</span>';
 				html += '</div>';
 				html += '</div>';
 				html += '</div>';
@@ -389,7 +389,7 @@ function showScanProgress() {
 				html += '<p class="text-slate-500">Next, bring in the backup files you want to restore.</p>';
 				html += '<button id="mmr-continue-upload-btn" type="button" class="mmr-btn-primary inline-flex items-center gap-1 rounded-full px-3 py-1.5 text-sm font-medium">';
 				html += '<span>Continue to upload</span>';
-				html += '<span class="dashicons dashicons-arrow-right-alt2 text-[13px]"></span>';
+				html += '<span class="dashicons dashicons-arrow-right-alt2 text-[15px]"></span>';
 				html += '</button>';
 				html += '</div>';
 
@@ -699,7 +699,7 @@ function showScanProgress() {
 		html += '<span class="dashicons dashicons-yes-alt text-[14px]"></span>';
 		html += '<span>Matched Files</span>';
 		html += '</span>';
-		html += '<span class="text-[12px] font-bold text-emerald-700">' + matched + '</span>';
+		html += '<span class="text-[15px] font-bold text-emerald-700">' + matched + '</span>';
 		html += '</div>';
 		html += '<p class="text-[10px] text-emerald-700/90 leading-relaxed">These files have a backup ready and will be restored in the next step.</p>';
 		html += '</div>';
@@ -711,7 +711,7 @@ function showScanProgress() {
 		html += '<span class="dashicons dashicons-warning text-[14px]"></span>';
 		html += '<span>Unmatched Files</span>';
 		html += '</span>';
-		html += '<span class="text-[12px] font-bold text-amber-700">' + unmatched + '</span>';
+		html += '<span class="text-[15px] font-bold text-amber-700">' + unmatched + '</span>';
 		html += '</div>';
 		html += '<p class="text-[10px] text-amber-700/90 leading-relaxed">These remain missing until their backup files appear with matching names.</p>';
 		html += '</div>';
@@ -723,7 +723,7 @@ function showScanProgress() {
 		if ( matchedItems.length > 0 ) {
 			html += '<div>';
 			html += '<h4 class="mb-2 text-[11px] font-bold text-emerald-900 flex items-center gap-1">';
-			html += '<span class="dashicons dashicons-yes text-[12px] text-emerald-600"></span>';
+			html += '<span class="dashicons dashicons-yes text-[15px] text-emerald-600"></span>';
 			html += '<span>Matched Files (' + matchedItems.length + ')</span>';
 			html += '</h4>';
 			html += '<div class="mmr-files-list-container border-2 border-emerald-200">';
@@ -741,7 +741,7 @@ function showScanProgress() {
 		if ( unmatchedItems.length > 0 ) {
 			html += '<div>';
 			html += '<h4 class="mb-2 text-[11px] font-bold text-amber-900 flex items-center gap-1">';
-			html += '<span class="dashicons dashicons-warning text-[12px] text-amber-600"></span>';
+			html += '<span class="dashicons dashicons-warning text-[15px] text-amber-600"></span>';
 			html += '<span>Unmatched Files (' + unmatchedItems.length + ')</span>';
 			html += '</h4>';
 			html += '<div class="mmr-files-list-container border-2 border-amber-200">';
@@ -1089,7 +1089,7 @@ function showScanProgress() {
 				html += '<p class="text-[11px] text-emerald-800 mb-2">Files are prepared in the temporary upload folder and ready for matching.</p>';
 				html += '<details class="mt-2">';
 				html += '<summary class="cursor-pointer text-[11px] font-semibold text-emerald-900 hover:text-emerald-700 flex items-center gap-1">';
-				html += '<span class="dashicons dashicons-visibility text-[13px]"></span>';
+				html += '<span class="dashicons dashicons-visibility text-[15px]"></span>';
 				html += '<span>View uploaded files (' + uploadedFiles.length + ')</span>';
 				html += '</summary>';
 				html += '<div class="mmr-upload-files-list">';

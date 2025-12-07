@@ -1090,7 +1090,7 @@ video {
 .text-\[16px\] {
   font-size: 16px;
 }
-.text-base {
+.text-[15px] {
   font-size: 1rem;
   line-height: 1.5rem;
 }

@@ -227,7 +227,7 @@ function mmr_render_admin_page() {
 				<div class="flex items-center justify-between gap-4">
 					<div class="flex items-center gap-3">
 						<div class="h-9 w-9 rounded-xl mmr-header-icon flex items-center justify-center shadow-sm">
-							<span class="dashicons dashicons-format-image text-base"></span>
+							<span class="dashicons dashicons-format-image text-[15px]"></span>
 						</div>
 						<div>
 							<h1 class="text-xl font-semibold tracking-tight text-slate-900">
@@ -243,11 +243,11 @@ function mmr_render_admin_page() {
 					</div>
 					<div class="sm:flex items-center gap-3 text-sm text-slate-500">
 						<span class="inline-flex items-center gap-1 rounded-full border border-emerald-200 bg-emerald-50 px-2 py-1">
-							<span class="dashicons dashicons-shield text-[13px] text-emerald-600"></span>
+							<span class="dashicons dashicons-shield text-[15px] text-emerald-600"></span>
 							<?php esc_html_e( 'Safe batch restore', 'missing-media-restorer' ); ?>
 						</span>
 						<span class="inline-flex items-center gap-1 rounded-full border border-blue-200 bg-blue-50 px-2 py-1">
-							<span class="dashicons dashicons-shield-alt text-[13px] text-blue-600"></span>
+							<span class="dashicons dashicons-shield-alt text-[15px] text-blue-600"></span>
 							<?php esc_html_e( 'No database changes', 'missing-media-restorer' ); ?>
 						</span>
 					</div>
@@ -284,11 +284,11 @@ function mmr_render_admin_page() {
 					</ol>
 					<div class="flex items-center gap-2 text-sm text-slate-400">
 						<button id="mmr-new-scan-btn" type="button" class="mmr-btn-primary inline-flex items-center gap-1 rounded-full px-3 py-1.5 text-sm font-medium">
-							<span class="dashicons dashicons-search text-[13px]"></span>
+							<span class="dashicons dashicons-search text-[15px]"></span>
 							<span><?php esc_html_e( 'Run Scan', 'missing-media-restorer' ); ?></span>
 						</button>
 						<button id="mmr-btn-pro" type="button" class="mmr-btn-pro inline-flex items-center gap-1 rounded-full px-3 py-1.5 text-sm font-medium <?php echo $pro_status['is_pro'] ? 'mmr-pro-active' : ''; ?>">
-							<span class="dashicons dashicons-<?php echo esc_attr( $pro_status['button_icon'] ); ?> text-[13px]"></span>
+							<span class="dashicons dashicons-<?php echo esc_attr( $pro_status['button_icon'] ); ?> text-[15px]"></span>
 							<span><?php echo esc_html( $pro_status['button_text'] ); ?></span>
 						</button>
 					</div>
@@ -418,15 +418,15 @@ function mmr_render_admin_page() {
 							</div>
 							<div class="flex flex-wrap items-center gap-2 text-sm">
 								<button id="mmr-select-files-btn" type="button" class="mmr-btn-ghost inline-flex items-center gap-1 rounded-full px-3 py-1.5">
-									<span class="dashicons dashicons-media-default text-[13px]"></span>
+									<span class="dashicons dashicons-media-default text-[15px]"></span>
 									<span><?php esc_html_e( 'Pick files', 'missing-media-restorer' ); ?></span>
 								</button>
 								<button id="mmr-select-folder-btn" type="button" class="mmr-btn-ghost inline-flex items-center gap-1 rounded-full px-3 py-1.5">
-									<span class="dashicons dashicons-category text-[13px]"></span>
+									<span class="dashicons dashicons-category text-[15px]"></span>
 									<span><?php esc_html_e( 'Pick folder', 'missing-media-restorer' ); ?></span>
 								</button>
 								<button id="mmr-refresh-files-btn" type="button" class="mmr-btn-ghost inline-flex items-center gap-1 rounded-full px-3 py-1.5">
-									<span class="dashicons dashicons-update text-[13px]"></span>
+									<span class="dashicons dashicons-update text-[15px]"></span>
 									<span><?php esc_html_e( 'Check FTP uploads', 'missing-media-restorer' ); ?></span>
 								</button>
 							</div>
@@ -438,7 +438,7 @@ function mmr_render_admin_page() {
 							<p class="mb-2 font-medium text-slate-800"><?php esc_html_e( 'Prefer FTP?', 'missing-media-restorer' ); ?></p>
 							<p class="mb-1 leading-relaxed"><?php esc_html_e( 'Upload your backup set directly to the temp folder, then refresh.', 'missing-media-restorer' ); ?></p>
 							<p class="inline-flex items-center gap-1 rounded-full border border-slate-200 bg-slate-50 px-2 py-1 text-[10px] font-mono text-slate-700">
-								<span class="dashicons dashicons-admin-network text-[13px]"></span>
+								<span class="dashicons dashicons-admin-network text-[15px]"></span>
 								<span>/wp-content/uploads/mmr-temp/</span>
 							</p>
 						</div>
@@ -447,7 +447,7 @@ function mmr_render_admin_page() {
 							<p class="mb-2"><?php esc_html_e( 'When you are happy with the list, move on to matching.', 'missing-media-restorer' ); ?></p>
 							<button id="mmr-continue-match-btn" type="button" class="mmr-btn-primary inline-flex items-center gap-1 rounded-full px-3 py-1.5 text-sm font-medium">
 								<span><?php esc_html_e( 'Continue to match', 'missing-media-restorer' ); ?></span>
-								<span class="dashicons dashicons-arrow-right-alt2 text-[13px]"></span>
+								<span class="dashicons dashicons-arrow-right-alt2 text-[15px]"></span>
 							</button>
 						</div>
 					</div>
@@ -460,7 +460,7 @@ function mmr_render_admin_page() {
 					<div class="flex items-center justify-between border-b border-slate-100 px-4 py-3">
 						<div class="flex items-center gap-2">
 							<span class="inline-flex h-6 w-6 items-center justify-center rounded-full bg-green-100 text-green-600 text-xs">
-								<span class="dashicons dashicons-yes text-[13px]"></span>
+								<span class="dashicons dashicons-yes text-[15px]"></span>
 							</span>
 							<div>
 								<h2 class="text-sm font-semibold tracking-tight text-slate-900"><?php esc_html_e( 'Quick match overview', 'missing-media-restorer' ); ?></h2>
@@ -469,7 +469,7 @@ function mmr_render_admin_page() {
 						</div>
 						<div class="flex items-center gap-2 text-sm text-slate-400">
 							<button id="mmr-back-to-upload-btn" type="button" class="mmr-btn-ghost inline-flex items-center gap-1 rounded-full px-3 py-1.5">
-								<span class="dashicons dashicons-arrow-left-alt2 text-[13px]"></span>
+								<span class="dashicons dashicons-arrow-left-alt2 text-[15px]"></span>
 								<span><?php esc_html_e( 'Adjust uploads', 'missing-media-restorer' ); ?></span>
 							</button>
 						</div>
@@ -480,7 +480,7 @@ function mmr_render_admin_page() {
 							<p class="text-sm text-slate-500"><?php esc_html_e( 'Only matched files will be processed in the next step.', 'missing-media-restorer' ); ?></p>
 							<button id="mmr-continue-restore-btn" type="button" class="mmr-btn-primary inline-flex items-center gap-1 rounded-full px-3 py-1.5 text-sm font-medium">
 								<span><?php esc_html_e( 'Continue to restore', 'missing-media-restorer' ); ?></span>
-								<span class="dashicons dashicons-arrow-right-alt2 text-[13px]"></span>
+								<span class="dashicons dashicons-arrow-right-alt2 text-[15px]"></span>
 							</button>
 						</div>
 					</div>
@@ -494,7 +494,7 @@ function mmr_render_admin_page() {
 						<div class="border-b border-slate-100 px-4 py-3">
 							<div class="flex items-center gap-2">
 								<span class="inline-flex h-6 w-6 items-center justify-center rounded-full bg-cyan-100 text-cyan-600 text-xs">
-									<span class="dashicons dashicons-image-rotate text-[13px]"></span>
+									<span class="dashicons dashicons-image-rotate text-[15px]"></span>
 								</span>
 								<div>
 									<h2 class="text-sm font-semibold tracking-tight text-slate-900"><?php esc_html_e( 'Restore in calm batches', 'missing-media-restorer' ); ?></h2>
@@ -510,12 +510,12 @@ function mmr_render_admin_page() {
 							</ul>
 							<div class="mt-2">
 								<button id="mmr-restore-btn" type="button" class="mmr-btn-primary inline-flex items-center gap-2 rounded-full px-3 py-1.5 text-sm font-medium">
-									<span class="dashicons dashicons-image-rotate text-[13px]"></span>
+									<span class="dashicons dashicons-image-rotate text-[15px]"></span>
 									<span><?php esc_html_e( 'Start restore', 'missing-media-restorer' ); ?></span>
 								</button>
 							</div>
 							<div class="mt-3 inline-flex items-center gap-2 rounded-full border border-slate-200 bg-slate-50 px-3 py-1 text-[10px] text-slate-500">
-								<span class="dashicons dashicons-clock text-[13px]"></span>
+								<span class="dashicons dashicons-clock text-[15px]"></span>
 								<span><?php esc_html_e( 'You can leave this tab open in the background.', 'missing-media-restorer' ); ?></span>
 							</div>
 						</div>
@@ -524,7 +524,7 @@ function mmr_render_admin_page() {
 						<div class="border-b border-slate-800 border-opacity-60 px-4 py-3 flex items-center justify-between text-sm">
 							<span class="font-medium text-slate-100"><?php esc_html_e( 'Batch progress', 'missing-media-restorer' ); ?></span>
 							<button id="mmr-clear-temp-btn" type="button" class="hidden rounded-full border border-slate-700 px-2 py-1 text-[10px] font-medium text-slate-200 hover:bg-slate-800">
-								<span class="dashicons dashicons-trash text-[12px]"></span>
+								<span class="dashicons dashicons-trash text-[15px]"></span>
 								<span><?php esc_html_e( 'Clear temp files', 'missing-media-restorer' ); ?></span>
 							</button>
 						</div>
@@ -1009,8 +1009,8 @@ function mmr_process_batch_restore( $batch_number, $batch_size ) {
 
 					if ( copy( $thumb_file, $thumb_dest ) ) {
 						++$files_restored;
-					// Remove from temp after successful copy.
-					wp_delete_file( $thumb_file );
+						// Remove from temp after successful copy.
+						wp_delete_file( $thumb_file );
 					}
 				}
 			}
@@ -1291,7 +1291,7 @@ function mmr_render_pro_scanner_page() {
 				<div class="flex items-center justify-between gap-4">
 					<div class="flex items-center gap-3">
 						<div class="h-9 w-9 rounded-xl mmr-header-icon flex items-center justify-center shadow-sm">
-							<span class="dashicons dashicons-search text-base"></span>
+							<span class="dashicons dashicons-search text-[15px]"></span>
 						</div>
 						<div>
 							<h1 class="text-xl font-semibold tracking-tight text-slate-900">
@@ -1420,7 +1420,7 @@ function mmr_render_pro_uploader_page() {
 				<div class="flex items-center justify-between gap-4">
 					<div class="flex items-center gap-3">
 						<div class="h-9 w-9 rounded-xl mmr-header-icon flex items-center justify-center shadow-sm">
-							<span class="dashicons dashicons-cloud-upload text-base"></span>
+							<span class="dashicons dashicons-cloud-upload text-[15px]"></span>
 						</div>
 						<div>
 							<h1 class="text-xl font-semibold tracking-tight text-slate-900">
@@ -1545,7 +1545,7 @@ function mmr_render_pro_matcher_page() {
 				<div class="flex items-center justify-between gap-4">
 					<div class="flex items-center gap-3">
 						<div class="h-9 w-9 rounded-xl mmr-header-icon flex items-center justify-center shadow-sm">
-							<span class="dashicons dashicons-admin-tools text-base"></span>
+							<span class="dashicons dashicons-admin-tools text-[15px]"></span>
 						</div>
 						<div>
 							<h1 class="text-xl font-semibold tracking-tight text-slate-900">
@@ -1727,7 +1727,7 @@ function mmr_render_pro_analytics_page() {
 				<div class="flex items-center justify-between gap-4">
 					<div class="flex items-center gap-3">
 						<div class="h-9 w-9 rounded-xl mmr-header-icon flex items-center justify-center shadow-sm">
-							<span class="dashicons dashicons-chart-line text-base"></span>
+							<span class="dashicons dashicons-chart-line text-[15px]"></span>
 						</div>
 						<div>
 							<h1 class="text-xl font-semibold tracking-tight text-slate-900">
@@ -1889,7 +1889,7 @@ function mmr_render_pro_support_page() {
 				<div class="flex items-center justify-between gap-4">
 					<div class="flex items-center gap-3">
 						<div class="h-9 w-9 rounded-xl mmr-header-icon flex items-center justify-center shadow-sm">
-							<span class="dashicons dashicons-sos text-base"></span>
+							<span class="dashicons dashicons-sos text-[15px]"></span>
 						</div>
 						<div>
 							<h1 class="text-xl font-semibold tracking-tight text-slate-900">

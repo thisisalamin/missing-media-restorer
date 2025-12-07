@@ -15,10 +15,7 @@
 	gap: 0.25rem;
 }
 
-.mmr-pro-badge::before {
-	content: '⭐';
-	font-size: 0.875rem;
-}
+
 
 /* Enhanced pro features display */
 .mmr-pro-feature-active {
