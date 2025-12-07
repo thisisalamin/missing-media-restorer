@@ -399,7 +399,7 @@ function mmr_render_admin_page() {
 			</div>
 		</section>			<!-- Step 2: Upload -->
 			<section id="mmr-step-2" class="mmr-step-container hidden">
-				<div class="grid gap-4 md:grid-cols-[minmax(0,3fr)_minmax(0,2fr)]">
+				<div class="grid gap-4">
 					<div class="rounded-2xl border border-slate-200 mmr-section-bg shadow-sm">
 						<div class="border-b border-slate-100 px-4 py-3">
 							<h2 class="text-sm font-semibold tracking-tight text-slate-900"><?php esc_html_e( 'Bring your backup media', 'missing-media-restorer' ); ?></h2>
@@ -489,7 +489,7 @@ function mmr_render_admin_page() {
 
 			<!-- Step 4: Restore -->
 			<section id="mmr-step-4" class="mmr-step-container hidden">
-				<div class="grid gap-4 md:grid-cols-[minmax(0,2fr)_minmax(0,3fr)]">
+				<div class="grid gap-4">
 					<div class="rounded-2xl border border-slate-200 mmr-section-bg shadow-sm flex flex-col">
 						<div class="border-b border-slate-100 px-4 py-3">
 							<div class="flex items-center gap-2">
