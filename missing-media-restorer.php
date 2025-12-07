@@ -3,8 +3,10 @@
  * Plugin Name: Missing Media Restorer
  * Description: Restores missing WordPress media files in batches to prevent timeouts and server overload
  * Version: 1.0.0
- * Author: Crafely Development
+ * Author: REVENTOR
+ * Author URI: https://reventor.eu
  * License: GPL v2 or later
+ * License URI: https://www.gnu.org/licenses/gpl-2.0.html
  * Text Domain: missing-media-restorer
  * Domain Path: /languages
  *
