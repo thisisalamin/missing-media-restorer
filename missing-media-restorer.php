@@ -19,7 +19,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 // Define plugin constants.
 define( 'MMR_PLUGIN_DIR', plugin_dir_path( __FILE__ ) );
 define( 'MMR_PLUGIN_URL', plugin_dir_url( __FILE__ ) );
-define( 'MMR_PLUGIN_VERSION', '1.0.3' );
+define( 'MMR_PLUGIN_VERSION', '1.0.4' );
 
 /**
  * Check if pro version is available
