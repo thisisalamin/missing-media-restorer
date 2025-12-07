@@ -2,6 +2,7 @@
 /**
  * Plugin Name: Missing Media Restorer
  * Description: Restores missing WordPress media files in batches to prevent timeouts and server overload
+ * Plugin URI: https://github.com/thisisalamin/missing-media-restorer
  * Version: 1.0.0
  * Author: REVENTOR
  * Author URI: https://reventor.eu
