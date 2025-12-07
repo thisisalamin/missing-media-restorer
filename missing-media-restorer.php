@@ -86,6 +86,7 @@ register_deactivation_hook( __FILE__, 'mmr_plugin_deactivation' );
  * Register admin menu for Media Restorer
  */
 function mmr_register_admin_menu() {
+	// Main menu page
 	add_menu_page(
 		'Media Restorer',           // Page title
 		'Media Restorer',           // Menu title
@@ -95,6 +96,54 @@ function mmr_register_admin_menu() {
 		'dashicons-format-image',   // Icon
 		25                          // Position
 	);
+
+	// Add pro submenu pages if pro is available
+	if ( mmr_is_pro_available() ) {
+		add_submenu_page(
+			'missing-media-restorer',      // Parent slug
+			'Pro Scanner',               // Page title
+			'Scanner',                  // Menu title
+			'manage_options',            // Capability
+			'mmr-pro-scanner',          // Menu slug
+			'mmr_render_pro_scanner_page' // Callback function
+		);
+
+		add_submenu_page(
+			'missing-media-restorer',      // Parent slug
+			'Pro Uploader',              // Page title
+			'Uploader',                  // Menu title
+			'manage_options',            // Capability
+			'mmr-pro-uploader',          // Menu slug
+			'mmr_render_pro_uploader_page' // Callback function
+		);
+
+		add_submenu_page(
+			'missing-media-restorer',      // Parent slug
+			'Pro Matcher',               // Page title
+			'Matcher',                   // Menu title
+			'manage_options',            // Capability
+			'mmr-pro-matcher',           // Menu slug
+			'mmr_render_pro_matcher_page'  // Callback function
+		);
+
+		add_submenu_page(
+			'missing-media-restorer',      // Parent slug
+			'Pro Analytics',             // Page title
+			'Analytics',                 // Menu title
+			'manage_options',            // Capability
+			'mmr-pro-analytics',         // Menu slug
+			'mmr_render_pro_analytics_page' // Callback function
+		);
+
+		add_submenu_page(
+			'missing-media-restorer',      // Parent slug
+			'Pro Support',              // Page title
+			'Support',                   // Menu title
+			'manage_options',            // Capability
+			'mmr-pro-support',           // Menu slug
+			'mmr_render_pro_support_page'  // Callback function
+		);
+	}
 }
 add_action( 'admin_menu', 'mmr_register_admin_menu' );
 
@@ -102,8 +151,17 @@ add_action( 'admin_menu', 'mmr_register_admin_menu' );
  * Enqueue admin scripts and styles for the plugin page
  */
 function mmr_enqueue_admin_assets( $hook ) {
-	// Only enqueue on our plugin's admin page
-	if ( 'toplevel_page_missing-media-restorer' !== $hook ) {
+	// Only enqueue on our plugin's admin pages
+	$valid_hooks = array(
+		'toplevel_page_missing-media-restorer',
+		'media-restorer_page_mmr-pro-scanner',
+		'media-restorer_page_mmr-pro-uploader',
+		'media-restorer_page_mmr-pro-matcher',
+		'media-restorer_page_mmr-pro-analytics',
+		'media-restorer_page_mmr-pro-support',
+	);
+
+	if ( ! in_array( $hook, $valid_hooks, true ) ) {
 		return;
 	}
 
@@ -483,96 +541,7 @@ function mmr_render_admin_page() {
 		</div>
 	</div>
 
-	<?php if ( $pro_status['is_pro'] ) : ?>
-	<!-- Pro Features Section -->
-	<div class="wrap">
-		<div class="mmr-admin max-w-[88rem] mx-auto mt-8 mb-10 px-4">
-			<section id="mmr-pro-section" class="mmr-step-container">
-				<div class="grid gap-4 md:grid-cols-2">
-					<div class="rounded-2xl border border-slate-200 mmr-section-bg shadow-sm">
-						<div class="border-b border-slate-100 px-4 py-3">
-							<div class="flex items-center gap-2">
-								<span class="inline-flex h-6 w-6 items-center justify-center rounded-full bg-gradient-to-r from-blue-500 to-purple-600 text-white text-xs">
-									<span class="dashicons dashicons-search text-[13px]"></span>
-								</span>
-								<div>
-									<h2 class="text-sm font-semibold tracking-tight text-slate-900"><?php esc_html_e( 'Smart Directory Scanner', 'missing-media-restorer' ); ?></h2>
-									<p class="mt-0.5 text-sm text-slate-500"><?php esc_html_e( 'Scan local directories for missing media files', 'missing-media-restorer' ); ?></p>
-								</div>
-							</div>
-						</div>
-						<div class="px-4 py-4">
-							<div class="mmr-pro-scanner-section">
-								<div class="mb-4">
-									<label for="mmr-pro-scanner-input" class="block text-sm font-medium text-slate-700 mb-2">
-										<?php esc_html_e( 'Directory Path', 'missing-media-restorer' ); ?>
-									</label>
-									<input type="text" id="mmr-pro-scanner-input" class="mmr-pro-scanner-input" placeholder="/path/to/backup/directory" />
-								</div>
-								<button id="mmr-pro-scanner-button" type="button" class="mmr-btn-primary inline-flex items-center gap-2 rounded-full px-4 py-2 text-sm font-medium">
-									<span class="dashicons dashicons-search text-[13px]"></span>
-									<span><?php esc_html_e( 'Scan Directory', 'missing-media-restorer' ); ?></span>
-								</button>
-							</div>
-							<div id="mmr-pro-scanner-results" class="mt-4"></div>
-						</div>
-					</div>
 
-					<div class="rounded-2xl border border-slate-200 mmr-section-bg shadow-sm">
-						<div class="border-b border-slate-100 px-4 py-3">
-							<div class="flex items-center gap-2">
-								<span class="inline-flex h-6 w-6 items-center justify-center rounded-full bg-gradient-to-r from-green-500 to-emerald-600 text-white text-xs">
-									<span class="dashicons dashicons-cloud-upload text-[13px]"></span>
-								</span>
-								<div>
-									<h2 class="text-sm font-semibold tracking-tight text-slate-900"><?php esc_html_e( 'Bulk Upload & Restore', 'missing-media-restorer' ); ?></h2>
-									<p class="mt-0.5 text-sm text-slate-500"><?php esc_html_e( 'Upload and restore multiple files at once', 'missing-media-restorer' ); ?></p>
-								</div>
-							</div>
-						</div>
-						<div class="px-4 py-4">
-							<div class="space-y-3">
-								<div class="mmr-pro-feature-active">
-									<div class="flex items-center gap-3">
-										<span class="mmr-workflow-icon mmr-workflow-icon-blue">
-											<span class="dashicons dashicons-cloud-upload"></span>
-										</span>
-										<div>
-											<p class="mmr-workflow-title"><?php esc_html_e( 'Drag & Drop Folders', 'missing-media-restorer' ); ?></p>
-											<p class="mmr-workflow-description"><?php esc_html_e( 'Upload entire folder structures with ease', 'missing-media-restorer' ); ?></p>
-										</div>
-									</div>
-								</div>
-								<div class="mmr-pro-feature-active">
-									<div class="flex items-center gap-3">
-										<span class="mmr-workflow-icon mmr-workflow-icon-emerald">
-											<span class="dashicons dashicons-yes"></span>
-										</span>
-										<div>
-											<p class="mmr-workflow-title"><?php esc_html_e( 'Selective Restore', 'missing-media-restorer' ); ?></p>
-											<p class="mmr-workflow-description"><?php esc_html_e( 'Choose exactly which files to restore', 'missing-media-restorer' ); ?></p>
-										</div>
-									</div>
-								</div>
-								<div class="mmr-pro-feature-active">
-									<div class="flex items-center gap-3">
-										<span class="mmr-workflow-icon mmr-workflow-icon-purple">
-											<span class="dashicons dashicons-chart-line"></span>
-										</span>
-										<div>
-											<p class="mmr-workflow-title"><?php esc_html_e( 'Progress Analytics', 'missing-media-restorer' ); ?></p>
-											<p class="mmr-workflow-description"><?php esc_html_e( 'Detailed reports and restoration statistics', 'missing-media-restorer' ); ?></p>
-										</div>
-									</div>
-								</div>
-							</div>
-						</div>
-					</div>
-				</div>
-			</section>
-		</div>
-	</div>
-	<?php endif; ?>
 
 	<!-- Pro Features Modal -->
 	<div id="mmr-pro-modal" class="fixed inset-0 z-50 hidden bg-black bg-opacity-50 backdrop-blur-sm">
@@ -1306,3 +1275,797 @@ function mmr_ajax_clear_temp_files() {
 	);
 }
 add_action( 'wp_ajax_mmr_clear_temp_files', 'mmr_ajax_clear_temp_files' );
+
+/**
+ * Render Pro Scanner page
+ */
+function mmr_render_pro_scanner_page() {
+	if ( ! mmr_is_pro_available() ) {
+		wp_die( 'Pro version not available' );
+	}
+	?>
+	<script>jQuery('body').addClass('mmr-pro-scanner');</script>
+	<div class="wrap">
+		<div class="mmr-admin max-w-[88rem] mx-auto mt-8 mb-10 px-4">
+			<header class="flex flex-col gap-4 mb-4">
+				<div class="flex items-center justify-between gap-4">
+					<div class="flex items-center gap-3">
+						<div class="h-9 w-9 rounded-xl mmr-header-icon flex items-center justify-center shadow-sm">
+							<span class="dashicons dashicons-search text-base"></span>
+						</div>
+						<div>
+							<h1 class="text-xl font-semibold tracking-tight text-slate-900">
+								<?php esc_html_e( 'Pro Scanner', 'missing-media-restorer' ); ?>
+								<span class="mmr-pro-badge">PRO</span>
+							</h1>
+							<p class="text-sm font-medium text-slate-500">
+								<?php esc_html_e( 'Advanced directory scanning for missing media files.', 'missing-media-restorer' ); ?>
+							</p>
+						</div>
+					</div>
+				</div>
+			</header>
+
+			<div class="mmr-pro-scanner-container">
+				<!-- Pro Scanner Interface -->
+				<div class="grid gap-6 md:grid-cols-2 mb-6">
+					<!-- Quick Scan -->
+					<div class="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
+						<h3 class="text-lg font-semibold text-slate-900 mb-4"><?php esc_html_e( 'Quick Scan', 'missing-media-restorer' ); ?></h3>
+						<div class="space-y-4">
+							<div>
+								<label class="block text-sm font-medium text-slate-700 mb-2"><?php esc_html_e( 'Directory Path', 'missing-media-restorer' ); ?></label>
+								<input type="text" id="mmr-pro-scan-directory" class="w-full px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent" placeholder="/path/to/your/media" value="<?php echo esc_attr( wp_upload_dir()['basedir'] ); ?>">
+							</div>
+							<div class="flex items-center gap-4">
+								<label class="flex items-center gap-2">
+									<input type="checkbox" id="mmr-pro-recursive-scan" class="rounded text-blue-600">
+									<span class="text-sm text-slate-700"><?php esc_html_e( 'Recursive scan', 'missing-media-restorer' ); ?></span>
+								</label>
+								<label class="flex items-center gap-2">
+									<input type="checkbox" id="mmr-pro-fuzzy-matching" class="rounded text-blue-600">
+									<span class="text-sm text-slate-700"><?php esc_html_e( 'Fuzzy matching', 'missing-media-restorer' ); ?></span>
+								</label>
+							</div>
+							<div>
+								<label class="block text-sm font-medium text-slate-700 mb-2"><?php esc_html_e( 'File Size Limit (MB)', 'missing-media-restorer' ); ?></label>
+								<input type="number" id="mmr-pro-file-size-limit" class="w-full px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent" value="50" min="1" max="500">
+							</div>
+							<button id="mmr-pro-scan-button" class="w-full bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors">
+								<span class="dashicons dashicons-search"></span>
+								<?php esc_html_e( 'Start Scan', 'missing-media-restorer' ); ?>
+							</button>
+						</div>
+					</div>
+
+					<!-- Deep Scan -->
+					<div class="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
+						<h3 class="text-lg font-semibold text-slate-900 mb-4"><?php esc_html_e( 'Deep Scan', 'missing-media-restorer' ); ?></h3>
+						<div class="space-y-4">
+							<div>
+								<label class="block text-sm font-medium text-slate-700 mb-2"><?php esc_html_e( 'Directory Path', 'missing-media-restorer' ); ?></label>
+								<input type="text" id="mmr-pro-deep-scan-directory" class="w-full px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent" placeholder="/path/to/scan">
+							</div>
+							<div class="grid grid-cols-2 gap-4">
+								<div>
+									<label class="block text-sm font-medium text-slate-700 mb-2"><?php esc_html_e( 'Include Extensions', 'missing-media-restorer' ); ?></label>
+									<input type="text" id="mmr-pro-include-extensions" class="w-full px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent" placeholder="jpg,png,gif,pdf" value="jpg,jpeg,png,gif,pdf,doc,docx">
+								</div>
+								<div>
+									<label class="block text-sm font-medium text-slate-700 mb-2"><?php esc_html_e( 'Exclude Patterns', 'missing-media-restorer' ); ?></label>
+									<input type="text" id="mmr-pro-exclude-patterns" class="w-full px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent" placeholder="cache,temp,*.tmp">
+								</div>
+							</div>
+							<div>
+								<label class="block text-sm font-medium text-slate-700 mb-2"><?php esc_html_e( 'File Size Limit (MB)', 'missing-media-restorer' ); ?></label>
+								<input type="number" id="mmr-pro-deep-file-size-limit" class="w-full px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent" value="100" min="1" max="1000">
+							</div>
+							<button id="mmr-pro-deep-scan-button" class="w-full bg-purple-600 text-white px-4 py-2 rounded-lg hover:bg-purple-700 transition-colors">
+								<span class="dashicons dashicons-search"></span>
+								<?php esc_html_e( 'Start Deep Scan', 'missing-media-restorer' ); ?>
+							</button>
+						</div>
+					</div>
+				</div>
+
+				<!-- Fuzzy Matching -->
+				<div class="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm mb-6">
+					<h3 class="text-lg font-semibold text-slate-900 mb-4"><?php esc_html_e( 'Fuzzy Matching', 'missing-media-restorer' ); ?></h3>
+					<div class="flex items-center gap-4">
+						<div>
+							<label class="block text-sm font-medium text-slate-700 mb-2"><?php esc_html_e( 'Similarity Threshold', 'missing-media-restorer' ); ?></label>
+							<input type="range" id="mmr-pro-fuzzy-threshold" class="w-48" min="0.1" max="1.0" step="0.1" value="0.7">
+							<span id="mmr-pro-threshold-value" class="ml-2 text-sm text-slate-600">0.7</span>
+						</div>
+						<button id="mmr-pro-fuzzy-match-button" class="bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 transition-colors">
+							<span class="dashicons dashicons-admin-tools"></span>
+							<?php esc_html_e( 'Run Fuzzy Match', 'missing-media-restorer' ); ?>
+						</button>
+					</div>
+				</div>
+
+				<!-- Results Container -->
+				<div id="mmr-pro-scan-results" class="hidden rounded-2xl border border-slate-200 bg-white p-6 shadow-sm"></div>
+				<div id="mmr-pro-deep-scan-results" class="hidden rounded-2xl border border-slate-200 bg-white p-6 shadow-sm"></div>
+				<div id="mmr-pro-fuzzy-match-results" class="hidden rounded-2xl border border-slate-200 bg-white p-6 shadow-sm"></div>
+
+				<!-- Progress Bar -->
+				<div id="mmr-pro-scan-progress" class="hidden rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
+					<div class="flex items-center gap-3">
+						<div class="animate-spin rounded-full h-5 w-5 border-b-2 border-blue-600"></div>
+						<span class="text-sm text-slate-600"><?php esc_html_e( 'Scanning...', 'missing-media-restorer' ); ?></span>
+					</div>
+					<div class="mt-4 h-2 bg-slate-200 rounded-full overflow-hidden">
+						<div id="mmr-pro-scan-progress-fill" class="h-full bg-blue-600 rounded-full transition-all duration-300" style="width: 0%"></div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+	<?php
+}
+
+/**
+ * Render Pro Uploader page
+ */
+function mmr_render_pro_uploader_page() {
+	if ( ! mmr_is_pro_available() ) {
+		wp_die( 'Pro version not available' );
+	}
+	?>
+	<script>jQuery('body').addClass('mmr-pro-uploader');</script>
+	<div class="wrap">
+		<div class="mmr-admin max-w-[88rem] mx-auto mt-8 mb-10 px-4">
+			<header class="flex flex-col gap-4 mb-4">
+				<div class="flex items-center justify-between gap-4">
+					<div class="flex items-center gap-3">
+						<div class="h-9 w-9 rounded-xl mmr-header-icon flex items-center justify-center shadow-sm">
+							<span class="dashicons dashicons-cloud-upload text-base"></span>
+						</div>
+						<div>
+							<h1 class="text-xl font-semibold tracking-tight text-slate-900">
+								<?php esc_html_e( 'Pro Uploader', 'missing-media-restorer' ); ?>
+								<span class="mmr-pro-badge">PRO</span>
+							</h1>
+							<p class="text-sm font-medium text-slate-500">
+								<?php esc_html_e( 'Bulk upload and manage media files.', 'missing-media-restorer' ); ?>
+							</p>
+						</div>
+					</div>
+				</div>
+			</header>
+
+			<div class="mmr-pro-uploader-container">
+				<!-- Pro Uploader Interface -->
+				<div class="grid gap-6 md:grid-cols-3 mb-6">
+					<!-- File Upload -->
+					<div class="md:col-span-2 rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
+						<h3 class="text-lg font-semibold text-slate-900 mb-4"><?php esc_html_e( 'Bulk File Upload', 'missing-media-restorer' ); ?></h3>
+
+						<!-- Drop Zone -->
+						<div id="mmr-pro-drop-zone" class="border-2 border-dashed border-slate-300 rounded-xl p-8 text-center hover:border-blue-400 transition-colors cursor-pointer">
+							<div class="flex flex-col items-center gap-3">
+								<span class="dashicons dashicons-cloud-upload text-4xl text-slate-400"></span>
+								<p class="text-lg font-medium text-slate-700"><?php esc_html_e( 'Drop files here or click to browse', 'missing-media-restorer' ); ?></p>
+								<p class="text-sm text-slate-500"><?php esc_html_e( 'Supports drag & drop folders and multiple files', 'missing-media-restorer' ); ?></p>
+							</div>
+							<input type="file" id="mmr-pro-upload-files" multiple webkitdirectory class="hidden">
+						</div>
+
+						<!-- Upload Options -->
+						<div class="mt-6 space-y-4">
+							<div class="grid grid-cols-2 gap-4">
+								<label class="flex items-center gap-2">
+									<input type="checkbox" id="mmr-pro-overwrite-existing" class="rounded text-blue-600">
+									<span class="text-sm text-slate-700"><?php esc_html_e( 'Overwrite existing', 'missing-media-restorer' ); ?></span>
+								</label>
+								<label class="flex items-center gap-2">
+									<input type="checkbox" id="mmr-pro-create-thumbnails" class="rounded text-blue-600" checked>
+									<span class="text-sm text-slate-700"><?php esc_html_e( 'Create thumbnails', 'missing-media-restorer' ); ?></span>
+								</label>
+							</div>
+
+							<div class="flex items-center gap-4">
+								<label class="text-sm font-medium text-slate-700"><?php esc_html_e( 'Batch Size:', 'missing-media-restorer' ); ?></label>
+								<select id="mmr-pro-batch-size" class="px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+									<option value="10">10 files</option>
+									<option value="25" selected>25 files</option>
+									<option value="50">50 files</option>
+									<option value="100">100 files</option>
+								</select>
+								<label class="flex items-center gap-2 ml-4">
+									<input type="checkbox" id="mmr-pro-enable-chunked-upload" class="rounded text-blue-600">
+									<span class="text-sm text-slate-700"><?php esc_html_e( 'Chunked upload for large files', 'missing-media-restorer' ); ?></span>
+								</label>
+							</div>
+						</div>
+
+						<!-- Action Buttons -->
+						<div class="mt-6 flex gap-3">
+							<button id="mmr-pro-select-files" class="flex-1 bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors">
+								<span class="dashicons dashicons-media-default"></span>
+								<?php esc_html_e( 'Select Files', 'missing-media-restorer' ); ?>
+							</button>
+							<button id="mmr-pro-bulk-upload-button" class="flex-1 bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 transition-colors">
+								<span class="dashicons dashicons-cloud-upload"></span>
+								<?php esc_html_e( 'Upload All', 'missing-media-restorer' ); ?>
+							</button>
+						</div>
+					</div>
+
+					<!-- File List -->
+					<div class="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
+						<h3 class="text-lg font-semibold text-slate-900 mb-4"><?php esc_html_e( 'File Queue', 'missing-media-restorer' ); ?></h3>
+						<div id="mmr-pro-file-list" class="space-y-2 max-h-96 overflow-y-auto">
+							<p class="text-sm text-slate-500 text-center py-8"><?php esc_html_e( 'No files selected', 'missing-media-restorer' ); ?></p>
+						</div>
+						<div class="mt-4 pt-4 border-t border-slate-200">
+							<div class="flex justify-between items-center">
+								<span class="text-sm text-slate-600"><?php esc_html_e( 'Total Size:', 'missing-media-restorer' ); ?></span>
+								<span id="mmr-pro-total-size" class="text-sm font-medium text-slate-900">0 MB</span>
+							</div>
+						</div>
+					</div>
+				</div>
+
+				<!-- Results Container -->
+				<div id="mmr-pro-upload-results" class="hidden rounded-2xl border border-slate-200 bg-white p-6 shadow-sm"></div>
+
+				<!-- Progress Container -->
+				<div id="mmr-pro-upload-progress" class="hidden rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
+					<h3 class="text-lg font-semibold text-slate-900 mb-4"><?php esc_html_e( 'Upload Progress', 'missing-media-restorer' ); ?></h3>
+					<div class="space-y-4">
+						<div class="h-3 bg-slate-200 rounded-full overflow-hidden">
+							<div id="mmr-pro-upload-progress-fill" class="h-full bg-green-600 rounded-full transition-all duration-300" style="width: 0%"></div>
+						</div>
+						<div class="flex justify-between items-center text-sm">
+							<span id="mmr-pro-upload-status"><?php esc_html_e( 'Preparing upload...', 'missing-media-restorer' ); ?></span>
+							<span id="mmr-pro-upload-percentage">0%</span>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+	<?php
+}
+
+/**
+ * Render Pro Matcher page
+ */
+function mmr_render_pro_matcher_page() {
+	if ( ! mmr_is_pro_available() ) {
+		wp_die( 'Pro version not available' );
+	}
+	?>
+	<script>jQuery('body').addClass('mmr-pro-matcher');</script>
+	<div class="wrap">
+		<div class="mmr-admin max-w-[88rem] mx-auto mt-8 mb-10 px-4">
+			<header class="flex flex-col gap-4 mb-4">
+				<div class="flex items-center justify-between gap-4">
+					<div class="flex items-center gap-3">
+						<div class="h-9 w-9 rounded-xl mmr-header-icon flex items-center justify-center shadow-sm">
+							<span class="dashicons dashicons-admin-tools text-base"></span>
+						</div>
+						<div>
+							<h1 class="text-xl font-semibold tracking-tight text-slate-900">
+								<?php esc_html_e( 'Pro Matcher', 'missing-media-restorer' ); ?>
+								<span class="mmr-pro-badge">PRO</span>
+							</h1>
+							<p class="text-sm font-medium text-slate-500">
+								<?php esc_html_e( 'Advanced file matching and verification.', 'missing-media-restorer' ); ?>
+							</p>
+						</div>
+					</div>
+				</div>
+			</header>
+
+			<div class="mmr-pro-matcher-container">
+				<!-- Pro Matcher Interface -->
+				<div class="grid gap-6 md:grid-cols-2 mb-6">
+					<!-- Matching Configuration -->
+					<div class="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
+						<h3 class="text-lg font-semibold text-slate-900 mb-4"><?php esc_html_e( 'Matching Configuration', 'missing-media-restorer' ); ?></h3>
+						<div class="space-y-4">
+							<div>
+								<label class="block text-sm font-medium text-slate-700 mb-2"><?php esc_html_e( 'Matching Algorithms', 'missing-media-restorer' ); ?></label>
+								<div class="space-y-2">
+									<label class="flex items-center gap-2">
+										<input type="checkbox" id="mmr-pro-exact-match" class="rounded text-blue-600" checked>
+										<span class="text-sm text-slate-700"><?php esc_html_e( 'Exact Filename Match', 'missing-media-restorer' ); ?></span>
+									</label>
+									<label class="flex items-center gap-2">
+										<input type="checkbox" id="mmr-pro-fuzzy-match" class="rounded text-blue-600">
+										<span class="text-sm text-slate-700"><?php esc_html_e( 'Fuzzy Filename Match', 'missing-media-restorer' ); ?></span>
+									</label>
+									<label class="flex items-center gap-2">
+										<input type="checkbox" id="mmr-pro-metadata-match" class="rounded text-blue-600">
+										<span class="text-sm text-slate-700"><?php esc_html_e( 'Metadata Match', 'missing-media-restorer' ); ?></span>
+									</label>
+									<label class="flex items-center gap-2">
+										<input type="checkbox" id="mmr-pro-size-match" class="rounded text-blue-600">
+										<span class="text-sm text-slate-700"><?php esc_html_e( 'File Size Match', 'missing-media-restorer' ); ?></span>
+									</label>
+								</div>
+							</div>
+
+							<div>
+								<label class="block text-sm font-medium text-slate-700 mb-2"><?php esc_html_e( 'Algorithm Weights', 'missing-media-restorer' ); ?></label>
+								<div class="space-y-3">
+									<div>
+										<div class="flex justify-between items-center mb-1">
+											<span class="text-sm text-slate-600"><?php esc_html_e( 'Exact Match', 'missing-media-restorer' ); ?></span>
+											<span id="mmr-pro-exact-weight" class="text-sm font-medium text-slate-900">100%</span>
+										</div>
+										<input type="range" id="mmr-pro-exact-weight-slider" class="w-full" min="0" max="100" value="100">
+									</div>
+									<div>
+										<div class="flex justify-between items-center mb-1">
+											<span class="text-sm text-slate-600"><?php esc_html_e( 'Fuzzy Match', 'missing-media-restorer' ); ?></span>
+											<span id="mmr-pro-fuzzy-weight" class="text-sm font-medium text-slate-900">70%</span>
+										</div>
+										<input type="range" id="mmr-pro-fuzzy-weight-slider" class="w-full" min="0" max="100" value="70">
+									</div>
+									<div>
+										<div class="flex justify-between items-center mb-1">
+											<span class="text-sm text-slate-600"><?php esc_html_e( 'Metadata Match', 'missing-media-restorer' ); ?></span>
+											<span id="mmr-pro-metadata-weight" class="text-sm font-medium text-slate-900">50%</span>
+										</div>
+										<input type="range" id="mmr-pro-metadata-weight-slider" class="w-full" min="0" max="100" value="50">
+									</div>
+									<div>
+										<div class="flex justify-between items-center mb-1">
+											<span class="text-sm text-slate-600"><?php esc_html_e( 'Size Match', 'missing-media-restorer' ); ?></span>
+											<span id="mmr-pro-size-weight" class="text-sm font-medium text-slate-900">30%</span>
+										</div>
+										<input type="range" id="mmr-pro-size-weight-slider" class="w-full" min="0" max="100" value="30">
+									</div>
+								</div>
+							</div>
+
+							<div class="grid grid-cols-2 gap-4">
+								<div>
+									<label class="block text-sm font-medium text-slate-700 mb-2"><?php esc_html_e( 'Match Threshold', 'missing-media-restorer' ); ?></label>
+									<input type="number" id="mmr-pro-match-threshold" class="w-full px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent" value="80" min="1" max="100">
+								</div>
+								<div>
+									<label class="block text-sm font-medium text-slate-700 mb-2"><?php esc_html_e( 'Max Matches', 'missing-media-restorer' ); ?></label>
+									<input type="number" id="mmr-pro-max-matches" class="w-full px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent" value="10" min="1" max="100">
+								</div>
+							</div>
+
+							<button id="mmr-pro-run-matcher" class="w-full bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors">
+								<span class="dashicons dashicons-admin-tools"></span>
+								<?php esc_html_e( 'Run Matcher', 'missing-media-restorer' ); ?>
+							</button>
+						</div>
+					</div>
+
+					<!-- Match Verification -->
+					<div class="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
+						<h3 class="text-lg font-semibold text-slate-900 mb-4"><?php esc_html_e( 'Match Verification', 'missing-media-restorer' ); ?></h3>
+						<div class="space-y-4">
+							<div>
+								<label class="block text-sm font-medium text-slate-700 mb-2"><?php esc_html_e( 'Missing File Path', 'missing-media-restorer' ); ?></label>
+								<input type="text" id="mmr-pro-missing-file-path" class="w-full px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent" placeholder="/path/to/missing/file.jpg">
+							</div>
+							<div>
+								<label class="block text-sm font-medium text-slate-700 mb-2"><?php esc_html_e( 'Potential Match Path', 'missing-media-restorer' ); ?></label>
+								<input type="text" id="mmr-pro-match-file-path" class="w-full px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent" placeholder="/path/to/potential/match.jpg">
+							</div>
+							<div class="grid grid-cols-2 gap-4">
+								<div>
+									<label class="block text-sm font-medium text-slate-700 mb-2"><?php esc_html_e( 'Similarity Score', 'missing-media-restorer' ); ?></label>
+									<input type="number" id="mmr-pro-similarity-score" class="w-full px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent" value="0" min="0" max="100" step="0.1" readonly>
+								</div>
+								<div>
+									<label class="block text-sm font-medium text-slate-700 mb-2"><?php esc_html_e( 'Confidence Level', 'missing-media-restorer' ); ?></label>
+									<select id="mmr-pro-confidence-level" class="w-full px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+										<option value="low"><?php esc_html_e( 'Low', 'missing-media-restorer' ); ?></option>
+										<option value="medium"><?php esc_html_e( 'Medium', 'missing-media-restorer' ); ?></option>
+										<option value="high"><?php esc_html_e( 'High', 'missing-media-restorer' ); ?></option>
+									</select>
+								</div>
+							</div>
+							<div class="flex gap-3">
+								<button id="mmr-pro-verify-match" class="flex-1 bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 transition-colors">
+									<span class="dashicons dashicons-yes"></span>
+									<?php esc_html_e( 'Verify Match', 'missing-media-restorer' ); ?>
+								</button>
+								<button id="mmr-pro-accept-match" class="flex-1 bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors">
+									<span class="dashicons dashicons-yes-alt"></span>
+									<?php esc_html_e( 'Accept Match', 'missing-media-restorer' ); ?>
+								</button>
+							</div>
+						</div>
+					</div>
+				</div>
+
+				<!-- Results Container -->
+				<div id="mmr-pro-match-results" class="hidden rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
+					<h3 class="text-lg font-semibold text-slate-900 mb-4"><?php esc_html_e( 'Match Results', 'missing-media-restorer' ); ?></h3>
+					<div id="mmr-pro-match-results-content"></div>
+				</div>
+
+				<!-- Verification Results -->
+				<div id="mmr-pro-verification-results" class="hidden rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
+					<h3 class="text-lg font-semibold text-slate-900 mb-4"><?php esc_html_e( 'Verification Results', 'missing-media-restorer' ); ?></h3>
+					<div id="mmr-pro-verification-content"></div>
+				</div>
+
+				<!-- Progress Container -->
+				<div id="mmr-pro-match-progress" class="hidden rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
+					<h3 class="text-lg font-semibold text-slate-900 mb-4"><?php esc_html_e( 'Matching Progress', 'missing-media-restorer' ); ?></h3>
+					<div class="space-y-4">
+						<div class="h-3 bg-slate-200 rounded-full overflow-hidden">
+							<div id="mmr-pro-match-progress-fill" class="h-full bg-blue-600 rounded-full transition-all duration-300" style="width: 0%"></div>
+						</div>
+						<div class="flex justify-between items-center text-sm">
+							<span id="mmr-pro-match-status"><?php esc_html_e( 'Preparing match...', 'missing-media-restorer' ); ?></span>
+							<span id="mmr-pro-match-percentage">0%</span>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+	<?php
+}
+
+/**
+ * Render Pro Analytics page
+ */
+function mmr_render_pro_analytics_page() {
+	if ( ! mmr_is_pro_available() ) {
+		wp_die( 'Pro version not available' );
+	}
+	?>
+	<script>jQuery('body').addClass('mmr-pro-analytics');</script>
+	<div class="wrap">
+		<div class="mmr-admin max-w-[88rem] mx-auto mt-8 mb-10 px-4">
+			<header class="flex flex-col gap-4 mb-4">
+				<div class="flex items-center justify-between gap-4">
+					<div class="flex items-center gap-3">
+						<div class="h-9 w-9 rounded-xl mmr-header-icon flex items-center justify-center shadow-sm">
+							<span class="dashicons dashicons-chart-line text-base"></span>
+						</div>
+						<div>
+							<h1 class="text-xl font-semibold tracking-tight text-slate-900">
+								<?php esc_html_e( 'Pro Analytics', 'missing-media-restorer' ); ?>
+								<span class="mmr-pro-badge">PRO</span>
+							</h1>
+							<p class="text-sm font-medium text-slate-500">
+								<?php esc_html_e( 'Detailed reports and restoration statistics.', 'missing-media-restorer' ); ?>
+							</p>
+						</div>
+					</div>
+				</div>
+			</header>
+
+			<div class="mmr-pro-analytics-container">
+				<!-- Pro Analytics Interface -->
+				<div class="grid gap-6 md:grid-cols-3 mb-6">
+					<!-- Statistics Cards -->
+					<div class="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
+						<div class="flex items-center justify-between mb-2">
+							<h3 class="text-sm font-medium text-slate-600"><?php esc_html_e( 'Total Files Processed', 'missing-media-restorer' ); ?></h3>
+							<span class="dashicons dashicons-media-default text-blue-500"></span>
+						</div>
+						<p id="mmr-pro-total-files" class="text-2xl font-bold text-slate-900">0</p>
+						<p class="text-xs text-slate-500 mt-1"><?php esc_html_e( 'All time', 'missing-media-restorer' ); ?></p>
+					</div>
+
+					<div class="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
+						<div class="flex items-center justify-between mb-2">
+							<h3 class="text-sm font-medium text-slate-600"><?php esc_html_e( 'Successful Restores', 'missing-media-restorer' ); ?></h3>
+							<span class="dashicons dashicons-yes text-green-500"></span>
+						</div>
+						<p id="mmr-pro-successful-restore" class="text-2xl font-bold text-slate-900">0</p>
+						<p class="text-xs text-slate-500 mt-1"><?php esc_html_e( 'All time', 'missing-media-restorer' ); ?></p>
+					</div>
+
+					<div class="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
+						<div class="flex items-center justify-between mb-2">
+							<h3 class="text-sm font-medium text-slate-600"><?php esc_html_e( 'Success Rate', 'missing-media-restorer' ); ?></h3>
+							<span class="dashicons dashicons-chart-line text-purple-500"></span>
+						</div>
+						<p id="mmr-pro-success-rate" class="text-2xl font-bold text-slate-900">0%</p>
+						<p class="text-xs text-slate-500 mt-1"><?php esc_html_e( 'Last 30 days', 'missing-media-restorer' ); ?></p>
+					</div>
+				</div>
+
+				<!-- Charts Section -->
+				<div class="grid gap-6 md:grid-cols-2 mb-6">
+					<!-- Restoration Activity Chart -->
+					<div class="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
+						<h3 class="text-lg font-semibold text-slate-900 mb-4"><?php esc_html_e( 'Restoration Activity', 'missing-media-restorer' ); ?></h3>
+						<div class="mb-4">
+							<select id="mmr-pro-activity-period" class="px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+								<option value="7"><?php esc_html_e( 'Last 7 days', 'missing-media-restorer' ); ?></option>
+								<option value="30" selected><?php esc_html_e( 'Last 30 days', 'missing-media-restorer' ); ?></option>
+								<option value="90"><?php esc_html_e( 'Last 90 days', 'missing-media-restorer' ); ?></option>
+								<option value="365"><?php esc_html_e( 'Last year', 'missing-media-restorer' ); ?></option>
+							</select>
+						</div>
+						<div id="mmr-pro-activity-chart" class="h-64 flex items-center justify-center bg-slate-50 rounded-lg">
+							<p class="text-sm text-slate-500"><?php esc_html_e( 'Chart will be displayed here', 'missing-media-restorer' ); ?></p>
+						</div>
+					</div>
+
+					<!-- File Type Distribution -->
+					<div class="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
+						<h3 class="text-lg font-semibold text-slate-900 mb-4"><?php esc_html_e( 'File Type Distribution', 'missing-media-restorer' ); ?></h3>
+						<div id="mmr-pro-file-type-chart" class="h-64 flex items-center justify-center bg-slate-50 rounded-lg">
+							<p class="text-sm text-slate-500"><?php esc_html_e( 'Chart will be displayed here', 'missing-media-restorer' ); ?></p>
+						</div>
+					</div>
+				</div>
+
+				<!-- Reports Section -->
+				<div class="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm mb-6">
+					<div class="flex items-center justify-between mb-4">
+						<h3 class="text-lg font-semibold text-slate-900"><?php esc_html_e( 'Reports & Export', 'missing-media-restorer' ); ?></h3>
+						<div class="flex gap-2">
+							<button id="mmr-pro-generate-report" class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors text-sm">
+								<span class="dashicons dashicons-update"></span>
+								<?php esc_html_e( 'Generate Report', 'missing-media-restorer' ); ?>
+							</button>
+							<button id="mmr-pro-export-data" class="bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 transition-colors text-sm">
+								<span class="dashicons dashicons-download"></span>
+								<?php esc_html_e( 'Export Data', 'missing-media-restorer' ); ?>
+							</button>
+						</div>
+					</div>
+
+					<div class="grid gap-4 md:grid-cols-2">
+						<div>
+							<label class="block text-sm font-medium text-slate-700 mb-2"><?php esc_html_e( 'Report Type', 'missing-media-restorer' ); ?></label>
+							<select id="mmr-pro-report-type" class="w-full px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+								<option value="summary"><?php esc_html_e( 'Summary Report', 'missing-media-restorer' ); ?></option>
+								<option value="detailed"><?php esc_html_e( 'Detailed Report', 'missing-media-restorer' ); ?></option>
+								<option value="errors"><?php esc_html_e( 'Error Report', 'missing-media-restorer' ); ?></option>
+								<option value="performance"><?php esc_html_e( 'Performance Report', 'missing-media-restorer' ); ?></option>
+							</select>
+						</div>
+						<div>
+							<label class="block text-sm font-medium text-slate-700 mb-2"><?php esc_html_e( 'Export Format', 'missing-media-restorer' ); ?></label>
+							<select id="mmr-pro-export-format" class="w-full px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+								<option value="csv">CSV</option>
+								<option value="json">JSON</option>
+								<option value="pdf">PDF</option>
+								<option value="xlsx">Excel</option>
+							</select>
+						</div>
+					</div>
+
+					<div class="mt-4">
+						<label class="block text-sm font-medium text-slate-700 mb-2"><?php esc_html_e( 'Date Range', 'missing-media-restorer' ); ?></label>
+						<div class="grid gap-4 md:grid-cols-2">
+							<div>
+								<label class="block text-xs text-slate-500 mb-1"><?php esc_html_e( 'From', 'missing-media-restorer' ); ?></label>
+								<input type="date" id="mmr-pro-date-from" class="w-full px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+							</div>
+							<div>
+								<label class="block text-xs text-slate-500 mb-1"><?php esc_html_e( 'To', 'missing-media-restorer' ); ?></label>
+								<input type="date" id="mmr-pro-date-to" class="w-full px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+							</div>
+						</div>
+					</div>
+				</div>
+
+				<!-- Recent Activity -->
+				<div class="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
+					<h3 class="text-lg font-semibold text-slate-900 mb-4"><?php esc_html_e( 'Recent Activity', 'missing-media-restorer' ); ?></h3>
+					<div id="mmr-pro-recent-activity" class="space-y-3">
+						<div class="text-center py-8 text-sm text-slate-500">
+							<p><?php esc_html_e( 'No recent activity to display', 'missing-media-restorer' ); ?></p>
+						</div>
+					</div>
+				</div>
+
+				<!-- Results Container -->
+				<div id="mmr-pro-analytics-results" class="hidden rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
+					<h3 class="text-lg font-semibold text-slate-900 mb-4"><?php esc_html_e( 'Analytics Results', 'missing-media-restorer' ); ?></h3>
+					<div id="mmr-pro-analytics-content"></div>
+				</div>
+			</div>
+		</div>
+	</div>
+	<?php
+}
+
+/**
+ * Render Pro Support page
+ */
+function mmr_render_pro_support_page() {
+	if ( ! mmr_is_pro_available() ) {
+		wp_die( 'Pro version not available' );
+	}
+	?>
+	<script>jQuery('body').addClass('mmr-pro-support');</script>
+	<div class="wrap">
+		<div class="mmr-admin max-w-[88rem] mx-auto mt-8 mb-10 px-4">
+			<header class="flex flex-col gap-4 mb-4">
+				<div class="flex items-center justify-between gap-4">
+					<div class="flex items-center gap-3">
+						<div class="h-9 w-9 rounded-xl mmr-header-icon flex items-center justify-center shadow-sm">
+							<span class="dashicons dashicons-sos text-base"></span>
+						</div>
+						<div>
+							<h1 class="text-xl font-semibold tracking-tight text-slate-900">
+								<?php esc_html_e( 'Pro Support', 'missing-media-restorer' ); ?>
+								<span class="mmr-pro-badge">PRO</span>
+							</h1>
+							<p class="text-sm font-medium text-slate-500">
+								<?php esc_html_e( 'Priority support and knowledge base.', 'missing-media-restorer' ); ?>
+							</p>
+						</div>
+					</div>
+				</div>
+			</header>
+
+			<div class="mmr-pro-support-container">
+				<!-- Pro Support Interface -->
+				<div class="grid gap-6 md:grid-cols-2 mb-6">
+					<!-- Support Tickets -->
+					<div class="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
+						<h3 class="text-lg font-semibold text-slate-900 mb-4"><?php esc_html_e( 'Support Tickets', 'missing-media-restorer' ); ?></h3>
+						<div class="space-y-4">
+							<div>
+								<label class="block text-sm font-medium text-slate-700 mb-2"><?php esc_html_e( 'Ticket Subject', 'missing-media-restorer' ); ?></label>
+								<input type="text" id="mmr-pro-ticket-subject" class="w-full px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent" placeholder="<?php esc_attr_e( 'Enter ticket subject', 'missing-media-restorer' ); ?>">
+							</div>
+							<div>
+								<label class="block text-sm font-medium text-slate-700 mb-2"><?php esc_html_e( 'Category', 'missing-media-restorer' ); ?></label>
+								<select id="mmr-pro-ticket-category" class="w-full px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+									<option value="general"><?php esc_html_e( 'General Inquiry', 'missing-media-restorer' ); ?></option>
+									<option value="technical"><?php esc_html_e( 'Technical Issue', 'missing-media-restorer' ); ?></option>
+									<option value="feature"><?php esc_html_e( 'Feature Request', 'missing-media-restorer' ); ?></option>
+									<option value="bug"><?php esc_html_e( 'Bug Report', 'missing-media-restorer' ); ?></option>
+								</select>
+							</div>
+							<div>
+								<label class="block text-sm font-medium text-slate-700 mb-2"><?php esc_html_e( 'Priority', 'missing-media-restorer' ); ?></label>
+								<select id="mmr-pro-ticket-priority" class="w-full px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+									<option value="low"><?php esc_html_e( 'Low', 'missing-media-restorer' ); ?></option>
+									<option value="medium"><?php esc_html_e( 'Medium', 'missing-media-restorer' ); ?></option>
+									<option value="high"><?php esc_html_e( 'High', 'missing-media-restorer' ); ?></option>
+									<option value="urgent"><?php esc_html_e( 'Urgent', 'missing-media-restorer' ); ?></option>
+								</select>
+							</div>
+							<div>
+								<label class="block text-sm font-medium text-slate-700 mb-2"><?php esc_html_e( 'Description', 'missing-media-restorer' ); ?></label>
+								<textarea id="mmr-pro-ticket-description" rows="4" class="w-full px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent" placeholder="<?php esc_attr_e( 'Describe your issue or question', 'missing-media-restorer' ); ?>"></textarea>
+							</div>
+							<button id="mmr-pro-submit-ticket" class="w-full bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors">
+								<span class="dashicons dashicons-email-alt"></span>
+								<?php esc_html_e( 'Submit Ticket', 'missing-media-restorer' ); ?>
+							</button>
+						</div>
+					</div>
+
+					<!-- Knowledge Base -->
+					<div class="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
+						<h3 class="text-lg font-semibold text-slate-900 mb-4"><?php esc_html_e( 'Knowledge Base', 'missing-media-restorer' ); ?></h3>
+						<div class="space-y-4">
+							<div>
+								<label class="block text-sm font-medium text-slate-700 mb-2"><?php esc_html_e( 'Search Articles', 'missing-media-restorer' ); ?></label>
+								<div class="relative">
+									<input type="text" id="mmr-pro-kb-search" class="w-full px-3 py-2 pr-10 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent" placeholder="<?php esc_attr_e( 'Search knowledge base...', 'missing-media-restorer' ); ?>">
+									<button id="mmr-pro-kb-search-btn" class="absolute right-2 top-2.5 text-slate-400 hover:text-slate-600">
+										<span class="dashicons dashicons-search"></span>
+									</button>
+								</div>
+							</div>
+							<div id="mmr-pro-kb-categories" class="space-y-2">
+								<h4 class="text-sm font-medium text-slate-700"><?php esc_html_e( 'Popular Categories', 'missing-media-restorer' ); ?></h4>
+								<div class="space-y-1">
+									<a href="#" class="block text-sm text-blue-600 hover:text-blue-800"><?php esc_html_e( 'Getting Started', 'missing-media-restorer' ); ?></a>
+									<a href="#" class="block text-sm text-blue-600 hover:text-blue-800"><?php esc_html_e( 'Troubleshooting', 'missing-media-restorer' ); ?></a>
+									<a href="#" class="block text-sm text-blue-600 hover:text-blue-800"><?php esc_html_e( 'Advanced Features', 'missing-media-restorer' ); ?></a>
+									<a href="#" class="block text-sm text-blue-600 hover:text-blue-800"><?php esc_html_e( 'Best Practices', 'missing-media-restorer' ); ?></a>
+								</div>
+							</div>
+							<div id="mmr-pro-kb-results" class="hidden space-y-2">
+								<h4 class="text-sm font-medium text-slate-700"><?php esc_html_e( 'Search Results', 'missing-media-restorer' ); ?></h4>
+								<div id="mmr-pro-kb-results-list" class="space-y-2"></div>
+							</div>
+						</div>
+					</div>
+				</div>
+
+				<!-- Diagnostic Tools -->
+				<div class="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm mb-6">
+					<h3 class="text-lg font-semibold text-slate-900 mb-4"><?php esc_html_e( 'Diagnostic Tools', 'missing-media-restorer' ); ?></h3>
+					<div class="grid gap-4 md:grid-cols-3">
+						<div>
+							<h4 class="text-sm font-medium text-slate-700 mb-2"><?php esc_html_e( 'System Check', 'missing-media-restorer' ); ?></h4>
+							<button id="mmr-pro-system-check" class="w-full bg-slate-600 text-white px-4 py-2 rounded-lg hover:bg-slate-700 transition-colors text-sm">
+								<span class="dashicons dashicons-hammer"></span>
+								<?php esc_html_e( 'Run System Check', 'missing-media-restorer' ); ?>
+							</button>
+						</div>
+						<div>
+							<h4 class="text-sm font-medium text-slate-700 mb-2"><?php esc_html_e( 'File Permissions', 'missing-media-restorer' ); ?></h4>
+							<button id="mmr-pro-permissions-check" class="w-full bg-slate-600 text-white px-4 py-2 rounded-lg hover:bg-slate-700 transition-colors text-sm">
+								<span class="dashicons dashicons-lock"></span>
+								<?php esc_html_e( 'Check Permissions', 'missing-media-restorer' ); ?>
+							</button>
+						</div>
+						<div>
+							<h4 class="text-sm font-medium text-slate-700 mb-2"><?php esc_html_e( 'Export Logs', 'missing-media-restorer' ); ?></h4>
+							<button id="mmr-pro-export-logs" class="w-full bg-slate-600 text-white px-4 py-2 rounded-lg hover:bg-slate-700 transition-colors text-sm">
+								<span class="dashicons dashicons-download"></span>
+								<?php esc_html_e( 'Export System Logs', 'missing-media-restorer' ); ?>
+							</button>
+						</div>
+					</div>
+				</div>
+
+				<!-- Recent Tickets -->
+				<div class="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm mb-6">
+					<h3 class="text-lg font-semibold text-slate-900 mb-4"><?php esc_html_e( 'Recent Tickets', 'missing-media-restorer' ); ?></h3>
+					<div id="mmr-pro-recent-tickets" class="space-y-3">
+						<div class="text-center py-8 text-sm text-slate-500">
+							<p><?php esc_html_e( 'No recent tickets to display', 'missing-media-restorer' ); ?></p>
+						</div>
+					</div>
+				</div>
+
+				<!-- System Information -->
+				<div class="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
+					<h3 class="text-lg font-semibold text-slate-900 mb-4"><?php esc_html_e( 'System Information', 'missing-media-restorer' ); ?></h3>
+					<div id="mmr-pro-system-info" class="grid gap-4 md:grid-cols-2">
+						<div>
+							<h4 class="text-sm font-medium text-slate-700 mb-2"><?php esc_html_e( 'WordPress Environment', 'missing-media-restorer' ); ?></h4>
+							<div class="space-y-1 text-sm">
+								<div class="flex justify-between">
+									<span class="text-slate-600"><?php esc_html_e( 'Version:', 'missing-media-restorer' ); ?></span>
+									<span id="mmr-pro-wp-version" class="text-slate-900">-</span>
+								</div>
+								<div class="flex justify-between">
+									<span class="text-slate-600"><?php esc_html_e( 'Multisite:', 'missing-media-restorer' ); ?></span>
+									<span id="mmr-pro-multisite" class="text-slate-900">-</span>
+								</div>
+								<div class="flex justify-between">
+									<span class="text-slate-600"><?php esc_html_e( 'Memory Limit:', 'missing-media-restorer' ); ?></span>
+									<span id="mmr-pro-memory-limit" class="text-slate-900">-</span>
+								</div>
+							</div>
+						</div>
+						<div>
+							<h4 class="text-sm font-medium text-slate-700 mb-2"><?php esc_html_e( 'Plugin Information', 'missing-media-restorer' ); ?></h4>
+							<div class="space-y-1 text-sm">
+								<div class="flex justify-between">
+									<span class="text-slate-600"><?php esc_html_e( 'Version:', 'missing-media-restorer' ); ?></span>
+									<span id="mmr-pro-plugin-version" class="text-slate-900"><?php echo esc_html( MMR_PLUGIN_VERSION ); ?></span>
+								</div>
+								<div class="flex justify-between">
+									<span class="text-slate-600"><?php esc_html_e( 'Pro Status:', 'missing-media-restorer' ); ?></span>
+									<span id="mmr-pro-pro-status" class="text-slate-900"><?php echo mmr_is_pro_available() ? esc_html__( 'Active', 'missing-media-restorer' ) : esc_html__( 'Inactive', 'missing-media-restorer' ); ?></span>
+								</div>
+								<div class="flex justify-between">
+									<span class="text-slate-600"><?php esc_html_e( 'License Key:', 'missing-media-restorer' ); ?></span>
+									<span id="mmr-pro-license-key" class="text-slate-900">-</span>
+								</div>
+							</div>
+						</div>
+					</div>
+					<div class="mt-4">
+						<button id="mmr-pro-refresh-system-info" class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors text-sm">
+							<span class="dashicons dashicons-update"></span>
+							<?php esc_html_e( 'Refresh System Info', 'missing-media-restorer' ); ?>
+						</button>
+					</div>
+				</div>
+
+				<!-- Results Container -->
+				<div id="mmr-pro-support-results" class="hidden rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
+					<h3 class="text-lg font-semibold text-slate-900 mb-4"><?php esc_html_e( 'Support Results', 'missing-media-restorer' ); ?></h3>
+					<div id="mmr-pro-support-content"></div>
+				</div>
+			</div>
+		</div>
+	</div>
+	<?php
+}
