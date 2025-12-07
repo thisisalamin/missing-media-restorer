@@ -520,11 +520,11 @@ function mmr_render_admin_page() {
 }
 
 /**
-	* Sanitize files array from $_FILES
-	*
-	* @param array $files The files array to sanitize
-	* @return array The sanitized files array
-	*/
+ * Sanitize files array from $_FILES
+ *
+ * @param array $files The files array to sanitize
+ * @return array The sanitized files array
+ */
 function mmr_sanitize_files_array( $files ) {
 	if ( ! is_array( $files ) ) {
 		return array();
@@ -546,7 +546,7 @@ function mmr_sanitize_files_array( $files ) {
 }
 
 /**
-	* Get list of files in the temporary upload directory
+ * Get list of files in the temporary upload directory
  *
  * @return array List of uploaded files
  */
@@ -878,8 +878,8 @@ function mmr_process_batch_restore( $batch_number, $batch_size ) {
 		// Pattern: basename-*x*.ext (e.g., image-300x300.jpg)
 		if ( ! empty( $extension ) ) {
 			$thumbnail_pattern = $basename . '-*.' . $extension;
-			$temp_files = $wp_filesystem->dirlist( $temp_upload_dir );
-			$thumbnails = array();
+			$temp_files        = $wp_filesystem->dirlist( $temp_upload_dir );
+			$thumbnails        = array();
 
 			if ( is_array( $temp_files ) ) {
 				foreach ( $temp_files as $temp_filename => $fileinfo ) {
@@ -896,8 +896,8 @@ function mmr_process_batch_restore( $batch_number, $batch_size ) {
 
 					if ( $wp_filesystem->copy( $thumb_file, $thumb_dest ) ) {
 						++$files_restored;
-					// Remove from temp after successful copy.
-					$wp_filesystem->delete( $thumb_file );
+						// Remove from temp after successful copy.
+						$wp_filesystem->delete( $thumb_file );
 					}
 				}
 			}
@@ -985,9 +985,12 @@ function mmr_ajax_upload_files() {
 	}
 
 	// Check if files were uploaded
+	// phpcs:disable WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- Sanitized below with wp_unslash and mmr_sanitize_files_array
 	if ( ! isset( $_FILES['files'] ) || empty( $_FILES['files'] ) ) {
+		// phpcs:enable
 		wp_send_json_error( array( 'message' => 'No files provided. Please select files to upload.' ) );
 	}
+	// phpcs:enable
 
 	// Initialize WP_Filesystem
 	global $wp_filesystem;
@@ -1017,7 +1020,9 @@ function mmr_ajax_upload_files() {
 	}
 
 	// Sanitize $_FILES input
-	$files          = isset( $_FILES['files'] ) ? wp_unslash( $_FILES['files'] ) : array();
+	// phpcs:disable WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- Sanitized immediately with wp_unslash and mmr_sanitize_files_array
+	$files = isset( $_FILES['files'] ) ? wp_unslash( $_FILES['files'] ) : array();
+	// phpcs:enable
 	$files          = mmr_sanitize_files_array( $files );
 	$uploaded_files = array();
 	$failed_files   = array();
